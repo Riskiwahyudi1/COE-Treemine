@@ -1,22 +1,23 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 
 function Footer() {
     return (
-        <Box
-            component="footer"
-            sx={{
-                backgroundColor: 'primary.main',
-                padding: 2,
-                textAlign: 'center',
-                position: 'fixed',
-                bottom: 0,
-                width: '100%'
-            }}
-        >
-            <Typography variant="body1" color="white">
-                © 2024 COE Treemine. All rights reserved.
-            </Typography>
+        <Box component="footer" sx={{ backgroundColor: '#84c9ef', py: 6 }}>
+            <Container maxWidth="lg">
+                <Typography variant="h6" align="center" gutterBottom>
+                    Toko PCB Online
+                </Typography>
+                <Typography variant="subtitle1" align="center" color="text.secondary" component="p">
+                    Menyediakan PCB berkualitas tinggi untuk seluruh Indonesia
+                </Typography>
+                <Typography variant="body2" color="text.secondary" align="center">
+                    {'Copyright © '}
+                    Toko PCB Online
+                    {new Date().getFullYear()}
+                    {'.'}
+                </Typography>
+            </Container>
         </Box>
     );
 }

@@ -29,7 +29,7 @@ function ProductCard({ product }) {
                 <Typography variant="body2" color="textSecondary" sx={{ marginBottom: 2 }}>
                     {product.price}
                 </Typography>
-                <Button variant="contained" color="primary" fullWidth>
+                <Button variant="contained" fullWidth sx={{  bgcolor: '#d565be', color: 'white' }}>
                     Buy Now
                 </Button>
             </CardContent>

@@ -35,11 +35,10 @@ const products = [
 
 function ShopCard() { // Renamed to uppercase
     return (
-        <div className="App">
-
+        <div>
             {/* Content */}
-            <Container sx={{ marginTop: 4, marginBottom: 8 }}> {/* Tambahkan marginBottom */}
-                <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+            <Container sx={{ marginTop: 8 }}> {/* Tambahkan marginBottom */}
+                <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold', color: '#black' , marginBottom : 7 }}>
                     Our PCB Products
                 </Typography>
                 <Grid container spacing={4} justifyContent="center"> {/* Changed Grid2 to Grid */}
