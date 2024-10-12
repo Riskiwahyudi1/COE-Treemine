@@ -1,143 +1,156 @@
-import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import Logoweb from '../assets/images/logo.png';
+import React from 'react';
+import {
+    AppBar,
+    Toolbar,
+    Typography,
+    InputBase,
+    IconButton,
+    Badge,
+    Box,
+    Tabs,
+    Tab,
+    Button
+} from '@mui/material';
+import { styled, alpha } from '@mui/material/styles';
+import SearchIcon from '@mui/icons-material/Search';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import HistoryIcon from '@mui/icons-material/History';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import Logoweb from '../assets/images/logo.png'; // Import logo
 
-const pages = ['Home', 'Products', 'About'];
+const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    '&:hover': {
+        backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+    marginRight: theme.spacing(2),
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+        marginLeft: theme.spacing(3),
+        width: 'auto',
+    },
+}));
 
-function ResponsiveAppBar() {
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
-    const navigate = useNavigate(); // Inisialisasi useNavigate untuk navigasi
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+}));
 
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    '& .MuiInputBase-input': {
+        padding: theme.spacing(1, 1, 1, 0),
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+        transition: theme.transitions.create('width'),
+        width: '100%',
+        [theme.breakpoints.up('md')]: {
+            width: '20ch',
+        },
+    },
+}));
+
+const Navbar = () => {
+    const navigate = useNavigate(); // Menggunakan useNavigate untuk navigasi
+
+    const [value, setValue] = React.useState(0);
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+
+        // Navigasi berdasarkan tab yang dipilih
+        switch (newValue) {
+            case 0:
+                navigate('/'); // Home
+                break;
+            case 1:
+                navigate('/product'); // Custom
+                break;
+            case 2:
+                navigate('/custom'); // Product
+                break;
+            case 3:
+                navigate('/product-assembly'); // Service
+                break;
+            case 4:
+                navigate('/service'); // Product Assembly
+                break;
+            default:
+                break;
+        }
     };
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
-
-    // Fungsi untuk navigasi ke halaman login
-    const handleLogin = () => {
-        navigate('/login'); // Arahkan pengguna ke halaman login
+    const handleLoginClick = () => {
+        navigate('/login'); // Navigasi ke halaman login
     };
 
     return (
-        <AppBar position="fixed" sx={{ bgcolor: '#84c9ef' }}>
-            <Container maxWidth="xl">
-                <Toolbar disableGutters>
-                    {/* Logo untuk desktop */}
+        <>
+            <AppBar position="static" sx={{ bgcolor: '#84c9ef' }} elevation={0}>
+                <Toolbar>
                     <Box
                         component="img"
-                        sx={{
-                            height: 65,
-                            display: { xs: 'none', md: 'flex' },
-                            mr: 0, mt: 1,
-                        }}
-                        alt="COE Treemine Logo"
                         src={Logoweb}
+                        alt="Logo"
+                        sx={{ height: 40, marginRight: 2 }} // Ukuran logo
                     />
-
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'none', md: 'flex' },
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        CoE Treemine
                     </Typography>
 
-                    {/* Menu untuk mobile */}
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            color="inherit"
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
-                            sx={{ display: { xs: 'block', md: 'none' } }}
-                        >
-                            {pages.map((page) => (
-                                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                    <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu>
-                    </Box>
+                    <Search>
+                        <SearchIconWrapper>
+                            <SearchIcon />
+                        </SearchIconWrapper>
+                        <StyledInputBase
+                            placeholder="Search in site"
+                            inputProps={{ 'aria-label': 'search' }}
+                        />
+                    </Search>
 
-                    {/* Logo untuk mobile */}
-                    <Box
-                        component="img"
-                        sx={{
-                            height: 40,
-                            display: { xs: 'flex', md: 'none' },
-                            mr: 2,
-                        }}
-                        alt="COE Treemine Logo"
-                        src={Logoweb}
-                    />
-
-                    {/* Menu untuk desktop */}
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map((page) => (
-                            <Button
-                                key={page}
-                                onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
-                            >
-                                {page}
-                            </Button>
-                        ))}
-                    </Box>
-
-                    {/* Tombol Login */}
-                    <Box sx={{ flexGrow: 0 }}>
-                        <Button
-                            variant="contained"
-                            sx={{ bgcolor: '#d565be', color: 'white' }}
-                            onClick={handleLogin} // Navigasi ke halaman login
-                        >
-                            Login
-                        </Button>
-                    </Box>
+                    <IconButton color="inherit">
+                        <Badge badgeContent={4} color="error">
+                            <ShoppingCartIcon />
+                        </Badge>
+                    </IconButton>
+                    <IconButton color="inherit">
+                        <HistoryIcon />
+                    </IconButton>
+                    <Button
+                        variant="contained"
+                        sx={{ ml: 1, bgcolor: '#d565be', '&:hover': { bgcolor: '#c054a9' } }}
+                        onClick={handleLoginClick} // Panggil fungsi navigasi saat tombol di klik
+                    >
+                        Login
+                    </Button>
                 </Toolbar>
-            </Container>
-        </AppBar>
+            </AppBar>
+
+            <AppBar position="static" sx={{ bgcolor: '#84c9ef' }} elevation={1}>
+                <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    centered
+                    indicatorColor="primary"
+                    textColor="primary"
+                >
+                    <Tab label="Home" />
+                    <Tab label="Product" />
+                    <Tab label="Custom Product" />
+                    <Tab label="Product Assembly" />
+                    <Tab label="Service" />
+
+                </Tabs>
+            </AppBar>
+        </>
     );
-}
-export default ResponsiveAppBar;
+};
+
+export default Navbar;
