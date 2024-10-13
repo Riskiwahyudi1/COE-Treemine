@@ -1,10 +1,10 @@
-import { Container, Grid, Typography } from '@mui/material'; // Changed Grid2 to Grid
+import React from 'react';
+import { Container, Grid, Typography, Box } from '@mui/material';
 import ProductCard from './productCard';
-// Import gambar lokal
 import pcb1 from '../assets/images/pcb1.jpeg';
 import pcb2 from '../assets/images/pcb2.jpg';
 import pcb3 from '../assets/images/pcb3.jpg';
-import pcb4 from '../assets/images/pcb4.jpg'; // Tambahkan gambar keempat
+import pcb4 from '../assets/images/pcb4.jpg';
 
 const products = [
     {
@@ -29,28 +29,27 @@ const products = [
         id: 4,
         name: 'PCB 10 Layer - VVIP Build',
         price: 'Rp 1,500,000',
-        image: pcb4, // Produk baru
+        image: pcb4,
     },
 ];
 
-function ShopCard() { // Renamed to uppercase
+function ShopCard() {
     return (
-        <div>
-            {/* Content */}
-            <Container sx={{ marginTop: 8 }}> {/* Tambahkan marginBottom */}
-                <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold', color: '#black' , marginBottom : 7 }}>
+        <Box sx={{ backgroundColor: 'white' }}>
+            <Container sx={{ paddingTop: 8, paddingBottom: 8 }}>
+                <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'black', marginBottom: 7 }}>
                     Our PCB Products
                 </Typography>
-                <Grid container spacing={4} justifyContent="center"> {/* Changed Grid2 to Grid */}
+                <Grid container spacing={4} justifyContent="center">
                     {products.map((product) => (
-                        <Grid item key={product.id} xs={12} sm={6} md={3}> {/* Changed Grid2 to Grid */}
+                        <Grid item key={product.id} xs={12} sm={6} md={3}>
                             <ProductCard product={product} />
                         </Grid>
                     ))}
                 </Grid>
             </Container>
-        </div>
+        </Box>
     );
 }
 
-export default ShopCard; // Renamed to uppercase
+export default ShopCard;

@@ -112,7 +112,7 @@ const LoginPage = () => {
                   }
                 }}
               >
-                Register  `122`
+                Register
               </Button>
             </Box>
           </Box>
