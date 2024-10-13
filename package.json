@@ -1,5 +1,5 @@
 {
-  "name": "teslagi",
+  "name": "coe-treemine",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -44,5 +44,17 @@
   },
   "devDependencies": {
     "html-webpack-plugin": "^5.3.2"
-  }
+  },
+  "description": "COE Treemine",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Riskiwahyudi1/COE-Treemine.git"
+  },
+  "author": "Riski Wahyudi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Riskiwahyudi1/COE-Treemine/issues"
+  },
+  "homepage": "/"
 }
