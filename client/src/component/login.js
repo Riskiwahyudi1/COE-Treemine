@@ -61,9 +61,7 @@ const LoginPage = () => {
       });
 
       if (response.status === 200 && response.data.token) {
-        console.log('Token:', response.data.token); // Debug log
-        localStorage.setItem('token', response.data.token); // Simpan token ke localStorage
-        login(); // Update status autentikasi
+        login(response.data.token); 
         Toast.fire({
           icon: 'success',
           title: 'Login successful',

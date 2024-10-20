@@ -1,17 +1,33 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Membuat context
+
 const AuthContext = createContext();
 
-// Custom hook untuk menggunakan AuthContext
+
 export const useAuth = () => useContext(AuthContext);
 
-// Provider untuk AuthContext
 export const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
 
-    const login = () => setIsAuthenticated(true);
-    const logout = () => setIsAuthenticated(false);
+    // Fungsi untuk login
+    const login = (token) => {
+        localStorage.setItem('token', token); // Simpan token di local storage
+        setIsAuthenticated(true);
+    };
+
+    // Fungsi untuk logout
+    const logout = () => {
+        localStorage.removeItem('token'); // Hapus token dari local storage
+        setIsAuthenticated(false);
+    };
+
+    // Efek untuk memeriksa token saat pertama kali render
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsAuthenticated(true); // Jika ada token, set isAuthenticated ke true
+        }
+    }, []);
 
     return (
         <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
