@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            setIsAuthenticated(true); // Jika ada token, set isAuthenticated ke true
+            setIsAuthenticated(true); 
         }
     }, []);
 
