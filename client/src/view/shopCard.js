@@ -1,39 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Grid, Typography, Box } from '@mui/material';
 import ProductCard from './productCard';
-import pcb1 from '../assets/images/pcb1.jpeg';
-import pcb2 from '../assets/images/pcb2.jpg';
-import pcb3 from '../assets/images/pcb3.jpg';
-import pcb4 from '../assets/images/pcb4.jpg';
 
-const products = [
-    {
-        id: 1,
-        name: 'PCB 4 Layer - High Quality',
-        price: 'Rp 500,000',
-        image: pcb1,
-    },
-    {
-        id: 2,
-        name: 'PCB 6 Layer - Custom Design',
-        price: 'Rp 750,000',
-        image: pcb2,
-    },
-    {
-        id: 3,
-        name: 'PCB 8 Layer - Premium Build',
-        price: 'Rp 1,000,000',
-        image: pcb3,
-    },
-    {
-        id: 4,
-        name: 'PCB 10 Layer - VVIP Build',
-        price: 'Rp 1,500,000',
-        image: pcb4,
-    },
-];
+import getProducts from '../api/productListApi';
 
 function ShopCard() {
+
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const data = await getProducts();
+                setProducts(data);
+            } catch (error) {
+                console.error('Failed to load products', error);
+            }
+        };
+        fetchProducts();
+    }, []);
     return (
         <Box sx={{ backgroundColor: 'white' }}>
             <Container sx={{ paddingTop: 8, paddingBottom: 8 }}>

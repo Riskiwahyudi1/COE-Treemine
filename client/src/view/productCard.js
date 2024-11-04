@@ -19,15 +19,15 @@ function ProductCard({ product }) {
             <CardMedia
                 component="img"
                 height="200"
-                image={product.image}
-                alt={product.name}
+                src={`http://localhost:5000${product.picture_url}`}
+                alt={product.picture_url}
             />
             <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                    {product.name}
+                    {product.product_name}
                 </Typography>
                 <Typography variant="body2" color="textSecondary" sx={{ marginBottom: 2 }}>
-                    {product.price}
+                 Rp.{product.harga.toLocaleString('id-ID')}
                 </Typography>
                 <Button variant="contained" fullWidth sx={{  bgcolor: '#d565be', color: 'white' }}>
                     Buy Now
