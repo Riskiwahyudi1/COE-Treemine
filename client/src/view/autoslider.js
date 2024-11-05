@@ -1,110 +1,154 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Paper } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import React from 'react';
+import { Box, Container, Typography, Grid, Paper } from '@mui/material';
+import { Smartphone, Eye, Sparkles, ThumbsUp, CheckCircle } from 'lucide-react';
+import vid from '../assets/images/Firmware.gif';
 
-// Import gambar lokal
-import pcb1 from '../assets/images/pcb1.jpeg';
-import pcb2 from '../assets/images/pcb2.jpg';
-import pcb3 from '../assets/images/pcb3.jpg';
-import pcb4 from '../assets/images/pcb4.jpg';
-
-// Komponen wadah untuk slider
-const SliderContainer = styled(Box)(({ theme }) => ({
-    width: '100%',
-    height: '400px',
-    position: 'relative',
-    overflow: 'hidden',
-}));
-
-// Komponen untuk menampung semua slide
-const SlidesWrapper = styled(Box)(({ theme }) => ({
-    display: 'flex',
-    height: '100%',
-    transition: 'transform 0.5s ease-in-out',
-}));
-
-// Komponen untuk satu slide
-const Slide = styled(Box)({
-    minWidth: '100%',
-    height: '100%',
-});
-
-// Komponen untuk titik-titik indikator
-const DotsContainer = styled(Box)(({ theme }) => ({
-    position: 'absolute',
-    bottom: theme.spacing(2),
-    left: '50%',
-    transform: 'translateX(-50%)',
-    display: 'flex',
-    gap: theme.spacing(1),
-    zIndex: 1,
-}));
-
-// Komponen untuk satu titik indikator
-const Dot = styled(Paper)(({ active }) => ({
-    width: 10,
-    height: 10,
-    borderRadius: '50%',
-    backgroundColor: active ? '#fff' : 'rgba(255, 255, 255, 0.5)',
-    cursor: 'pointer',
-}));
-
-// Data slide - gunakan gambar lokal
-const slides = [
-    { image: pcb1, alt: 'pcb1' },
-    { image: pcb2, alt: 'pcb2' },
-    { image: pcb3, alt: 'pcb3' },
-    { image: pcb4, alt: 'pcb4' },
-];
-
-const AutoSlider = () => {
-    const [currentSlide, setCurrentSlide] = useState(0);
-
-    // Efek untuk auto-slide
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentSlide((prevSlide) => 
-                prevSlide === slides.length - 1 ? 0 : prevSlide + 1
-            );
-        }, 5000); // Ganti slide setiap 5 detik
-
-        return () => clearInterval(timer);
-    }, []);
-
-    // Fungsi untuk mengganti slide saat titik diklik
-    const handleDotClick = (index) => {
-        setCurrentSlide(index);
-    };
+export default function TicketLandingPage() {
+    const features = [
+        {
+            icon: <Smartphone style={{ width: 24, height: 24 }} />,
+            title: "Responsive Layout",
+            description: "Works perfectly on all devices"
+        },
+        {
+            icon: <Eye style={{ width: 24, height: 24 }} />,
+            title: "System Ready",
+            description: "Ready to use anytime every time"
+        },
+        {
+            icon: <Sparkles style={{ width: 24, height: 24 }} />,
+            title: "Smart Tools",
+            description: "Advanced features included"
+        },
+        {
+            icon: <ThumbsUp style={{ width: 24, height: 24 }} />,
+            title: "Easy to Use",
+            description: "Simple and intuitive interface"
+        },
+        {
+            icon: <CheckCircle style={{ width: 24, height: 24 }} />,
+            title: "Great Design",
+            description: "Modern and clean design"
+        }
+    ];
 
     return (
-        <SliderContainer>
-            <SlidesWrapper sx={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-                {slides.map((slide, index) => (
-                    <Slide key={index}>
-                        <Box
-                            component="img"
-                            src={slide.image}
-                            alt={slide.alt}
-                            sx={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                            }}
-                        />
-                    </Slide>
-                ))}
-            </SlidesWrapper>
-            <DotsContainer>
-                {slides.map((_, index) => (
-                    <Dot
-                        key={index}
-                        active={currentSlide === index}
-                        onClick={() => handleDotClick(index)}
-                    />
-                ))}
-            </DotsContainer>
-        </SliderContainer>
-    );
-};
+        <Box sx={{
+            minHeight: '100vh',
+            background: `linear-gradient(to bottom, #2f98cd, white)`
+        }}>
+            <Container sx={{ pt: 8 }}>
+                {/* Hero Section */}
+                <Grid container spacing={4} alignItems="center">
+                    <Grid item xs={12} md={6}>
+                        <Box sx={{ color: 'white' }}>
+                            <Typography variant="h2" sx={{
+                                fontWeight: 'bold',
+                                mb: 2
+                            }}>
+                                The best PCB buying experience
+                            </Typography>
+                            <Typography variant="body1" sx={{ mb: 3 }}>
+                                yrgveyindrui uiywegdryrgnuedir iuydrniyersnye iegrdn weygdr wieyrd we diewygr d7wetrf xwyegfdoweufg qyegfy ceqvfegwix fqgeyiv cfyiex fyiev  diuefiodufgoy yefg yiywzgfueg 
+                            </Typography>
+                            <Box
+                                component="button"
+                                sx={{
+                                    backgroundColor: '#54cbbb',
+                                    color: 'white',
+                                    px: 3,
+                                    py: 1,
+                                    borderRadius: 50,
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                        opacity: 0.9
+                                    }
+                                }}
+                            >
+                                Learn More
+                            </Box>
+                        </Box>
+                    </Grid>
 
-export default AutoSlider;
+                    <Grid item xs={12} md={6}>
+                        <Box sx={{ position: 'relative' }}>
+                            <Box sx={{
+                                position: 'absolute',
+                                width: 300,
+                                height: 300,
+                                borderRadius: '50%',
+                                backgroundColor: '#7fd685',
+                                filter: 'blur(60px)',
+                                opacity: 0.3,
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                zIndex: 0
+                            }} />
+                            <Box
+                                component="img"
+                                src={vid}
+                                alt="Mobile app preview"
+                                sx={{
+                                    width: '100%',
+                                    maxWidth: 400,
+                                    mx: 'auto',
+                                    display: 'block',
+                                    // transform: 'rotate(12deg)',
+                                    position: 'relative',
+                                    zIndex: 1
+                                }}
+                            />
+                        </Box>
+                    </Grid>
+                </Grid>
+
+                {/* Features Section */}
+                <Grid container spacing={4} sx={{ mt: 4, pb: 8 }}>
+                    {features.map((feature, index) => (
+                        <Grid item xs={6} md={2.4} key={index}>
+                            <Paper
+                                elevation={0}
+                                sx={{
+                                    p: 3,
+                                    textAlign: 'center',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    gap: 2,
+                                    backgroundColor: 'rgba(255,255,255,0.8)',
+                                    backdropFilter: 'blur(8px)',
+                                    borderRadius: 2,
+                                    transition: 'all 0.3s',
+                                    '&:hover': {
+                                        boxShadow: 3
+                                    }
+                                }}
+                            >
+                                <Box sx={{
+                                    width: 48,
+                                    height: 48,
+                                    borderRadius: '50%',
+                                    backgroundColor: '#2f98cd',
+                                    color: 'white',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    {feature.icon}
+                                </Box>
+                                <Typography sx={{ fontWeight: 600, color: 'text.primary' }}>
+                                    {feature.title}
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                    {feature.description}
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                    ))}
+                </Grid>
+            </Container>
+        </Box>
+    );
+}

@@ -38,40 +38,6 @@ const LandingPage = () => {
         <ThemeProvider theme={theme}>
             <Autoslider/>
             <Box sx={{ flexGrow: 1, bgcolor: 'background.default', minHeight: '100vh' }}>
-                {/* Welcome Section with White Background */}
-                {/* <Box sx={{ bgcolor: '#b4d2ed' }}>
-                    <Container maxWidth="lg" sx={{ pt: 8, pb: 8 }}>
-                        <Grid container spacing={4} alignItems="center">
-                            <Grid item xs={12} md={6}>
-                                <Typography variant="h2" component="h1" gutterBottom sx={{ fontSize: '47px', fontWeight: 'bold' }}>
-                                    Selamat datang di <br /> COE Treemine
-                                </Typography>
-                                <Typography variant="h6" paragraph sx={{ fontSize: '17px' }}>
-                                    penyedia Printed Circuit Boards (PCB) berkualitas tinggi di Indonesia. Kami berkomitmen menghadirkan produk terbaik untuk mendukung berbagai kebutuhan elektronik Anda. Dengan layanan yang ramah dan profesional, kami siap membantu kesuksesan proyek Anda dengan solusi yang andal dan harga kompetitif.
-                                </Typography>
-                                <Button
-                                    variant="contained"
-                                    size="large"
-                                    sx={{ bgcolor: '#d565be', color: 'white', mt: 2 }}
-                                >
-                                    Login
-                                </Button>
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <Box
-                                    component="img"
-                                    sx={{
-                                        width: '100%',
-                                        maxWidth: 650,
-                                        height: 'auto',
-                                    }}
-                                    src={Videocontoh}
-                                    alt="Mockup aplikasi tiket"
-                                />
-                            </Grid>
-                        </Grid>
-                    </Container>
-                </Box> */}
 
                 {/* Product Features Section with Blue Background */}
                 <Box sx={{ bgcolor: '#ffffff' }}>

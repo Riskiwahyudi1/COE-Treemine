@@ -13,15 +13,29 @@ import {
     Avatar,
     Menu,
     MenuItem,
+    useTheme,
+    useMediaQuery,
+    Drawer,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemIcon,
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import HistoryIcon from '@mui/icons-material/History';
+import MenuIcon from '@mui/icons-material/Menu';
+import HomeIcon from '@mui/icons-material/Home';
+import ShopIcon from '@mui/icons-material/Shop';
+import BuildIcon from '@mui/icons-material/Build';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import HandymanIcon from '@mui/icons-material/Handyman';
 import { useNavigate } from 'react-router-dom';
 import Logoweb from '../assets/images/logo.png';
 import { useAuth } from '../contexts/AuthContext';
 
+// Search component styles remain the same
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -38,6 +52,7 @@ const Search = styled('div')(({ theme }) => ({
     },
 }));
 
+// Other styled components remain the same
 const SearchIconWrapper = styled('div')(({ theme }) => ({
     padding: theme.spacing(0, 2),
     height: '100%',
@@ -62,77 +77,141 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const Navbar = () => {
-    const navigate = useNavigate(); // Untuk navigasi
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const navigate = useNavigate();
     const { isAuthenticated, logout } = useAuth();
     const [value, setValue] = useState(0);
-    const [anchorEl, setAnchorEl] = useState(null); // State untuk buka/tutup menu avatar
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+    const menuItems = [
+        { text: 'Home', icon: <HomeIcon />, path: '/' },
+        { text: 'Product', icon: <ShopIcon />, path: '/product' },
+        { text: 'Custom Product', icon: <BuildIcon />, path: '/custom' },
+        { text: 'Product Assembly', icon: <InventoryIcon />, path: '/product-assembly' },
+        { text: 'Service', icon: <HandymanIcon />, path: '/service' },
+    ];
 
     const handleOpenMenu = (event) => {
-        setAnchorEl(event.currentTarget); // Set posisi menu
+        setAnchorEl(event.currentTarget);
     };
 
     const handleCloseMenu = () => {
-        setAnchorEl(null); // Tutup menu
+        setAnchorEl(null);
     };
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
-        const paths = ['/', '/product', '/custom', '/product-assembly', '/service'];
-        navigate(paths[newValue] || '/');
+        navigate(menuItems[newValue].path);
+    };
+
+    const handleMobileMenuClick = (path) => {
+        navigate(path);
+        setMobileMenuOpen(false);
     };
 
     const handleLoginClick = () => {
-        navigate('/login'); // Navigasi ke halaman login
+        navigate('/login');
     };
+
+    const renderMobileDrawer = () => (
+        <Drawer
+            anchor="left"
+            open={mobileMenuOpen}
+            onClose={() => setMobileMenuOpen(false)}
+        >
+            <Box sx={{ width: 250 }}>
+                <List>
+                    {menuItems.map((item, index) => (
+                        <ListItem
+                            button
+                            key={item.text}
+                            onClick={() => handleMobileMenuClick(item.path)}
+                        >
+                            <ListItemIcon>{item.icon}</ListItemIcon>
+                            <ListItemText primary={item.text} />
+                        </ListItem>
+                    ))}
+                </List>
+            </Box>
+        </Drawer>
+    );
 
     return (
         <>
-            <AppBar position="static" sx={{ bgcolor: '#84c9ef' }} elevation={0}>
+            <AppBar position="static" sx={{ bgcolor: '#2f98cd' }} elevation={0}>
                 <Toolbar>
+                    {isMobile && (
+                        <IconButton
+                            color="inherit"
+                            edge="start"
+                            onClick={() => setMobileMenuOpen(true)}
+                            sx={{ mr: 2 }}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                    )}
+
                     <Box
                         component="img"
                         src={Logoweb}
                         alt="Logo"
                         sx={{ height: 40, marginRight: 2 }}
                     />
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        CoE Treemine
-                    </Typography>
 
-                    <Search>
-                        <SearchIconWrapper>
-                            <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            placeholder="Search in site"
-                            inputProps={{ 'aria-label': 'search' }}
-                        />
-                    </Search>
+                    {!isMobile && (
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                            CoE Treemine
+                        </Typography>
+                    )}
 
-                    {/* Render tombol Login atau Avatar berdasarkan status isAuthenticated */}
+                    {!isMobile && (
+                        <Search>
+                            <SearchIconWrapper>
+                                <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase
+                                placeholder="Search in site"
+                                inputProps={{ 'aria-label': 'search' }}
+                            />
+                        </Search>
+                    )}
+
+                    <Box sx={{ flexGrow: 1 }} />
+
                     {!isAuthenticated ? (
                         <Button
                             variant="contained"
-                            sx={{ ml: 1, bgcolor: '#d565be', '&:hover': { bgcolor: '#c054a9' } }}
+                            sx={{
+                                ml: 1,
+                                bgcolor: '#54cbbb',
+                                '&:hover': { bgcolor: '#c054a9' },
+                                ...(isMobile && { fontSize: '0.8rem', padding: '6px 12px' })
+                            }}
                             onClick={handleLoginClick}
                         >
                             Login
                         </Button>
                     ) : (
-                        
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <IconButton color="inherit">
-                            <Badge badgeContent={4} color="error">
-                                <ShoppingCartIcon />
-                            </Badge>
+                            <IconButton color="inherit" size={isMobile ? "small" : "medium"}>
+                                <Badge badgeContent={4} color="error">
+                                    <ShoppingCartIcon />
+                                </Badge>
                             </IconButton>
 
-                            <IconButton color="inherit">
+                            <IconButton color="inherit" size={isMobile ? "small" : "medium"}>
                                 <HistoryIcon />
                             </IconButton>
+
                             <Avatar
                                 onClick={handleOpenMenu}
-                                sx={{ cursor: 'pointer', bgcolor: 'primary.main' }}
+                                sx={{
+                                    cursor: 'pointer',
+                                    bgcolor: 'primary.main',
+                                    ...(isMobile && { width: 32, height: 32 })
+                                }}
                             >
                                 U
                             </Avatar>
@@ -159,21 +238,23 @@ const Navbar = () => {
                 </Toolbar>
             </AppBar>
 
-            <AppBar position="static" sx={{ bgcolor: '#84c9ef' }} elevation={1}>
-                <Tabs
-                    value={value}
-                    onChange={handleChange}
-                    centered
-                    indicatorColor="primary"
-                    textColor="primary"
-                >
-                    <Tab label="Home" />
-                    <Tab label="Product" />
-                    <Tab label="Custom Product" />
-                    <Tab label="Product Assembly" />
-                    <Tab label="Service" />
-                </Tabs>
-            </AppBar>
+            {!isMobile && (
+                <AppBar position="static" sx={{ bgcolor: '#2f98cd' }} elevation={1}>
+                    <Tabs
+                        value={value}
+                        onChange={handleChange}
+                        centered
+                        indicatorColor="primary"
+                        textColor="white"
+                    >
+                        {menuItems.map((item) => (
+                            <Tab key={item.text} label={item.text} />
+                        ))}
+                    </Tabs>
+                </AppBar>
+            )}
+
+            {renderMobileDrawer()}
         </>
     );
 };
