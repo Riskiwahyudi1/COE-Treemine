@@ -83,33 +83,45 @@ const LoginPage = () => {
   };
 
   return (
-    <Grid container component="main" sx={{ height: '100vh' }}>
+    <Grid container component="main" sx={{ height: '100vh', borderRadius: '50%' }}>
       <Grid
         item
         xs={false}
         sm={4}
         md={7}
         sx={{
-          backgroundColor: '#B4D2ED',
+          backgroundColor: '#93D1C9',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
           padding: 4,
+          clipPath: 'polygon(0 0, 100% 0%, 75% 100%, 0 100%)' 
         }}
       >
         <Box
-          component="img"
+         component="img"
           src={Videocontoh}
           alt="E-commerce Web Page"
           sx={{
             maxWidth: '100%',
             maxHeight: '80vh',
-            objectFit: 'contain',
+            objectFit: 'contain', 
+            marginRight: '100px',
           }}
         />
       </Grid>
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+      <Grid 
+        item xs={12} 
+        sm={8} 
+        md={5} 
+        component={Paper} 
+        elevation={6} 
+        square 
+        sx={{
+          clipPath: 'polygon(15% 0, 100% 0%, 100% 100%, 0% 100%)', 
+          overflow: 'hidden' 
+          }}>
         <Box
           sx={{
             my: 8,
@@ -119,13 +131,13 @@ const LoginPage = () => {
             alignItems: 'center',
           }}
         >
-          <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
+          <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
             Login
           </Typography>
           <Typography variant="body2" sx={{ mb: 3 }}>
             See what's happening in the Seotech world right now
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1, width: '100%', maxWidth: 400 }}>
+          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1, width: '100%', maxWidth: 400,  }}>
             <TextField
               margin="normal"
               required
@@ -158,8 +170,8 @@ const LoginPage = () => {
               sx={{
                 mt: 3,
                 mb: 2,
-                bgcolor: '#d565be',
-                '&:hover': { bgcolor: '#b054a5' } // Darker shade for hover
+                bgcolor: '#54cbbb',
+                '&:hover': { bgcolor: '#2f98cd' } // Darker shade for hover
               }}
             >
               {loading ? <CircularProgress size={24} /> : 'Login'}
@@ -170,10 +182,10 @@ const LoginPage = () => {
                 onClick={() => navigate('/')}
                 sx={{
                   width: '48%',
-                  color: '#84C9EF',
-                  borderColor: '#84C9EF',
+                  color: '#54cbbb',
+                  borderColor: '#54cbbb',
                   '&:hover': {
-                    bgcolor: '#84C9EF',
+                    bgcolor: '#54cbbb',
                     color: '#fff', // Ensure text is visible on hover
                   }
                 }}
@@ -185,10 +197,10 @@ const LoginPage = () => {
                 onClick={() => navigate('/register')}
                 sx={{
                   width: '48%',
-                  color: '#d565be',
-                  borderColor: '#d565be',
+                  color: '#2f98cd',
+                  borderColor: '#2f98cd',
                   '&:hover': {
-                    bgcolor: '#d565be',
+                    bgcolor: '#2f98cd',
                     color: '#fff', // Ensure text is visible on hover
                   }
                 }}
