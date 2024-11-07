@@ -3,7 +3,7 @@ import { Box, Button, TextField, Typography, Grid, CircularProgress, Paper, Aler
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import Videocontoh from '../assets/images/Sign up.gif';
+import Videocontoh from '../assets/images/Mobile login.gif';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -58,7 +58,12 @@ const RegisterPage = () => {
 
   return (
     <Grid container component="main" sx={{ height: '100vh' }}>
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square
+      sx={{
+        clipPath: 'polygon(0 0, 100% 0%, 85% 100%, 0% 100%)',
+        overflow: 'hidden',
+    }}
+      >
         <Box
           sx={{
             my: 8,
@@ -122,9 +127,9 @@ const RegisterPage = () => {
               sx={{
                 mt: 3,
                 mb: 2,
-                bgcolor: '#d565be',
+                bgcolor: '#54CBBB',
                 '&:hover': {
-                  bgcolor: '#b054a5', 
+                  bgcolor: '#2f98cd', 
                 },
               }}
             >
@@ -148,10 +153,10 @@ const RegisterPage = () => {
                 onClick={() => navigate('/')}
                 sx={{
                   flex: 1, // Each button takes equal space
-                  borderColor: '#84C9EF', // Border color
-                  color: '#84C9EF', // Text color
+                  borderColor: '#2f98cd', // Border color
+                  color: '#2f98cd', // Text color
                   '&:hover': {
-                    backgroundColor: '#84C9EF', // Background color on hover
+                    backgroundColor: '#2f98cd', // Background color on hover
                     color: '#fff', // Text color on hover
                   }
                 }}
@@ -166,10 +171,10 @@ const RegisterPage = () => {
                 onClick={() => navigate('/login')}
                 sx={{
                   flex: 1, // Each button takes equal space
-                  borderColor: '#d565be', // Border color
-                  color: '#d565be', // Text color
+                  borderColor: '#54CBBB', // Border color
+                  color: '#54CBBB', // Text color
                   '&:hover': {
-                    backgroundColor: '#d565be', // Background color on hover
+                    backgroundColor: '#54CBBB', // Background color on hover
                     color: '#fff', // Text color on hover
                   }
                 }}
@@ -182,29 +187,32 @@ const RegisterPage = () => {
         </Box>
       </Grid>
       <Grid
-        item
-        xs={false}
-        sm={4}
-        md={7}
-        sx={{
-          backgroundColor: '#B4D2ED',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 4,
-        }}
-      >
-        <Box
-          component="img"
-          src={Videocontoh}
-          alt="E-commerce Web Page"
-          sx={{
-            maxWidth: '100%',
-            maxHeight: '80vh',
-            objectFit: 'contain',
-          }}
-        />
+       item
+       xs={false}
+       sm={4}
+       md={7}
+       sx={{
+         backgroundColor: '#93D1C9',
+         display: 'flex',
+         flexDirection: 'column',
+         justifyContent: 'center',
+         alignItems: 'center',
+         padding: 4,
+         clipPath: 'polygon(0 0, 100% 0, 100% 100%, 25% 100%)',
+       }}
+     >
+       <Box
+         component="img"
+         src={Videocontoh}
+         alt="E-commerce Web Page"
+         sx={{
+           maxWidth: '100%',
+           maxHeight: '80vh',
+           objectFit: 'contain',
+           marginLeft:'150px'
+
+         }}
+       />
       </Grid>
     </Grid>
   );
