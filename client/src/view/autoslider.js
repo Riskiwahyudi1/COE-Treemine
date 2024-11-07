@@ -1,34 +1,43 @@
 import React from 'react';
 import { Box, Container, Typography, Grid, Paper } from '@mui/material';
-import { Smartphone, Eye, Sparkles, ThumbsUp, CheckCircle } from 'lucide-react';
 import vid from '../assets/images/Firmware.gif';
 
 export default function TicketLandingPage() {
     const features = [
         {
-            icon: <Smartphone style={{ width: 24, height: 24 }} />,
-            title: "Responsive Layout",
-            description: "Works perfectly on all devices"
+            icon: "01",
+            title: "Online Quote",
+            description: "Place an order on CoE Timeline"
         },
         {
-            icon: <Eye style={{ width: 24, height: 24 }} />,
-            title: "System Ready",
-            description: "Ready to use anytime every time"
+            icon: "02",
+            title: "Upload PCB file",
+            description: "Submit your PCB design files"
         },
         {
-            icon: <Sparkles style={{ width: 24, height: 24 }} />,
-            title: "Smart Tools",
-            description: "Advanced features included"
+            icon: "03",
+            title: "Order Review",
+            description: "We check your specifications"
         },
         {
-            icon: <ThumbsUp style={{ width: 24, height: 24 }} />,
-            title: "Easy to Use",
-            description: "Simple and intuitive interface"
+            icon: "04",
+            title: "Payment",
+            description: "Secure payment processing"
         },
         {
-            icon: <CheckCircle style={{ width: 24, height: 24 }} />,
-            title: "Great Design",
-            description: "Modern and clean design"
+            icon: "05",
+            title: "Fabrication",
+            description: "PCB manufacturing begins"
+        },
+        {
+            icon: "06",
+            title: "Delivery",
+            description: "Ships to your location"
+        },
+        {
+            icon: "07",
+            title: "Confirm Received",
+            description: "Order completion verified"
         }
     ];
 
@@ -37,7 +46,7 @@ export default function TicketLandingPage() {
             minHeight: '100vh',
             background: `linear-gradient(to bottom, #2f98cd, white)`
         }}>
-            <Container sx={{ pt: 8 }}>
+            <Container maxWidth="xl" sx={{ pt: 8 }}>
                 {/* Hero Section */}
                 <Grid container spacing={4} alignItems="center">
                     <Grid item xs={12} md={6}>
@@ -49,7 +58,7 @@ export default function TicketLandingPage() {
                                 The best PCB buying experience
                             </Typography>
                             <Typography variant="body1" sx={{ mb: 3 }}>
-                                yrgveyindrui uiywegdryrgnuedir iuydrniyersnye iegrdn weygdr wieyrd we diewygr d7wetrf xwyegfdoweufg qyegfy ceqvfegwix fqgeyiv cfyiex fyiev  diuefiodufgoy yefg yiywzgfueg 
+                                yrgveyindrui uiywegdryrgnuedir iuydrniyersnye iegrdn weygdr wieyrd we diewygr d7wetrf xwyegfdoweufg qyegfy ceqvfegwix fqgeyiv cfyiex fyiev  diuefiodufgoy yefg yiywzgfueg
                             </Typography>
                             <Box
                                 component="button"
@@ -95,7 +104,6 @@ export default function TicketLandingPage() {
                                     maxWidth: 400,
                                     mx: 'auto',
                                     display: 'block',
-                                    // transform: 'rotate(12deg)',
                                     position: 'relative',
                                     zIndex: 1
                                 }}
@@ -105,49 +113,100 @@ export default function TicketLandingPage() {
                 </Grid>
 
                 {/* Features Section */}
-                <Grid container spacing={4} sx={{ mt: 4, pb: 8 }}>
-                    {features.map((feature, index) => (
-                        <Grid item xs={6} md={2.4} key={index}>
+                <Box sx={{ mt: 4, pb: 8, overflowX: 'auto' }}>
+                    <Typography variant="h4" sx={{ color: 'black', mb: 4, fontWeight: 'bold' }}>
+                        How to Use?
+                    </Typography>
+                    <Box sx={{
+                        display: 'flex',
+                        gap: 2,
+                        minWidth: 'min-content',
+                        position: 'relative',
+                        '&::after': {
+                            content: '""',
+                            position: 'absolute',
+                            top: '32px',
+                            left: '60px',
+                            right: '60px',
+                            height: '2px',
+                            backgroundColor: '#e0e0e0',
+                            zIndex: 0
+                        }
+                    }}>
+                        {features.map((feature, index) => (
                             <Paper
-                                elevation={0}
-                                sx={{
-                                    p: 3,
-                                    textAlign: 'center',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    gap: 2,
-                                    backgroundColor: 'rgba(255,255,255,0.8)',
-                                    backdropFilter: 'blur(8px)',
-                                    borderRadius: 2,
-                                    transition: 'all 0.3s',
-                                    '&:hover': {
-                                        boxShadow: 3
-                                    }
-                                }}
-                            >
+                            key={index}
+                            elevation={0}
+                            sx={{
+                                p: 2, // Mengurangi padding
+                                minWidth: {
+                                    xs: '160px', // Mengurangi lebar minimal agar fitur tidak melebar
+                                    sm: '140px',
+                                    md: '120px',
+                                    lg: '100px'
+                                },
+                                textAlign: 'center',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: 1, // Mengurangi jarak antar elemen dalam fitur
+                                backgroundColor: 'rgba(255,255,255,0.8)',
+                                backdropFilter: 'blur(8px)',
+                                borderRadius: 2,
+                                transition: 'all 0.3s',
+                                position: 'relative',
+                                zIndex: 1,
+                                '&:hover': {
+                                    boxShadow: 3,
+                                    transform: 'translateY(-4px)'
+                                }
+                            }}
+                        >
+                            <Box sx={{
+                                width: 28, // Mengurangi ukuran ikon
+                                height: 28,
+                                bgcolor: '#2f98cd',
+                                borderRadius: 1,
+                                color: 'white',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '0.8rem', // Mengurangi ukuran font ikon
+                                fontWeight: 'bold',
+                                mb: 1
+                            }}>
+                                {feature.icon}
+                            </Box>
+                            <Typography sx={{
+                                fontWeight: 600,
+                                color: 'text.primary',
+                                fontSize: '0.875rem' // Mengurangi ukuran font judul
+                            }}>
+                                {feature.title}
+                            </Typography>
+                            <Typography variant="body2" sx={{
+                                color: 'text.secondary',
+                                fontSize: '0.75rem' // Mengurangi ukuran font deskripsi
+                            }}>
+                                {feature.description}
+                            </Typography>
+                            {index < features.length - 1 && (
                                 <Box sx={{
-                                    width: 48,
-                                    height: 48,
-                                    borderRadius: '50%',
-                                    backgroundColor: '#2f98cd',
-                                    color: 'white',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
+                                    position: 'absolute',
+                                    right: '-10px', // Mengurangi jarak panah
+                                    top: '32px',
+                                    color: '#2f98cd',
+                                    fontWeight: 'bold',
+                                    zIndex: 2
                                 }}>
-                                    {feature.icon}
+                                    →
                                 </Box>
-                                <Typography sx={{ fontWeight: 600, color: 'text.primary' }}>
-                                    {feature.title}
-                                </Typography>
-                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                    {feature.description}
-                                </Typography>
-                            </Paper>
-                        </Grid>
-                    ))}
-                </Grid>
+                            )}
+                        </Paper>
+                        
+                        ))}
+                    </Box>
+                </Box>
             </Container>
         </Box>
     );

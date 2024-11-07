@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import {
     AppBar,
     Toolbar,
@@ -13,7 +13,6 @@ import {
     Avatar,
     Menu,
     MenuItem,
-    useTheme,
     useMediaQuery,
     Drawer,
     List,
@@ -21,7 +20,7 @@ import {
     ListItemText,
     ListItemIcon,
 } from '@mui/material';
-import { styled, alpha } from '@mui/material/styles';
+import { styled, alpha, createTheme, ThemeProvider } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import HistoryIcon from '@mui/icons-material/History';
@@ -35,7 +34,17 @@ import { useNavigate } from 'react-router-dom';
 import Logoweb from '../assets/images/logo.png';
 import { useAuth } from '../contexts/AuthContext';
 
-// Search component styles remain the same
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#2f98cd',
+        },
+        secondary: {
+            main: '#ffffff', // Set secondary color to white
+        },
+    },
+});
+
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -52,7 +61,6 @@ const Search = styled('div')(({ theme }) => ({
     },
 }));
 
-// Other styled components remain the same
 const SearchIconWrapper = styled('div')(({ theme }) => ({
     padding: theme.spacing(0, 2),
     height: '100%',
@@ -77,7 +85,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const Navbar = () => {
-    const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const navigate = useNavigate();
     const { isAuthenticated, logout } = useAuth();
@@ -123,7 +130,7 @@ const Navbar = () => {
         >
             <Box sx={{ width: 250 }}>
                 <List>
-                    {menuItems.map((item, index) => (
+                    {menuItems.map((item) => (
                         <ListItem
                             button
                             key={item.text}
@@ -139,8 +146,8 @@ const Navbar = () => {
     );
 
     return (
-        <>
-            <AppBar position="static" sx={{ bgcolor: '#2f98cd' }} elevation={0}>
+        <ThemeProvider theme={theme}>
+            <AppBar position="fixed" sx={{ bgcolor: '#2f98cd' }} elevation={0}>
                 <Toolbar>
                     {isMobile && (
                         <IconButton
@@ -239,13 +246,13 @@ const Navbar = () => {
             </AppBar>
 
             {!isMobile && (
-                <AppBar position="static" sx={{ bgcolor: '#2f98cd' }} elevation={1}>
+                <AppBar position="fixed" sx={{ bgcolor: '#2f98cd', top: 64 }} elevation={0}>
                     <Tabs
                         value={value}
                         onChange={handleChange}
                         centered
-                        indicatorColor="primary"
-                        textColor="white"
+                        indicatorColor="secondary" // Set indicator color to white
+                        textColor="inherit"
                     >
                         {menuItems.map((item) => (
                             <Tab key={item.text} label={item.text} />
@@ -255,7 +262,12 @@ const Navbar = () => {
             )}
 
             {renderMobileDrawer()}
-        </>
+
+            {/* Add padding to main content to avoid being covered by fixed AppBar */}
+            <Box sx={{ mt: { xs: 8, md: 14 } }}>
+                {/* Konten utama website Anda di sini */}
+            </Box>
+        </ThemeProvider>
     );
 };
 
