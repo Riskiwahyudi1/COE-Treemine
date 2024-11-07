@@ -3,7 +3,7 @@ import { Box, Container, Typography } from '@mui/material';
 
 function Footer() {
     return (
-        <Box component="footer" sx={{ backgroundColor: '#84c9ef', py: 6 }}>
+        <Box component="footer" sx={{ backgroundColor: '#2f98cd', py: 6 }}>
             <Container maxWidth="lg">
                 <Typography variant="h6" align="center" gutterBottom>
                     Toko PCB Online
