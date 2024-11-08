@@ -28,7 +28,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
 import ShopIcon from '@mui/icons-material/Shop';
 import BuildIcon from '@mui/icons-material/Build';
-import InventoryIcon from '@mui/icons-material/Inventory';
 import HandymanIcon from '@mui/icons-material/Handyman';
 import { useNavigate } from 'react-router-dom';
 import Logoweb from '../assets/images/logo.png';
@@ -96,7 +95,6 @@ const Navbar = () => {
         { text: 'Home', icon: <HomeIcon />, path: '/' },
         { text: 'Product', icon: <ShopIcon />, path: '/product' },
         { text: 'Custom Product', icon: <BuildIcon />, path: '/custom' },
-        { text: 'Product Assembly', icon: <InventoryIcon />, path: '/product-assembly' },
         { text: 'Service', icon: <HandymanIcon />, path: '/service' },
     ];
 
@@ -121,6 +119,12 @@ const Navbar = () => {
     const handleLoginClick = () => {
         navigate('/login');
     };
+
+    const handleKeranjang = () => {
+        navigate('/keranjang');
+    };
+
+    
 
     const renderMobileDrawer = () => (
         <Drawer
@@ -193,7 +197,7 @@ const Navbar = () => {
                             sx={{
                                 ml: 1,
                                 bgcolor: '#54cbbb',
-                                '&:hover': { bgcolor: '#c054a9' },
+                                '&:hover': { bgcolor: '#7fd685' },
                                 ...(isMobile && { fontSize: '0.8rem', padding: '6px 12px' })
                             }}
                             onClick={handleLoginClick}
@@ -201,7 +205,9 @@ const Navbar = () => {
                             Login
                         </Button>
                     ) : (
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Box 
+                        onClick={handleKeranjang}
+                        sx={{ display: 'flex', alignItems: 'center' }}>
                             <IconButton color="inherit" size={isMobile ? "small" : "medium"}>
                                 <Badge badgeContent={4} color="error">
                                     <ShoppingCartIcon />

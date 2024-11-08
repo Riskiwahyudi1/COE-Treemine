@@ -1,9 +1,20 @@
 import React from 'react';
 import { Container, Box, Typography, Button, Grid } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import product1 from '../assets/images/5.png';
 import product2 from '../assets/images/5.png';
 
-const NaturalBeautyCream = () => {
+const CustomPage = () => {
+    const navigate = useNavigate(); // Inisialisasi useNavigate
+
+    // Fungsi untuk handling navigasi
+    const handlePrototypeClick = () => {
+        navigate('/custom-prototype'); // Navigasi ke halaman custom prototype
+    };
+
+    const handleAssemblyClick = () => {
+        navigate('/custom-assembly'); // Navigasi ke halaman custom assembly
+    };
     return (
         <div
             style={{
@@ -83,7 +94,7 @@ const NaturalBeautyCream = () => {
                                 </Typography>
                                 <Button
                                     variant="outlined"
-                                    href="#"
+                                    onClick={handlePrototypeClick}
                                     sx={{
                                         borderColor: '#54cbbb',
                                         color: '#54cbbb',
@@ -146,7 +157,7 @@ const NaturalBeautyCream = () => {
                             {/* Content Section */}
                             <Box sx={{ flex: 8 }}>
                                 <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#000000' }}>
-                                Custom Assembly
+                                    Custom Assembly
                                 </Typography>
                                 <Typography variant="body1" sx={{ color: '#666666', marginTop: '10px', marginBottom: '20px' }}>
                                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
@@ -154,7 +165,7 @@ const NaturalBeautyCream = () => {
                                 </Typography>
                                 <Button
                                     variant="outlined"
-                                    href="#"
+                                    onClick={handleAssemblyClick}
                                     sx={{
                                         borderColor: '#54cbbb',
                                         color: '#54cbbb',
@@ -176,4 +187,4 @@ const NaturalBeautyCream = () => {
     );
 };
 
-export default NaturalBeautyCream;
+export default CustomPage;

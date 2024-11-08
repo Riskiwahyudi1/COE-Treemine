@@ -8,11 +8,14 @@ import LoginPage from './component/login';
 import RegisterPage from './component/regis';
 import HomePage from './view/homepage';
 import AdminHome from './Admin/adminHome';
-import CustomPage from './view/pcbCustom'; 
-import ProductPage from './view/shopCard'; 
-import ServicePage from './view/service'; 
-import ProductAssemblyPage from './view/productAssembly'; 
+import CustomPage from './view/pcbCustom';
+import ProductPage from './view/shopCard';
+import ServicePage from './view/service';
+import CustomPrototype from './view/customPrototype';
+import ProductAssemblyPage from './view/customAssembly';
 import ProtectedRoute from "./component/ProtectedRoute";
+import DetailProduct from "./view/detailProduct";
+import Keranjang from "./view/keranjang";
 
 function App() {
   return (
@@ -50,8 +53,16 @@ function AppContent() {
           <Route path="/custom" element={<CustomPage />} />
           <Route path="/product-assembly" element={<ProductAssemblyPage />} />
           <Route path="/service" element={<ServicePage />} />
+
+          <Route path="/keranjang" element={<Keranjang />} />
+          <Route path="/detail-product" element={<DetailProduct />} />
+          <Route path="/custom-prototype" element={<CustomPrototype />} />
+          <Route path="/custom-assembly" element={<ProductAssemblyPage />} />
         </Route>
+
       </Routes>
+
+
 
       {/* Footer hanya muncul jika bukan di halaman login atau admin */}
       {!isLoginPage && !isAdminPage && <Footer />}

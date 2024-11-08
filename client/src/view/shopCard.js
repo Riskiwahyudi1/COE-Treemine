@@ -4,6 +4,8 @@ import product1 from '../assets/images/1.png';
 import product2 from '../assets/images/3.png';
 import product3 from '../assets/images/2.png';
 import product4 from '../assets/images/5.png';
+import { useNavigate } from 'react-router-dom';
+
 
 const products = [
     { title: "Board", price: "$100.00", rating: 4, img: product1 },
@@ -13,6 +15,13 @@ const products = [
 ];
 
 const ProductCard = ({ title, price, rating, img }) => {
+    const navigate = useNavigate(); // Inisialisasi useNavigate
+
+    // Fungsi untuk handling navigasi
+    const handleDetailProduct = () => {
+        navigate('/detail-product'); // Navigasi ke halaman custom prototype
+    };
+
     return (
         <Card
             sx={{
@@ -41,6 +50,7 @@ const ProductCard = ({ title, price, rating, img }) => {
             </CardContent>
             <CardActions>
                 <Button variant="contained"
+                onClick={handleDetailProduct}
                     sx={{
                         backgroundColor: '#54cbbb',
                         '&:hover': {
@@ -78,6 +88,7 @@ const App = () => {
                         fontWeight: 'bold',
                         color: '#000000',
                         marginBottom: '30px',
+                        marginTop: '-180px',
                     }}
                 >
                     Our Product
