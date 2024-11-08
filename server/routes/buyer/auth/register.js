@@ -1,5 +1,4 @@
 const express = require('express');
-const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const User = require('../../../models/users');
@@ -7,13 +6,6 @@ const transporter = require('../../../config/nodemailer');
 const router = express.Router();
 const Joi = require('joi');
 
-
-// Konfigurasi CORS
-const corsOptions = {
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type'],
-};
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -29,7 +21,7 @@ const registrationSchema = Joi.object({
     city: Joi.string().allow(null, ''),
     province: Joi.string().allow(null, ''),
     postal_code: Joi.string().length(5).allow(null, ''),
-  }).optional(),
+  }).optional(), 
 });
 
 router.post('/', async (req, res) => {
