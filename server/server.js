@@ -8,6 +8,7 @@ const registerRoutes = require('./routes/buyer/auth/register');
 const verifyRoutes = require('./routes/buyer/auth/verify');
 const loginRoute = require('./routes/buyer/auth/login');
 const dashbord = require('./routes/buyer/dashbord');
+const fs = require('fs')
 
 // admin
 const productCategories = require('./routes/admin/categories');
@@ -37,6 +38,13 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/product-picture', express.static(path.join(__dirname, 'storage/product-picture')));
+
+// membuat folder simpan foto produk
+const productPictureStorage = path.join(__dirname, 'storage/product-picture');
+
+if (!fs.existsSync(productPictureStorage)) {
+    fs.mkdirSync(productPictureStorage, { recursive: true });
+}
 
 
 app.get('/api/products', async (req, res) => {

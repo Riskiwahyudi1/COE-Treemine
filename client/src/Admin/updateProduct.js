@@ -14,14 +14,11 @@ import {
     CircularProgress, 
 } from '@mui/material';
 import { CalendarToday as Calendar } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import getCategories from './api/categoriesApi';
 import Swal from 'sweetalert2';
-
 import axios from 'axios';
 
-
-// Setup Toast untuk notifikasi
 const Toast = Swal.mixin({
     toast: true,
     position: 'bottom-end',
@@ -32,9 +29,9 @@ const Toast = Swal.mixin({
       toast.addEventListener('mouseenter', Swal.stopTimer);
       toast.addEventListener('mouseleave', Swal.resumeTimer);
     },
-  });
-  
-export default function ProductForm() {
+});
+
+export default function UpdateProductForm() {
     const [formData, setFormData] = useState({
         product_name: '',
         id_category: '',
@@ -47,27 +44,48 @@ export default function ProductForm() {
     const [error, setError] = useState('');
     const [imagePreview, setImagePreview] = useState(null);
     const navigate = useNavigate(); 
+    const { id } = useParams();
     const [categories, setCategories] = useState([]);
-    // const [preview, setPreview] = useState(null);
 
     useEffect(() => {
         const fetchCategories = async () => {
-          try {
-            const data = await getCategories();
-            setCategories(data);
-          } catch (error) {
-            setError('Failed to load categories');
-          }
+            try {
+                const data = await getCategories();
+                setCategories(data);
+            } catch (error) {
+                setError('Failed to load categories');
+            }
         };
-        fetchCategories();
-      }, []);
+        
+        const fetchProductData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/admin/product/${id}`);
+                 console.log('Fetched product data:', response.data); 
+                const product = response.data;
+                setFormData({
+                    product_name: product.product_name,
+                    id_category: product.id_category?._id,
+                    harga: product.harga,
+                    stock: product.stock,
+                    description: product.description,
+                    image: '', 
+                });
+                setImagePreview(product.image_url);
+            } catch (error) {
+                setError('Failed to load product data');
+            }
+        };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
+        fetchCategories();
+        fetchProductData();
+    }, [id]);
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData({
+            ...formData,
+            [name]: value,  
+        });
     };
 
     const handleImageChange = (event) => {
@@ -93,8 +111,7 @@ export default function ProductForm() {
         setError('');
         setLoading(true);
     
-        // Validasi input
-        if (!formData.product_name || !formData.id_category || !formData.harga || !formData.stock || !formData.description || !formData.image) {
+        if (!formData.product_name || !formData.id_category || !formData.harga || !formData.stock || !formData.description) {
             setError('All fields are required.');
             setLoading(false);
             return;
@@ -107,51 +124,39 @@ export default function ProductForm() {
             data.append('harga', formData.harga);
             data.append('stock', formData.stock);
             data.append('description', formData.description);
-            data.append('image', formData.image);
+            if (formData.image) data.append('image', formData.image);
         
-            const response = await axios.post(
-                'http://localhost:5000/admin/product',
+            const response = await axios.put(
+                `http://localhost:5000/admin/product/${id}`, 
                 data,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
+                        'Content-Type': 'multipart/form-data', 
                     },
                 }
             );
-        
-            if (response.status === 201) { 
+            
+            if (response.status === 200) { 
                 Toast.fire({
                     icon: 'success',
-                    title: 'Product added successfully',
+                    title: 'Product updated successfully',
                 });
                 navigate('/admin', { state: { showToast: true } });
+                setLoading(false); 
             } else {
-                setError('Failed to add product. Please try again!');
+                setError('Failed to update product. Please try again!');
+                setLoading(false); 
             }
-        
+            
         } catch (error) {
             if (error.response) {
-                const { data, status } = error.response;
-        
-                if (data && data.errors && data.errors.length > 0) {
-                    const firstError = data.errors[0]?.msg;
-                    setError(firstError);
-                } else {
-                    setError(`Failed: ${data.message || 'Unknown error'}`);
-                }
-        
-                if (status >= 500) {
-                    setError('Server error. Please try again later.');
-                }
-        
-            } else if (error.request) {
-                setError('Network error. Please check your internet connection.');
+                setError(`Failed: ${error.response.data.message || 'Unknown error'}`);
             } else {
                 console.error('Error:', error.message);
-                setError('Failed to add product. Please try again.');
+                setError('Failed to update product. Please try again.');
             }
         } finally {
-            setLoading(false);
+            setLoading(false); 
         }
     };
 
@@ -167,7 +172,7 @@ export default function ProductForm() {
                     }}
                 >
                     <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                        Add Product
+                        Update Data Product
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}>
                         <Calendar sx={{ fontSize: 16, mr: 1 }} />
@@ -194,16 +199,16 @@ export default function ProductForm() {
                                 <InputLabel>Category</InputLabel>
                                 <Select
                                     name="id_category"
-                                    value={formData.id_category}
+                                    value={formData.id_category || ''}
                                     onChange={handleChange}
                                     sx={{ bgcolor: 'rgba(255, 192, 203, 0.1)' }}
                                     required
                                 >
                                     {categories.map((cat) => (
-                                    <MenuItem key={cat._id} value={cat._id}>
-                                        {cat.nama} 
-                                    </MenuItem>
-                                ))}
+                                        <MenuItem key={cat._id} value={cat._id}>
+                                            {cat.nama} 
+                                        </MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
 
