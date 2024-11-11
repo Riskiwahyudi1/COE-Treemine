@@ -1,32 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Container, CardContent, CardActions, Typography, Button, Box, Grid, Rating } from '@mui/material';
-import product1 from '../assets/images/1.png';
-import product2 from '../assets/images/3.png';
-import product3 from '../assets/images/2.png';
-import product4 from '../assets/images/5.png';
+import getProducts from '../api/productListApi';
 import { useNavigate } from 'react-router-dom';
 
+const ProductCard = ({ product_id ,product_name, harga, description, picture_url }) => {
+    const navigate = useNavigate();
 
-const products = [
-    { title: "Board", price: "$100.00", rating: 4, img: product1 },
-    { title: "Kabel", price: "$40.00", rating: 4.5, img: product4 },
-    { title: "Lem", price: "$70.84", rating: 3, img: product3 },
-    { title: "Timah", price: "$1000.84", rating: 5, img: product2 },
-];
-
-const ProductCard = ({ title, price, rating, img }) => {
-    const navigate = useNavigate(); // Inisialisasi useNavigate
-
-    // Fungsi untuk handling navigasi
-    const handleDetailProduct = () => {
-        navigate('/detail-product'); // Navigasi ke halaman custom prototype
-    };
+    // const handleDetailProduct = () => {
+    //     navigate('/detail-product/:id');
+    // };
 
     return (
         <Card
             sx={{
-                width: 280, // Ubah nilai ini untuk mengatur lebar card
-                height: 400, // Ubah nilai ini untuk mengatur tinggi card
+                width: 280,
+                height: 400,
                 m: 0,
                 borderRadius: 2,
                 boxShadow: 3,
@@ -39,25 +27,27 @@ const ProductCard = ({ title, price, rating, img }) => {
         >
             <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                    <img src={img} alt={title} style={{ width: '150px', height: '150px' }} />
+                    <img src={`http://localhost:5000${picture_url}`} alt={product_name} style={{ width: '150px', height: '150px' }} />
                 </Box>
-                <Typography variant="h6" align="center" gutterBottom>{title}</Typography>
+                <Typography variant="h6" align="center" gutterBottom>{product_name}</Typography>
                 <Typography variant="body2" align="center" color="text.secondary" gutterBottom>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    {description}
                 </Typography>
-                <Typography variant="h6" align="center" sx={{ mt: 1 }}>{price}</Typography>
-                <Rating name="read-only" value={rating} precision={0.5} readOnly />
+                <Typography variant="h6" align="center" sx={{ mt: 1 }}>Rp.{harga.toLocaleString('id-ID')}</Typography>
+                <Rating name="read-only" value={5} precision={0.5} readOnly />
             </CardContent>
             <CardActions>
-                <Button variant="contained"
-                onClick={handleDetailProduct}
+                <Button
+                    variant="contained"
+                    onClick={() => navigate(`./detail/${product_id}`)}
                     sx={{
                         backgroundColor: '#54cbbb',
                         '&:hover': {
-                            backgroundColor: '#47b4a7', // slightly darker shade for hover effect
+                            backgroundColor: '#47b4a7',
                         },
                     }}
-                    fullWidth>
+                    fullWidth
+                >
                     Buy Now
                 </Button>
             </CardActions>
@@ -66,6 +56,20 @@ const ProductCard = ({ title, price, rating, img }) => {
 };
 
 const App = () => {
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const data = await getProducts();
+                setProducts(data);
+            } catch (error) {
+                console.error('Failed to load products', error);
+            }
+        };
+        fetchProducts();
+    }, []);
+
     return (
         <Box
             sx={{
@@ -79,7 +83,6 @@ const App = () => {
             }}
         >
             <Container>
-                {/* Header Section */}
                 <Typography
                     variant="h3"
                     component="h1"
@@ -93,10 +96,16 @@ const App = () => {
                 >
                     Our Product
                 </Typography>
-                <Grid container justifyContent="center" spacing={4}>
-                    {products.map((product, index) => (
-                        <Grid item xs={12} sm={6} md={3} key={index}>
-                            <ProductCard {...product} />
+                <Grid container spacing={4} justifyContent="center">
+                    {products.map((product) => (
+                        <Grid item key={product.id} xs={12} sm={6} md={3}>
+                            <ProductCard
+                                product_id = {product._id}
+                                product_name={product.product_name}
+                                harga={product.harga}
+                                description={product.description}
+                                picture_url={product.picture_url}
+                            />
                         </Grid>
                     ))}
                 </Grid>
