@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import Sidebar from '../component/sidebar';
 import DataProduk from './dataProduk';
 import AddProdukPage from './addProduct';
-import UpdateProdukPage from './dashboard';
+import UpdateProdukPage from './updateProduct';
 import Dashboard from './dashboard';
 import { Routes, Route } from 'react-router-dom';
 
@@ -22,10 +22,10 @@ export function AdminHome() {
         }}
       >
         <Routes>
-        <Route path="/" element={<Dashboard />} />
-          <Route path="dataProduct" element={<DataProduk />} />
-          <Route path="addProduct" element={<AddProdukPage />} />
-          <Route path="updateProduct/:id" element={<UpdateProdukPage />} />
+          <Route path="/" element={<Dashboard />} />
+            <Route path="dataProduct" element={<DataProduk />} />
+            <Route path="dataProduct/addProduct" element={<AddProdukPage />} />
+            <Route path="dataProduct/updateProduct/:id" element={<UpdateProdukPage />} />
         </Routes>
       </Box>
     </Box>
