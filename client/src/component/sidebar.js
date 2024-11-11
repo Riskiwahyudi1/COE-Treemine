@@ -29,13 +29,17 @@ import HistoryIcon from '@mui/icons-material/History';
 import Logoweb from '../assets/images/logo.png';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { Link } from 'react-router-dom';
+import Dashboard from '../Admin/dashboard';
+import DataProduct from '../Admin/dataProduk';
 
+// Drawer styles
 const drawerWidth = 240;
 const customColor = '#2f98cd';
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
-  background: 'linear-gradient(135deg, #2f98cd, #006c88)', 
+  background: 'linear-gradient(135deg, #2f98cd, #006c88)',
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
@@ -56,6 +60,7 @@ const closedMixin = (theme) => ({
   },
 });
 
+// Styled components
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -68,7 +73,7 @@ const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
-  background: '#2f98cd', 
+  background: '#2f98cd',
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -83,26 +88,28 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(({
-  theme, open }) => ({
-  width: drawerWidth,
-  flexShrink: 0,
-  whiteSpace: 'nowrap',
-  boxSizing: 'border-box',
-  ...(open && {
-    ...openedMixin(theme),
-    '& .MuiDrawer-paper': openedMixin(theme),
-  }),
-  ...(!open && {
-    ...closedMixin(theme),
-    '& .MuiDrawer-paper': closedMixin(theme),
-  }),
-}));
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    width: drawerWidth,
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    ...(open && {
+      ...openedMixin(theme),
+      '& .MuiDrawer-paper': openedMixin(theme),
+    }),
+    ...(!open && {
+      ...closedMixin(theme),
+      '& .MuiDrawer-paper': closedMixin(theme),
+    }),
+  })
+);
 
+// Main component
 export default function MiniDrawer() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null); 
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -168,6 +175,7 @@ export default function MiniDrawer() {
           </Menu>
         </Toolbar>
       </AppBar>
+
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <Typography variant="h6" noWrap sx={{ color: '#ffffff' }}>
@@ -182,6 +190,14 @@ export default function MiniDrawer() {
           {['Dashboard', 'Kategori Portofolio', 'Produk Portofolio', 'Custom Prototype', 'Custom Assembly'].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
+                component={Link}
+                to={
+                  index === 0 ? "dashboard " :
+                  index === 1 ? "kategori-portofolio" :
+                  index === 2 ? "DataProduct" :
+                  index === 3 ? "custom-prototype" :
+                  "/custom-assembly"
+                }
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',

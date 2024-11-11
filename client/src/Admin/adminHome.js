@@ -23,9 +23,10 @@ export function AdminHome() {
       >
         <Routes>
           <Route path="/" element={<Dashboard />} />
-            <Route path="dataProduct" element={<DataProduk />} />
-            <Route path="dataProduct/addProduct" element={<AddProdukPage />} />
-            <Route path="dataProduct/updateProduct/:id" element={<UpdateProdukPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="dataProduct" element={<DataProduk />} />
+          <Route path="dataProduct/addProduct" element={<AddProdukPage />} />
+          <Route path="dataProduct/updateProduct/:id" element={<UpdateProdukPage />} />
         </Routes>
       </Box>
     </Box>
