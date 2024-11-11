@@ -4,6 +4,7 @@ import Sidebar from '../component/sidebar';
 import DataProduk from './dataProduk';
 import AddProdukPage from './addProduct';
 import UpdateProdukPage from './dashboard';
+import Dashboard from './dashboard';
 import { Routes, Route } from 'react-router-dom';
 
 export function AdminHome() {
@@ -21,7 +22,8 @@ export function AdminHome() {
         }}
       >
         <Routes>
-          <Route path="/" element={<DataProduk />} />
+        <Route path="/" element={<Dashboard />} />
+          <Route path="dataProduct" element={<DataProduk />} />
           <Route path="addProduct" element={<AddProdukPage />} />
           <Route path="updateProduct/:id" element={<UpdateProdukPage />} />
         </Routes>
