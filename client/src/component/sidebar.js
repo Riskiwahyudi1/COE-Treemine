@@ -7,6 +7,7 @@ import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -16,15 +17,25 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import HomeIcon from '@mui/icons-material/Home';
+import CategoryIcon from '@mui/icons-material/Category';
+import DeveloperBoardIcon from '@mui/icons-material/DeveloperBoard';
+import BuildIcon from '@mui/icons-material/Build';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PaymentIcon from '@mui/icons-material/Payment';
+import CheckIcon from '@mui/icons-material/Check';
+import HistoryIcon from '@mui/icons-material/History';
+import Logoweb from '../assets/images/logo.png';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 const drawerWidth = 240;
-const customColor = '#84c9ef'; // Warna yang diinginkan
+const customColor = '#2f98cd';
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
-  backgroundColor: customColor, // Ubah warna drawer saat terbuka
+  background: 'linear-gradient(135deg, #2f98cd, #006c88)', 
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
@@ -37,7 +48,7 @@ const closedMixin = (theme) => ({
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  backgroundColor: customColor, // Ubah warna drawer saat tertutup
+  background: 'linear-gradient(135deg, #2f98cd, #006c88)',
   overflowX: 'hidden',
   width: `calc(${theme.spacing(7)} + 1px)`,
   [theme.breakpoints.up('sm')]: {
@@ -57,7 +68,7 @@ const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
-  backgroundColor: customColor, // Ubah warna AppBar
+  background: '#2f98cd', 
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -72,26 +83,34 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme),
-    }),
-    ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme),
-    }),
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(({
+  theme, open }) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
+  boxSizing: 'border-box',
+  ...(open && {
+    ...openedMixin(theme),
+    '& .MuiDrawer-paper': openedMixin(theme),
   }),
-);
+  ...(!open && {
+    ...closedMixin(theme),
+    '& .MuiDrawer-paper': closedMixin(theme),
+  }),
+}));
 
 export default function MiniDrawer() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null); 
+
+  const handleOpenMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -115,23 +134,52 @@ export default function MiniDrawer() {
           >
             <MenuIcon />
           </IconButton>
+
+          <Box
+            component="img"
+            src={Logoweb}
+            alt="Logo"
+            sx={{ height: 40, marginRight: 2 }}
+          />
+
           <Typography variant="h6" noWrap component="div">
             CoE Treemine
           </Typography>
+
+          <Avatar
+            onClick={handleOpenMenu}
+            sx={{
+              cursor: 'pointer',
+              bgcolor: '#ffff',
+              marginLeft: 'auto',
+              color: '#54cbbb',
+              fontWeight: 'bold',
+            }}
+          >
+            A
+          </Avatar>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleCloseMenu}
+          >
+            <MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
+            <MenuItem onClick={handleCloseMenu}>Logout</MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          <Typography variant="h6" noWrap>
+          <Typography variant="h6" noWrap sx={{ color: '#ffffff' }}>
             Dashboard
           </Typography>
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton onClick={handleDrawerClose} sx={{ color: '#ffffff' }}>
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </DrawerHeader>
         <Divider />
         <List>
-          {['Dashboard', 'Kategori Portofolio', 'Produk Portofolio', 'Custom Prototype', 'Custom Assembly',].map((text, index) => (
+          {['Dashboard', 'Kategori Portofolio', 'Produk Portofolio', 'Custom Prototype', 'Custom Assembly'].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 sx={{
@@ -145,18 +193,23 @@ export default function MiniDrawer() {
                     minWidth: 0,
                     mr: open ? 3 : 'auto',
                     justifyContent: 'center',
+                    color: '#ffffff',
                   }}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {index === 0 && <HomeIcon />}
+                  {index === 1 && <CategoryIcon />}
+                  {index === 2 && <DeveloperBoardIcon />}
+                  {index === 3 && <BuildIcon />}
+                  {index === 4 && <AssignmentIcon />}
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0, color: '#ffffff' }} />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
         <Divider />
         <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
+          {['Review File', 'Review Payment', 'On Progress', 'History'].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 sx={{
@@ -170,11 +223,15 @@ export default function MiniDrawer() {
                     minWidth: 0,
                     mr: open ? 3 : 'auto',
                     justifyContent: 'center',
+                    color: '#ffffff',
                   }}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {index === 0 && <DescriptionIcon />}
+                  {index === 1 && <PaymentIcon />}
+                  {index === 2 && <CheckIcon />}
+                  {index === 3 && <HistoryIcon />}
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0, color: '#ffffff' }} />
               </ListItemButton>
             </ListItem>
           ))}

@@ -8,13 +8,16 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import TextField from '@mui/material/TextField'; 
+import InputAdornment from '@mui/material/InputAdornment';  
 import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import getProducts from '../api/productListApi';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-
+import SearchIcon from '@mui/icons-material/Search';  
+import AddIcon from '@mui/icons-material/Add';  
+import PrintIcon from '@mui/icons-material/Print';  
 
 const showToast = (message, icon) => {
   Swal.fire({
@@ -34,7 +37,7 @@ const showToast = (message, icon) => {
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: '#84c9ef',
+    backgroundColor: '#54cbbb',
     color: theme.palette.common.white,
   },
   [`&.${tableCellClasses.body}`]: {
@@ -80,7 +83,6 @@ export default function CustomizedTables() {
 
   // Handle delete product by ID
   const handleDelete = async (id) => {
-
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -90,15 +92,15 @@ export default function CustomizedTables() {
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Yes, delete it!',
       cancelButtonText: 'Cancel'
-  });
+    });
 
-  if (result.isConfirmed) {
+    if (result.isConfirmed) {
       try {
         const response = await axios.delete(`http://localhost:5000/admin/product/${id}`);
         setProducts(products.filter((product) => product._id !== id)); 
         if (response.status === 200) {
           showToast('Product has been deleted', 'success');
-      }
+        }
       } catch (error) {
         showToast('Failed to delete product', 'error');
       }
@@ -127,22 +129,31 @@ export default function CustomizedTables() {
           gap: 2,
         }}
       >
-        <StyledButton variant="contained" onClick={handleAddProduk}>
+        {/* Add Produk Button with Icon */}
+        <StyledButton variant="contained" onClick={handleAddProduk} sx={{bgcolor:'#7fd685'}} startIcon={<AddIcon />}>
           Add Produk
         </StyledButton>
 
+        {/* Search Produk Field */}
         <TextField
           variant="outlined"
           placeholder="Search Produk"
           sx={{
-            width: '150px',
+            width: '250px',
             '& .MuiOutlinedInput-root': {
               height: '36.5px',
             },
           }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
         />
 
-        <StyledButton variant="contained" onClick={handlePrint}>
+        <StyledButton variant="contained" onClick={handlePrint} startIcon={<PrintIcon />} sx={{bgcolor:'#2f98cd', width: '90px'}}>
           Print
         </StyledButton>
       </Box>
@@ -176,7 +187,7 @@ export default function CustomizedTables() {
                   {displayValue(product.stock, 'Stok tidak diketahui')}
                 </StyledTableCell>
                 <StyledTableCell align="right">
-                {product.picture_url ? (
+                  {product.picture_url ? (
                     <img
                       src={`http://localhost:5000${product.picture_url}`}
                       alt={product.product_name}

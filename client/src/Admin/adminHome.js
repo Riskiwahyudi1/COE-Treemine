@@ -3,6 +3,7 @@ import { Box } from '@mui/material';
 import Sidebar from '../component/sidebar';
 import DataProduk from './dataProduk';
 import AddProdukPage from './addProduct';
+import DashboardPage from './dashboard';
 import { Routes, Route } from 'react-router-dom';
 
 export function AdminHome() {
@@ -14,14 +15,15 @@ export function AdminHome() {
         sx={{
           flexGrow: 1,
           p: 3,
-          backgroundColor: '#b4d2ed',
+          backgroundColor: '#fffff',
           minHeight: '90vh',
           mt: 8,
         }}
       >
         <Routes>
-          <Route path="/" element={<DataProduk />} />
-          <Route path="addProduct" element={<AddProdukPage />} />
+          {/*<Route path="/" element={<DataProduk />} />*/}
+          {/*<Route path="addProduct" element={<AddProdukPage />} />*/}
+          <Route path="dashboard" element={<DashboardPage/>} />
         </Routes>
       </Box>
     </Box>
