@@ -201,10 +201,10 @@ export default function CustomizedTables() {
                   {displayValue(product.description, 'Deskripsi kosong')}
                 </StyledTableCell>
                 <StyledTableCell align="right">
-                  <Button
+                <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => navigate(`./edit/${product._id}`)}
+                    onClick={() => navigate(`./updateProduct/${product._id}`)}
                     sx={{ marginRight: 1 }}
                   >
                     Edit
