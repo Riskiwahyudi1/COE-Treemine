@@ -103,7 +103,7 @@ export default function UpdateProductForm() {
     };
 
     const handleBack = () => {
-        navigate('/admin'); 
+        navigate('/admin/dataProduct'); 
     };
 
     const handleSubmit = async (e) => {

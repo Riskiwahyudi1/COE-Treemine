@@ -39,7 +39,7 @@ const ProductCard = ({ product_id ,product_name, harga, description, picture_url
             <CardActions>
                 <Button
                     variant="contained"
-                    onClick={() => navigate(`./detail/${product_id}`)}
+                    onClick={() => navigate(`./product/detail/${product_id}`)}
                     sx={{
                         backgroundColor: '#54cbbb',
                         '&:hover': {

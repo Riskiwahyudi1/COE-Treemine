@@ -11,7 +11,7 @@ import {
     Box,
     Card,
     Alert,
-    CircularProgress, 
+    CircularProgress,
 } from '@mui/material';
 import { CalendarToday as Calendar } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -29,11 +29,11 @@ const Toast = Swal.mixin({
     timer: 2000,
     timerProgressBar: true,
     didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer);
-      toast.addEventListener('mouseleave', Swal.resumeTimer);
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
     },
-  });
-  
+});
+
 export default function ProductForm() {
     const [formData, setFormData] = useState({
         product_name: '',
@@ -46,21 +46,21 @@ export default function ProductForm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [imagePreview, setImagePreview] = useState(null);
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
     // const [preview, setPreview] = useState(null);
 
     useEffect(() => {
         const fetchCategories = async () => {
-          try {
-            const data = await getCategories();
-            setCategories(data);
-          } catch (error) {
-            setError('Failed to load categories');
-          }
+            try {
+                const data = await getCategories();
+                setCategories(data);
+            } catch (error) {
+                setError('Failed to load categories');
+            }
         };
         fetchCategories();
-      }, []);
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -85,21 +85,21 @@ export default function ProductForm() {
     };
 
     const handleBack = () => {
-        navigate('/admin'); 
+        navigate('/admin/dataProduct');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
-    
+
         // Validasi input
         if (!formData.product_name || !formData.id_category || !formData.harga || !formData.stock || !formData.description || !formData.image) {
             setError('All fields are required.');
             setLoading(false);
             return;
         }
-    
+
         try {
             const data = new FormData();
             data.append('product_name', formData.product_name);
@@ -108,7 +108,7 @@ export default function ProductForm() {
             data.append('stock', formData.stock);
             data.append('description', formData.description);
             data.append('image', formData.image);
-        
+
             const response = await axios.post(
                 'http://localhost:5000/admin/product',
                 data,
@@ -118,32 +118,32 @@ export default function ProductForm() {
                     },
                 }
             );
-        
-            if (response.status === 201) { 
+
+            if (response.status === 201) {
                 Toast.fire({
                     icon: 'success',
                     title: 'Product added successfully',
                 });
-                navigate('/admin', { state: { showToast: true } });
+                navigate('/admin/dataProduct', { state: { showToast: true } });
             } else {
                 setError('Failed to add product. Please try again!');
             }
-        
+
         } catch (error) {
             if (error.response) {
                 const { data, status } = error.response;
-        
+
                 if (data && data.errors && data.errors.length > 0) {
                     const firstError = data.errors[0]?.msg;
                     setError(firstError);
                 } else {
                     setError(`Failed: ${data.message || 'Unknown error'}`);
                 }
-        
+
                 if (status >= 500) {
                     setError('Server error. Please try again later.');
                 }
-        
+
             } else if (error.request) {
                 setError('Network error. Please check your internet connection.');
             } else {
@@ -200,10 +200,10 @@ export default function ProductForm() {
                                     required
                                 >
                                     {categories.map((cat) => (
-                                    <MenuItem key={cat._id} value={cat._id}>
-                                        {cat.nama} 
-                                    </MenuItem>
-                                ))}
+                                        <MenuItem key={cat._id} value={cat._id}>
+                                            {cat.nama}
+                                        </MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
 
