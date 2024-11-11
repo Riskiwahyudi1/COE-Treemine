@@ -55,7 +55,7 @@ function AppContent() {
           <Route path="/service" element={<ServicePage />} />
 
           <Route path="/keranjang" element={<Keranjang />} />
-          <Route path="/detail-product" element={<DetailProduct />} />
+          <Route path="/product/detail/:id" element={<DetailProduct />} />
           <Route path="/custom-prototype" element={<CustomPrototype />} />
           <Route path="/custom-assembly" element={<ProductAssemblyPage />} />
         </Route>
