@@ -124,7 +124,7 @@ const Navbar = () => {
         navigate('/keranjang');
     };
 
-    
+
 
     const renderMobileDrawer = () => (
         <Drawer
@@ -205,14 +205,15 @@ const Navbar = () => {
                             Login
                         </Button>
                     ) : (
-                        <Box 
-                        onClick={handleKeranjang}
-                        sx={{ display: 'flex', alignItems: 'center' }}>
-                            <IconButton color="inherit" size={isMobile ? "small" : "medium"}>
-                                <Badge badgeContent={4} color="error">
-                                    <ShoppingCartIcon />
-                                </Badge>
-                            </IconButton>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Box
+                                onClick={handleKeranjang}>
+                                <IconButton color="inherit" size={isMobile ? "small" : "medium"}>
+                                    <Badge badgeContent={4} color="error">
+                                        <ShoppingCartIcon />
+                                    </Badge>
+                                </IconButton>
+                            </Box>
 
                             <IconButton color="inherit" size={isMobile ? "small" : "medium"}>
                                 <HistoryIcon />
