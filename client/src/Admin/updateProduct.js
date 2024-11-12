@@ -141,7 +141,7 @@ export default function UpdateProductForm() {
                     icon: 'success',
                     title: 'Product updated successfully',
                 });
-                navigate('/admin', { state: { showToast: true } });
+                navigate('/admin/dataProduct', { state: { showToast: true } });
                 setLoading(false); 
             } else {
                 setError('Failed to update product. Please try again!');
