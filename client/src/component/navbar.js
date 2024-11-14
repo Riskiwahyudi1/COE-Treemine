@@ -124,6 +124,10 @@ const Navbar = () => {
         navigate('/keranjang');
     };
 
+    const handleProfileMenu = () => {
+        navigate('/setting-profile');
+    };
+
 
 
     const renderMobileDrawer = () => (
@@ -243,6 +247,7 @@ const Navbar = () => {
                                     horizontal: 'right',
                                 }}
                             >
+                                <MenuItem onClick={handleProfileMenu}>Profile</MenuItem>
                                 <MenuItem onClick={() => { logout(); handleCloseMenu(); }}>
                                     Logout
                                 </MenuItem>
