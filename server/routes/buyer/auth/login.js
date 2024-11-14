@@ -7,16 +7,14 @@ const cors = require('cors');
 
 
 const corsOptions = {
-    origin: 'http://localhost:3000', // Pastikan ini sesuai dengan URL frontend
+    origin: 'http://localhost:3000', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'; // Pastikan ada default value
+const JWT_SECRET = process.env.JWT_SECRET; 
 
 router.post('/', async (req, res) => {
-    console.log('Login route hit'); // Tambahkan log ini
-    console.log('Request body:', req.body); 
     const { email, password } = req.body;
 
     try {

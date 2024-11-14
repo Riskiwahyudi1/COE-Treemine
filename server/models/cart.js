@@ -1,13 +1,15 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const Cart = mongoose.model('Cart', {
     id_user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User' 
+        ref: 'User',
+        required: true
     },
-    id_Product: {
+    id_product: {  
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product' 
+        ref: 'Product',
+        required: true
     },
     create_at: {
         type: Date, 
@@ -17,6 +19,7 @@ const Cart = mongoose.model('Cart', {
         type: Date, 
         default: Date.now
    }
-})
+});
 
-module.exports = Cart
+
+module.exports = Cart;

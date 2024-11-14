@@ -1,21 +1,23 @@
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
+console.log('JWT_SECRET:', JWT_SECRET);
 
 const authenticateToken = (req, res, next) => {
-    const token = req.header('Authorization')?.split(' ')[1];
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
 
-    if(!token){
-        return res.status(401).json({message: "Invalid Token "});
-    };
+    if (!token) {
+        console.log("Token not provided in header");
+        return res.status(401).json({ message: "Token tidak ditemukan" });
+    }
 
-    try{
-
+    try {
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
         next();
-
-    }catch (error){
-        res.status(403).json({message:"token tidak valid atau kadarluarsa!"});
+    } catch (error) {
+        console.error("Token validation error:", error);
+        res.status(403).json({ message: "Token tidak valid atau kadaluwarsa" });
     }
 }
 

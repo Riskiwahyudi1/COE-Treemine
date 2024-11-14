@@ -2,22 +2,24 @@ const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+const fs = require('fs')
 const mongoose = require('mongoose');
 const Products = require('./models/product');
 const registerRoutes = require('./routes/buyer/auth/register');
 const verifyRoutes = require('./routes/buyer/auth/verify');
 const loginRoute = require('./routes/buyer/auth/login');
 const dashbord = require('./routes/buyer/dashbord');
-const fs = require('fs')
 
-// admin
+// memanggil routes admin 
 const productCategories = require('./routes/admin/categories');
 const products = require('./routes/admin/product');
 
+// memanggil routes buyer
+const cart = require('./routes/buyer/cart');
+
+
 const app = express();
 const port = 5000;
-
-const JWT_SECRET = 'your-secret-key';
 
 // Menghubungkan ke MongoDB
 mongoose.connect('mongodb://localhost:27017/COE_Treemine', {
@@ -31,7 +33,7 @@ mongoose.connect('mongodb://localhost:27017/COE_Treemine', {
 const corsOptions = {
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
@@ -56,6 +58,9 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
+
+
+
 app.use('/register/buyer', registerRoutes);
 app.use('/verify', verifyRoutes);
 app.use('/login/buyer', loginRoute);
@@ -64,6 +69,10 @@ app.use('/dashbord', dashbord);
 // admin
 app.use('/admin/product/categories', productCategories);
 app.use('/admin/product', products);
+
+// buyer
+app.use('/add-to-cart', cart);
+
 
 
 app.listen(port, () => {
