@@ -20,7 +20,7 @@ const port = 5000;
 const JWT_SECRET = 'your-secret-key';
 
 // Menghubungkan ke MongoDB
-mongoose.connect('mongodb://localhost:27017/COE_Treemine-backup', {
+mongoose.connect('mongodb://localhost:27017/COE_Treemine', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
