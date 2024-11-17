@@ -21,8 +21,9 @@ const cart = require('./routes/buyer/cart');
 const app = express();
 const port = 5000;
 
-// Menghubungkan ke MongoDB
-mongoose.connect('mongodb://localhost:27017/COE_Treemine', {
+
+mongoose.connect('mongodb://localhost:27017/COE_Treemine-backup', {
+
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })

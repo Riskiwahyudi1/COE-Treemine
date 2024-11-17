@@ -1,4 +1,5 @@
 const Cart = require('../../models/cart');
+const Products = require('../../models/product');
 
 
 // menambahkan product ke keranjang
@@ -35,6 +36,24 @@ const addProductToCart = async (req, res) => {
     }
 };
 
+// tampilkan keranjang
+
+const showCart = async (req, res) => {
+    const user = req.user;
+    try {
+        
+        const cartByUser = await Cart.find({id_user: user.id}).populate('id_product', 'product_name stock harga picture_url')
+        if(!cartByUser || cartByUser.length === 0) {
+            return res.status(404).json({message: 'keranjang masih kosong!'})
+        }
+        res.json(cartByUser)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Terjadi kesalahan server!" });
+    }
+}
+
 module.exports = {
     addProductToCart,
+    showCart
 };

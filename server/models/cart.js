@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const Cart = mongoose.model('Cart', {
     id_user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Users',
         required: true
     },
     id_product: {  
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
+        ref: 'Products',
         required: true
     },
     create_at: {
