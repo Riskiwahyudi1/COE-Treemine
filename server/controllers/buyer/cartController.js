@@ -1,6 +1,5 @@
 const Cart = require('../../models/cart');
-const Products = require('../../models/product');
-
+const mongoose = require('mongoose')
 
 // menambahkan product ke keranjang
 const addProductToCart = async (req, res) => {
