@@ -5,8 +5,26 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from 'react-router-dom';
 import getProductsInCart from '../api/cartApi';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
-const ShoppingCartItem = ({ name, initialQty, price, image }) => {
+const showToast = (message, icon) => {
+    Swal.fire({
+        toast: true,
+        position: 'bottom-end',
+        icon,
+        title: message,
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+        },
+    });
+};
+
+const ShoppingCartItem = ({ id, name, initialQty, price, image, onDelete }) => {
     const [quantity, setQuantity] = useState(initialQty);
 
     const handleIncrement = () => {
@@ -37,7 +55,7 @@ const ShoppingCartItem = ({ name, initialQty, price, image }) => {
             </Box>
             <Typography sx={{ width: '20%' }}>{`Rp. ${(price * quantity).toLocaleString()}`}</Typography>
             <Typography sx={{ width: '20%', color: 'blue', cursor: 'pointer' }}>view detail</Typography>
-            <IconButton color="default">
+            <IconButton color="default" onClick={() => onDelete(id)}>
                 <DeleteIcon />
             </IconButton>
             <IconButton color="default">
@@ -67,6 +85,38 @@ const ShoppingCart = () => {
         fetchCartList();
     }, []);
 
+    const handleDelete = async (id) => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+        });
+
+        if (result.isConfirmed) {
+            
+            const token = localStorage.getItem('token');
+            try {
+                const response = await axios.delete(`http://localhost:5000/cart/delete/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,  
+                    }
+                });
+                setCartList((prevList) => prevList.filter((product) => product._id !== id));
+                if (response.status === 200) {
+                    showToast('Product has been deleted', 'success');
+                }
+            } catch (error) {
+                showToast('Failed to delete product', 'error');
+            }
+        }
+
+    };
+
     return (
         <Box sx={{ p: 3 }}>
             {/* Back Button */}
@@ -91,12 +141,14 @@ const ShoppingCart = () => {
 
             {/* Cart Items */}
             {productListInCart.map((product) => (
-                <Box key={product.id}>
+                <Box key={product.id_product?._id}>
                     <ShoppingCartItem
-                        name={product.id_product?.product_name}
+                        id={product._id}
+                        name={product.id_product?.product_name || 'Unnamed Product'}
                         initialQty={1}
-                        price={product.id_product?.harga}
-                        image={product.id_product?.picture_url}
+                        price={product.id_product?.harga || 0}
+                        image={product.id_product?.picture_url || ''}
+                        onDelete={handleDelete}
                     />
                     <Divider />
                 </Box>

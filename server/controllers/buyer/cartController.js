@@ -52,8 +52,26 @@ const showCart = async (req, res) => {
         res.status(500).json({ message: "Terjadi kesalahan server!" });
     }
 }
+// delete product
+const deleteProductFromCart = async (req, res) => {
+    const { id } = req.params;
+    const user = req.user;
+
+    try {
+        const deletedProduct = await Cart.findOneAndDelete({ _id: id, id_user: user.id });
+        if(!deletedProduct){
+            return res.status(404).json({message : 'Product id not found!'})
+        }
+        res.status(200).json({ message: 'Product deleted successfully' });
+
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete producttt' });
+    };
+};
 
 module.exports = {
     addProductToCart,
-    showCart
+    showCart,
+    deleteProductFromCart
+    
 };

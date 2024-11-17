@@ -60,7 +60,7 @@ const ProductPage = () => {
             const data = { id_product: id };
     
             const response = await axios.post(
-                'http://localhost:5000/add-to-cart', 
+                'http://localhost:5000/cart/add-product', 
                 data,
                 {
                     headers: {
@@ -149,14 +149,7 @@ const ProductPage = () => {
                             {product.product_name}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                            <Typography>Quantity</Typography>
-                            <TextField
-                                type="number"
-                                defaultValue={1}
-                                size="small"
-                                sx={{ width: 60, ml: 1 }}
-                                inputProps={{ min: 1 }}
-                            />
+                            <Typography>Quantity : </Typography>
                             <Typography sx={{ ml: 1 }}>{product.stock} available</Typography>
                         </Box>
                         <Typography variant="h6" sx={{ mt: 2, fontWeight: 'bold' }}>

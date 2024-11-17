@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = 'http://localhost:5000/add-to-cart';
+const API_URL = 'http://localhost:5000/cart';
 
 const token = localStorage.getItem('token');
 

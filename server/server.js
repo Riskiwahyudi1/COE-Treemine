@@ -72,7 +72,7 @@ app.use('/admin/product/categories', productCategories);
 app.use('/admin/product', products);
 
 // buyer
-app.use('/add-to-cart', cart);
+app.use('/cart', cart);
 
 
 
