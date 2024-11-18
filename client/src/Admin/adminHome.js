@@ -5,6 +5,8 @@ import DataProduk from './dataProduk';
 import AddProdukPage from './addProduct';
 import UpdateProdukPage from './updateProduct';
 import Dashboard from './dashboard';
+import BoardType from './CustomPrototype/boardType';
+import AddBoardType from './CustomPrototype/addBoardType';
 import { Routes, Route } from 'react-router-dom';
 
 export function AdminHome() {
@@ -24,9 +26,17 @@ export function AdminHome() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
+
           <Route path="dataProduct" element={<DataProduk />} />
           <Route path="dataProduct/addProduct" element={<AddProdukPage />} />
           <Route path="dataProduct/updateProduct/:id" element={<UpdateProdukPage />} />
+
+          <Route path="/boardType" element={<BoardType />} />
+          <Route path="boardType/addBoardType" element={<AddBoardType />} />
+          
+          {/* <Route path="/designPanel" element={<DesignPanel />} />
+          <Route path="/layers" element={<Layers />} />
+          <Route path="/Material" element={<Material />} /> */}
         </Routes>
       </Box>
     </Box>
