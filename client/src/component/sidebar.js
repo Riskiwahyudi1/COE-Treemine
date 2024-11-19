@@ -30,9 +30,7 @@ import Logoweb from '../assets/images/logo.png';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Link } from 'react-router-dom';
-import Dashboard from '../Admin/dashboard';
-import DataProduct from '../Admin/dataProduk';
-import CustomPrototype from '../Admin/CustomPrototype/boardType';
+
 
 // Drawer styles
 const drawerWidth = 240;
@@ -194,7 +192,7 @@ export default function MiniDrawer() {
                 component={Link}
                 to={
                   index === 0 ? "dashboard " :
-                  index === 1 ? "kategori-portofolio" :
+                  index === 1 ? "./kategoriPortofolio" :
                   index === 2 ? "DataProduct" :
                   index === 3 ? "./boardType" :
                   "custom-assembly"
