@@ -95,7 +95,6 @@ const Navbar = () => {
         { text: 'Home', icon: <HomeIcon />, path: '/' },
         { text: 'Product', icon: <ShopIcon />, path: '/product' },
         { text: 'Custom Product', icon: <BuildIcon />, path: '/custom' },
-        { text: 'Service', icon: <HandymanIcon />, path: '/service' },
     ];
 
     const handleOpenMenu = (event) => {
@@ -125,7 +124,7 @@ const Navbar = () => {
     };
 
     const handleProfileMenu = () => {
-        navigate('/setting-profile');
+        navigate('/user');
     };
 
 
@@ -218,10 +217,6 @@ const Navbar = () => {
                                     </Badge>
                                 </IconButton>
                             </Box>
-
-                            <IconButton color="inherit" size={isMobile ? "small" : "medium"}>
-                                <HistoryIcon />
-                            </IconButton>
 
                             <Avatar
                                 onClick={handleOpenMenu}

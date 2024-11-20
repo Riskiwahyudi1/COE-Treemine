@@ -18,7 +18,7 @@ const CustomPage = () => {
     return (
         <div
             style={{
-                background: `linear-gradient(to bottom, #2f98cd, white)`,
+                background: `linear-gradient(to bottom, white, #2f98cd)`,
                 height: '90vh',
                 margin: 0,
                 padding: 0,

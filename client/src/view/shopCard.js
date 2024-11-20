@@ -79,7 +79,7 @@ const App = () => {
                 alignItems: 'center',
                 minHeight: '100vh',
                 padding: '20px',
-                background: 'linear-gradient(to bottom, white, #2f98cd, white)',
+                background: 'linear-gradient(to bottom, #2f98cd, white )',
             }}
         >
             <Container>
@@ -91,7 +91,7 @@ const App = () => {
                         fontWeight: 'bold',
                         color: '#000000',
                         marginBottom: '30px',
-                        marginTop: '0px',
+                        marginTop: '-130px',
                     }}
                 >
                     Our Product

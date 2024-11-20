@@ -10,14 +10,19 @@ import HomePage from './view/homepage';
 import AdminHome from './Admin/adminHome';
 import CustomPage from './view/pcbCustom';
 import ProductPage from './view/shopCard';
-import ServicePage from './view/service';
 import CustomPrototype from './view/customPrototype';
 import ProductAssemblyPage from './view/customAssembly';
 import ProtectedRoute from "./component/ProtectedRoute";
 import DetailProduct from "./view/detailProduct";
 import Keranjang from "./view/keranjang";
 import SidebarProfile from "./component/sidebarUser";
-import SettingProfile from "./view/settingProfile";
+import ChangePassword from './view/changePassword';
+import UserPage from './view/userPage';
+import Proses from './view/proses';
+import Finish from './view/finish';
+import Cancle from './view/cancle';
+import Check from './view/check';
+import Review from './view/review';
 
 function App() {
   return (
@@ -33,7 +38,13 @@ function AppContent() {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login' || location.pathname === '/register';
   const isAdminPage = location.pathname.startsWith('/admin');
-  const isProfilePage = location.pathname.startsWith('/setting-profile'); // Change this line
+  const isProfilePage = location.pathname.startsWith('/user') ||
+    location.pathname === '/change-password' ||
+    location.pathname === '/proses' ||
+    location.pathname === '/finish' ||
+    location.pathname === '/cancle' ||
+    location.pathname === '/check'  ||
+    location.pathname === '/review'; // Change this line
 
   return (
     <>
@@ -55,7 +66,6 @@ function AppContent() {
           <Route path="/product" element={<ProductPage />} />
           <Route path="/custom" element={<CustomPage />} />
           <Route path="/product-assembly" element={<ProductAssemblyPage />} />
-          <Route path="/service" element={<ServicePage />} />
           <Route path="/keranjang" element={<Keranjang />} />
           <Route path="/product/detail/:id" element={<DetailProduct />} />
           <Route path="/custom-prototype" element={<CustomPrototype />} />
@@ -77,7 +87,17 @@ function AppContent() {
               mt: 8,
             }}
           >
-            <SettingProfile />
+            <Routes>
+              <Route>
+                <Route path="/user" element={<UserPage />} />
+                <Route path="/change-password" element={<ChangePassword />} />
+                <Route path="/proses" element={<Proses />} />
+                <Route path="/finish" element={<Finish />} />
+                <Route path="/cancle" element={<Cancle />} />
+                <Route path="/check" element={<Check />} />
+                <Route path="/review" element={<Review />} />
+              </Route>
+            </Routes>
           </Box>
         </Box>
       )}

@@ -22,7 +22,7 @@ const app = express();
 const port = 5000;
 
 
-mongoose.connect('mongodb://localhost:27017/COE_Treemine-backup', {
+mongoose.connect('mongodb://localhost:27017/COE_Treemine', {
 
     useNewUrlParser: true,
     useUnifiedTopology: true,

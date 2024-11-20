@@ -22,7 +22,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
@@ -108,7 +107,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function MiniDrawer() {
     const theme = useTheme();
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [menuStates, setMenuStates] = React.useState({});
 
@@ -147,12 +146,12 @@ export default function MiniDrawer() {
                 {
                     text: 'Profile Setting',
                     icon: <PersonIcon />,
-                    path: 'setting-profile'
+                    path: 'user'
                 },
                 {
                     text: 'Change password',
                     icon: <LockIcon />,
-                    path: '/typography'
+                    path: 'change-password'
                 }
             ]
         },
@@ -160,30 +159,30 @@ export default function MiniDrawer() {
             text: 'Pesanan',
             icon: <ShoppingCartIcon />,
             submenu: [
-                {
-                    text: 'Review',
-                    icon: <RateReviewIcon />,
-                    path: '/buttons'
-                },
+                // {
+                //     text: 'Review',
+                //     icon: <RateReviewIcon />,
+                //     path: '/review'
+                // },
                 {
                     text: 'Check',
                     icon: <FactCheckIcon />,
-                    path: '/typography'
+                    path: '/check'
                 },
                 {
                     text: 'Proses',
                     icon: <EngineeringIcon />,
-                    path: '/typography'
+                    path: '/proses'
                 },
                 {
                     text: 'Finish',
                     icon: <CheckCircleIcon />,
-                    path: '/typography'
+                    path: '/finish'
                 },
                 {
                     text: 'Cancle',
                     icon: <CancelIcon />,
-                    path: '/typography'
+                    path: '/cancle'
                 }
             ]
         },
