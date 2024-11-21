@@ -27,7 +27,7 @@ const UpdateBoardTypePage = () => {
   };
 
   const handleBack = () => {
-    navigate('../boardType'); // Navigasi ke halaman sebelumnya
+    navigate('../boardType'); 
   };
 
   return (
@@ -37,7 +37,7 @@ const UpdateBoardTypePage = () => {
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={6}>
             <Typography variant="h5" fontWeight="bold">
-              Update Board Type
+              Update Custom Prototype
             </Typography>
           </Grid>
           <Grid item xs={6} textAlign="right">

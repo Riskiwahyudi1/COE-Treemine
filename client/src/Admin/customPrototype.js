@@ -21,58 +21,55 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: '#54cbbb',
     color: theme.palette.common.white,
+    fontWeight: 'bold',
+    fontSize: 16,
+    textTransform: 'uppercase',
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
+    color: '#1B2D3F',
   },
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
-    backgroundColor: '#d4ecf8',
-  },
-  '&:nth-of-type(even)': {
-    backgroundColor: '#e0f4fc',
-  },
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
+        backgroundColor: '#d4ecf8',
+    },
+    '&:nth-of-type(even)': {
+        backgroundColor: '#e0f4fc',
+    },
+    '&:hover': {
+        backgroundColor: '#cbe7f6',
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.15)', // Hover effect shadow
+    },
 }));
 
-const StyledButton = styled(Button)({
-  backgroundColor: '#7fd685',
-  width: '150px',
-  '&:hover': {
-    backgroundColor: '#6dc574',
-  },
-});
-
-const ActionButton = styled(Button)({
-  margin: '0 4px',
-});
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  borderRadius: '15px', // Rounded corners
+  boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)', // Shadow for 3D effect
+  overflow: 'hidden',
+}));
 
 const BoardTypePage = () => {
   const navigate = useNavigate();
   const [selectedBoard, setSelectedBoard] = useState('');
   
-  // Sample data array
   const boardTypeData = [
-    {id: 1, name: 'Single Piece', price: 'Rp. 35.000'},
-    {id: 2, name: 'Panel by Customers', price: 'Rp. 0'},
-    {id: 3, name: 'Panel by Polibatam', price: 'Rp. 15.000'}
+    {id: 1, name: 'Single Piece', price: 35000},
+    {id: 2, name: 'Panel by Customers', price: 0},
+    {id: 3, name: 'Panel by Polibatam', price: 15000}
   ];
 
   const handleAddBoard = () => {
-    navigate('./addBoardType');
+    navigate('./addPrototype');
   };
 
   const handleEditBoard = (id) => {
-    navigate(`./UpdateBoardType/${id}`);
+    // Implement edit logic
   };
 
   const handleDeleteBoard = (id) => {
-    // Implement delete logic or navigation
-    console.log(`Delete board with id: ${id}`);
+    // Implement delete logic
   };
 
   const handleSelectChange = (event) => {
@@ -89,14 +86,22 @@ const BoardTypePage = () => {
           gap: 2,
         }}
       >
-        <StyledButton
+        <Button
           variant="contained"
           onClick={handleAddBoard}
           startIcon={<AddIcon />}
-          sx={{ width: 'auto', height: '53px' }}
+          sx={{
+            backgroundColor: '#54cbbb',
+            color: '#ffffff',
+            textTransform: 'none',
+            '&:hover': {
+              backgroundColor: '#7fd685',
+            },
+            height:'54px',
+          }}
         >
           Add
-        </StyledButton>
+        </Button>
 
         <FormControl sx={{ width: '250px' }}>
           <Select
@@ -125,40 +130,55 @@ const BoardTypePage = () => {
       </Box>
 
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+        <Table>
           <TableHead>
             <TableRow>
               <StyledTableCell>Name</StyledTableCell>
-              <StyledTableCell align="right">Price</StyledTableCell>
-              <StyledTableCell align="right">Action</StyledTableCell>
+              <StyledTableCell align="center">Price</StyledTableCell>
+              <StyledTableCell align="center">Action</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {boardTypeData.map((row) => (
               <StyledTableRow key={row.id}>
-                <StyledTableCell component="th" scope="row">
-                  {row.name}
+                <StyledTableCell>{row.name}</StyledTableCell>
+                <StyledTableCell align="center">
+                  Rp. {row.price.toLocaleString('id-ID')}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row.price}</StyledTableCell>
-                <StyledTableCell align="right">
-                  <ActionButton
-                    variant="outlined"
-                    color="primary"
-                    size="small"
+                <StyledTableCell align="center">
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: '#54cbbb',
+                      color: '#ffffff',
+                      textTransform: 'none',
+                      marginRight: 1,
+                      '&:hover': {
+                        backgroundColor: '#7fd685',
+                      },
+                    }}
                     startIcon={<EditIcon />}
                     onClick={() => handleEditBoard(row.id)}
                   >
                     Edit
-                  </ActionButton>
-                  <ActionButton
+                  </Button>
+                  <Button
                     variant="outlined"
-                    color="secondary"
-                    size="small"
+                    sx={{
+                      textTransform: 'none',
+                      borderColor: '#f44336',
+                      color: '#f44336',
+                      '&:hover': {
+                        backgroundColor: '#e0f4fc',
+                        borderColor: '#f44336',
+                        color: '#f44336',
+                      },
+                    }}
                     startIcon={<DeleteIcon />}
                     onClick={() => handleDeleteBoard(row.id)}
                   >
                     Delete
-                  </ActionButton>
+                  </Button>
                 </StyledTableCell>
               </StyledTableRow>
             ))}

@@ -58,10 +58,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const StyledButton = styled(Button)({
-  backgroundColor: '#d565be',
+  backgroundColor: '#2f98cd',
   width: '150px',
   '&:hover': {
-    backgroundColor: '#c44cad',
+    backgroundColor: '#2f98cd',
   },
 });
 
@@ -130,7 +130,15 @@ export default function CustomizedTables() {
         }}
       >
         {/* Add Produk Button with Icon */}
-        <StyledButton variant="contained" onClick={handleAddProduk} sx={{bgcolor:'#7fd685'}} startIcon={<AddIcon />}>
+        <StyledButton variant="contained" 
+            onClick={handleAddProduk} 
+            sx={{backgroundColor: '#54cbbb',
+            color: '#ffffff',
+            textTransform: 'none',
+            '&:hover': {
+              backgroundColor: '#7fd685',
+            }}} 
+            startIcon={<AddIcon />}>
           Add Produk
         </StyledButton>
 

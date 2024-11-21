@@ -5,9 +5,12 @@ import DataProduk from './dataProduk';
 import AddProdukPage from './addProduct';
 import UpdateProdukPage from './updateProduct';
 import Dashboard from './dashboard';
-import BoardType from './CustomPrototype/boardType';
-import AddBoardType from './CustomPrototype/addBoardType';
+import CustomPrototype from './customPrototype';
+import AddPrototype from './addPrototype';
+import CustomAssembly from './customAssembly';
+import AddAssembly from './addAssembly';
 import KategoriPortofolio from './kategoriPortofolio';
+import AddCategory from './addCategory';
 import ReviewFile from './reviewfile';
 import ReviewPayment from './reviewpayment';
 import OnProgress from './onprogress';
@@ -36,18 +39,20 @@ export function AdminHome() {
           <Route path="dataProduct/addProduct" element={<AddProdukPage />} />
           <Route path="dataProduct/updateProduct/:id" element={<UpdateProdukPage />} />
 
-          <Route path="/boardType" element={<BoardType />} />
-          <Route path="boardType/addBoardType" element={<AddBoardType />} />
+          <Route path="/custom-prototype" element={<CustomPrototype />} />
+          <Route path="custom-prototype/addPrototype" element={<AddPrototype />} />
+
+          <Route path="/custom-assembly" element={<CustomAssembly />} />
+          <Route path="custom-assembly/addAssembly" element={<AddAssembly />} />
 
           <Route path="/kategoriPortofolio" element={<KategoriPortofolio />} />
+          <Route path="kategoriPortofolio/addCategory" element={<AddCategory />} />
+
           <Route path="/reviewFile" element={<ReviewFile />} />
           <Route path="/reviewpayment" element={<ReviewPayment />} />
           <Route path="/onprogress" element={<OnProgress />} />
           <Route path="/history" element={<History />} />
-          
-          {/* <Route path="/designPanel" element={<DesignPanel />} />
-          <Route path="/layers" element={<Layers />} />
-          <Route path="/Material" element={<Material />} /> */}
+
         </Routes>
       </Box>
     </Box>

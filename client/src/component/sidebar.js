@@ -171,22 +171,22 @@ export default function MiniDrawer() {
         {
           text: 'Review File',
           icon: <RateReviewIcon />,
-          path: '/review-file'
+          path: 'reviewFile'
         },
         {
           text: 'Review Payment',
           icon: <PaymentIcon />,
-          path: '/ReviewPayment'
+          path: 'reviewPayment'
         },
         {
           text: 'On Progress',
           icon: <EngineeringIcon />,
-          path: '/on-progress'
+          path: 'onprogress'
         },
         {
           text: 'History',
           icon: <HistoryIcon />,
-          path: '/history'
+          path: 'history'
         }
       ]
     },

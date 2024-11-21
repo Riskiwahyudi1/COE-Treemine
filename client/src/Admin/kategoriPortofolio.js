@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -8,7 +9,6 @@ import {
   CardContent,
   CardActions,
   CardMedia,
-  Box,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -26,18 +26,23 @@ const categories = [
 ];
 
 const KategoriPortfolioPage = () => {
+  const navigate = useNavigate();
+
+  const handleAddCategory = () => {
+    navigate('./addCategory');
+  };
+
   return (
     <Container sx={{ mt: 2, minHeight: '100vh', p: 2 }}>
-      {/* Header */}
       <Typography variant="h4" fontWeight="bold" mb={3}>
         Kategori Portofolio
       </Typography>
 
-      {/* Add Button */}
       <Button
         variant="contained"
+        onClick={handleAddCategory}
         sx={{
-          bgcolor: '#7fd685',
+          bgcolor: '#54cbbb',
           color: '#FFFFFF',
           borderRadius: '8px',
           mb: 3,
@@ -47,7 +52,6 @@ const KategoriPortfolioPage = () => {
         + Add Kategori
       </Button>
 
-      {/* Grid of Cards */}
       <Grid container spacing={3}>
         {categories.map((category) => (
           <Grid item xs={12} sm={6} md={4} key={category.id}>
@@ -62,7 +66,7 @@ const KategoriPortfolioPage = () => {
               <CardMedia
                 component="img"
                 height="140"
-                image={category.img} // Replace with valid image path
+                image={category.img}
                 alt={category.title}
               />
               <CardContent>
@@ -79,10 +83,15 @@ const KategoriPortfolioPage = () => {
                 }}
               >
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   sx={{
-                    color: '#1976D2',
-                    '&:hover': { bgcolor: '#1976D2', color: '#FFFFFF', borderColor: '#1976D2' },
+                    backgroundColor: '#54cbbb',
+                    color: '#ffffff',
+                    '&:hover': {
+                      bgcolor: '#7fd685',
+                      color: '#FFFFFF',
+                      borderColor: '#7fd685',
+                    },
                   }}
                   startIcon={<EditIcon />}
                 >
@@ -91,8 +100,13 @@ const KategoriPortfolioPage = () => {
                 <Button
                   variant="outlined"
                   sx={{
-                    color: '#9C27B0',
-                    '&:hover': { bgcolor: '#9C27B0', color: '#FFFFFF', borderColor: '#9C27B0' },
+                    borderColor: '#f44336',
+                    color: '#f44336',
+                    '&:hover': {
+                      backgroundColor: '#e0f4fc',
+                      borderColor: '#f44336',
+                      color: '#f44336',
+                    },
                   }}
                   startIcon={<DeleteIcon />}
                 >
