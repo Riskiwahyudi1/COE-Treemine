@@ -13,7 +13,10 @@ const ProductPage = () => {
     const [product, setProduct] = useState(null);
 
     const handleBack = () => {
-        navigate('/product'); 
+        navigate(-1); 
+    };
+    const handleBuy = () => {
+        navigate('/checkout'); 
     };
 
     useEffect(() => {
@@ -123,7 +126,7 @@ const ProductPage = () => {
     };
 
     return (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ minHeight: "50vh",p: 3 }}>
             <Box 
                 onClick={handleBack}
                 sx={{ display: 'flex', alignItems: 'center', mb: 2 }}
@@ -161,7 +164,7 @@ const ProductPage = () => {
                             <Button variant="outlined" onClick={handleSubmitCart}>
                                 Add to cart
                             </Button>
-                            <Button variant="contained" sx={{ backgroundColor: '#d565be', color: '#fff' }}>
+                            <Button variant="contained" onClick={handleBuy} sx={{ backgroundColor: '#d565be', color: '#fff' }}>
                                 Buy now
                             </Button>
                         </Box>

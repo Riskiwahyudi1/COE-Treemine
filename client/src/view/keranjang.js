@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, Checkbox, IconButton, Divider } from '@mui/material';
+import {
+    Box,
+    Typography,
+    Button,
+    Checkbox,
+    IconButton,
+    Card,
+    CardMedia,
+    CardContent,
+    CardActions,
+    Paper,
+} from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from 'react-router-dom';
-import getProductsInCart from '../api/cartApi';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import getProductsInCart from '../api/cartApi';
 
 const showToast = (message, icon) => {
     Swal.fire({
@@ -24,60 +34,123 @@ const showToast = (message, icon) => {
     });
 };
 
-const ShoppingCartItem = ({ id, name, initialQty, price, image, onDelete }) => {
-    const [quantity, setQuantity] = useState(initialQty);
-
+const ShoppingCartItem = ({
+    id,
+    name,
+    quantity,
+    price,
+    image,
+    onDelete,
+    onQuantityChange,
+    isChecked,
+    onSelect,
+    onView,
+}) => {
     const handleIncrement = () => {
-        setQuantity((prevQuantity) => prevQuantity + 1);
+        onQuantityChange(id, quantity + 1);
     };
 
     const handleDecrement = () => {
         if (quantity > 1) {
-            setQuantity((prevQuantity) => prevQuantity - 1);
+            onQuantityChange(id, quantity - 1);
         }
     };
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
-            <Checkbox />
-            <Box component="img" src={`http://localhost:5000${image}`} alt={name} sx={{ width: 80, height: 80, mr: 2 }} />
-            <Box sx={{ width: '20%' }}>
-                <Typography>{name}</Typography>
-            </Box>
-            <Box sx={{ width: '15%', display: 'flex', alignItems: 'center' }}>
-                <Button variant="text" onClick={handleDecrement}>
-                    -
+        <Card
+            elevation={3}
+            sx={{
+                display: 'flex',
+                alignItems: 'center',
+                p: 2,
+                mb: 2,
+                backgroundColor: '#f9f9f9',
+                borderRadius: 3,
+            }}
+        >
+            <Checkbox
+                checked={isChecked}
+                onChange={(e) => onSelect(id, e.target.checked)}
+                sx={{ marginRight: 2 }}
+            />
+            <CardMedia
+                component="img"
+                image={`http://localhost:5000${image}`}
+                alt={name}
+                sx={{ width: 120, height: 120, borderRadius: 2, cursor: 'pointer' }}
+                onClick={() => onView(id)}
+            />
+            <CardContent sx={{ flex: 1, ml: 2 }}>
+                <Typography variant="h6">{name}</Typography>
+                <Typography color="text.secondary">{`Rp. ${price.toLocaleString()} x ${quantity}`}</Typography>
+                <Typography fontWeight="bold" color="primary">
+                    {`Rp. ${(price * quantity).toLocaleString()}`}
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                    <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={handleDecrement}
+                        sx={{
+                            minWidth: 30,
+                            padding: '5px',
+                            fontWeight: 'bold',
+                        }}
+                    >
+                        -
+                    </Button>
+                    <Typography variant="body1" sx={{ mx: 2 }}>
+                        {quantity}
+                    </Typography>
+                    <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={handleIncrement}
+                        sx={{
+                            minWidth: 30,
+                            padding: '5px',
+                            fontWeight: 'bold',
+                        }}
+                    >
+                        +
+                    </Button>
+                </Box>
+            </CardContent>
+            <CardActions>
+                <Button size="small" variant="text" color="primary" onClick={() => onView(id)}>
+                    View Product
                 </Button>
-                <Typography sx={{ mx: 1 }}>{quantity}</Typography>
-                <Button variant="text" onClick={handleIncrement}>
-                    +
-                </Button>
-            </Box>
-            <Typography sx={{ width: '20%' }}>{`Rp. ${(price * quantity).toLocaleString()}`}</Typography>
-            <Typography sx={{ width: '20%', color: 'blue', cursor: 'pointer' }}>view detail</Typography>
-            <IconButton color="default" onClick={() => onDelete(id)}>
-                <DeleteIcon />
-            </IconButton>
-            <IconButton color="default">
-                <EditIcon />
-            </IconButton>
-        </Box>
+                <IconButton color="error" onClick={() => onDelete(id)}>
+                    <DeleteIcon />
+                </IconButton>
+            </CardActions>
+        </Card>
     );
 };
 
 const ShoppingCart = () => {
     const navigate = useNavigate();
     const [productListInCart, setCartList] = useState([]);
+    const [selectedItems, setSelectedItems] = useState({});
 
     const handleBack = () => {
-        navigate('/');
+        navigate(-1);
+    };
+
+    const handleViewProduct = (id) => {
+        navigate(`/product/detail/${id}`);
     };
 
     useEffect(() => {
         const fetchCartList = async () => {
             try {
                 const data = await getProductsInCart();
+                const initialSelected = {};
+                data.forEach((product) => {
+                    initialSelected[product._id] = false;
+                });
                 setCartList(data);
+                setSelectedItems(initialSelected);
             } catch (error) {
                 console.error('Failed to load products', error);
             }
@@ -98,15 +171,17 @@ const ShoppingCart = () => {
         });
 
         if (result.isConfirmed) {
-            
             const token = localStorage.getItem('token');
             try {
                 const response = await axios.delete(`http://localhost:5000/cart/delete/${id}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`,  
-                    }
+                        Authorization: `Bearer ${token}`,
+                    },
                 });
                 setCartList((prevList) => prevList.filter((product) => product._id !== id));
+                const newSelectedItems = { ...selectedItems };
+                delete newSelectedItems[id];
+                setSelectedItems(newSelectedItems);
                 if (response.status === 200) {
                     showToast('Product has been deleted', 'success');
                 }
@@ -114,50 +189,115 @@ const ShoppingCart = () => {
                 showToast('Failed to delete product', 'error');
             }
         }
+    };
 
+    const handleQuantityChange = (id, newQuantity) => {
+        setCartList((prevList) =>
+            prevList.map((product) =>
+                product._id === id ? { ...product, quantity: newQuantity } : product
+            )
+        );
+    };
+
+    const handleSelect = (id, isChecked) => {
+        setSelectedItems((prevSelected) => ({
+            ...prevSelected,
+            [id]: isChecked,
+        }));
+    };
+
+    const getTotalPrice = () => {
+        return productListInCart
+            .filter((product) => selectedItems[product._id])
+            .reduce((acc, product) => acc + product.id_product.harga * (product.quantity || 1), 0);
     };
 
     return (
-        <Box sx={{ p: 3 }}>
-            {/* Back Button */}
-            <Box onClick={handleBack} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: '80vh',
+                p: 3,
+                backgroundColor: '#f3f4f6',
+            }}
+        >
+            <Box onClick={handleBack} sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
                 <IconButton>
                     <ArrowBackIcon />
                 </IconButton>
-                <Typography variant="h6" sx={{ ml: 1 }}>
+                <Typography variant="h5" sx={{ ml: 1, fontWeight: 'bold' }}>
                     Shopping Cart
                 </Typography>
             </Box>
 
-            {/* Header Row */}
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Checkbox />
-                <Typography sx={{ width: '20%', fontWeight: 'bold' }}>All</Typography>
-                <Typography sx={{ width: '15%', fontWeight: 'bold' }}>Qty</Typography>
-                <Typography sx={{ width: '20%', fontWeight: 'bold' }}>Price</Typography>
-                <Typography sx={{ width: '20%', fontWeight: 'bold' }}>Detail</Typography>
+            <Box sx={{ flex: 1 }}>
+                {productListInCart.length > 0 ? (
+                    productListInCart.map((product) => (
+                        <ShoppingCartItem
+                            key={product._id}
+                            id={product._id}
+                            name={product.id_product?.product_name || 'Unnamed Product'}
+                            quantity={product.quantity || 1}
+                            price={product.id_product?.harga || 0}
+                            image={product.id_product?.picture_url || ''}
+                            onDelete={handleDelete}
+                            onQuantityChange={handleQuantityChange}
+                            isChecked={selectedItems[product._id]}
+                            onSelect={handleSelect}
+                            onView={handleViewProduct}
+                        />
+                    ))
+                ) : (
+                    <Paper elevation={0} sx={{ textAlign: 'center', py: 10, backgroundColor: '#ffffff', borderRadius: 2 }}>
+                        <Typography variant="h6" color="text.secondary">
+                            Your shopping cart is empty.
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                mt: 3,
+                                backgroundColor: '#7f91eb',
+                                color: '#fff',
+                                '&:hover': {
+                                    backgroundColor: '#5a6dd6',
+                                },
+                            }}
+                            onClick={() => navigate('/')}
+                        >
+                            Continue Shopping
+                        </Button>
+                    </Paper>
+                )}
             </Box>
-            <Divider />
 
-            {/* Cart Items */}
-            {productListInCart.map((product) => (
-                <Box key={product.id_product?._id}>
-                    <ShoppingCartItem
-                        id={product._id}
-                        name={product.id_product?.product_name || 'Unnamed Product'}
-                        initialQty={1}
-                        price={product.id_product?.harga || 0}
-                        image={product.id_product?.picture_url || ''}
-                        onDelete={handleDelete}
-                    />
-                    <Divider />
-                </Box>
-            ))}
-
-            {/* Buy Now Button */}
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-                <Button variant="contained" sx={{ backgroundColor: '#7f91eb', color: '#fff' }}>
-                    Beli Sekarang
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mt: 'auto',
+                    py: 2,
+                    px: 3,
+                    backgroundColor: '#fff',
+                    boxShadow: '0 -2px 5px rgba(0,0,0,0.1)',
+                }}
+            >
+                <Typography variant="h6">{`Total: Rp. ${getTotalPrice().toLocaleString()}`}</Typography>
+                <Button
+                    variant="contained"
+                    size="large"
+                    sx={{
+                        backgroundColor: '#7f91eb',
+                        color: '#fff',
+                        borderRadius: 3,
+                        padding: '10px 30px',
+                        '&:hover': {
+                            backgroundColor: '#5a6dd6',
+                        },
+                    }}
+                >
+                    Checkout
                 </Button>
             </Box>
         </Box>

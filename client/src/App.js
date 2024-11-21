@@ -23,6 +23,7 @@ import Finish from './view/finish';
 import Cancle from './view/cancle';
 import Check from './view/check';
 import Review from './view/review';
+import Checkout from './view/checkout';
 
 function App() {
   return (
@@ -44,7 +45,7 @@ function AppContent() {
     location.pathname === '/finish' ||
     location.pathname === '/cancle' ||
     location.pathname === '/check'  ||
-    location.pathname === '/review'; // Change this line
+    location.pathname === '/review'; 
 
   return (
     <>
@@ -70,6 +71,7 @@ function AppContent() {
           <Route path="/product/detail/:id" element={<DetailProduct />} />
           <Route path="/custom-prototype" element={<CustomPrototype />} />
           <Route path="/custom-assembly" element={<ProductAssemblyPage />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Route>
       </Routes>
 

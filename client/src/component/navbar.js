@@ -23,12 +23,11 @@ import {
 import { styled, alpha, createTheme, ThemeProvider } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import HistoryIcon from '@mui/icons-material/History';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
 import ShopIcon from '@mui/icons-material/Shop';
 import BuildIcon from '@mui/icons-material/Build';
-import HandymanIcon from '@mui/icons-material/Handyman';
+import CategoryIcon from '@mui/icons-material/Category'; // Icon for Category Product
 import { useNavigate } from 'react-router-dom';
 import Logoweb from '../assets/images/logo.png';
 import { useAuth } from '../contexts/AuthContext';
@@ -94,6 +93,7 @@ const Navbar = () => {
     const menuItems = [
         { text: 'Home', icon: <HomeIcon />, path: '/' },
         { text: 'Product', icon: <ShopIcon />, path: '/product' },
+        { text: 'Category Product', icon: <CategoryIcon />, path: '/category-product' },
         { text: 'Custom Product', icon: <BuildIcon />, path: '/custom' },
     ];
 
@@ -126,8 +126,6 @@ const Navbar = () => {
     const handleProfileMenu = () => {
         navigate('/user');
     };
-
-
 
     const renderMobileDrawer = () => (
         <Drawer
@@ -167,15 +165,30 @@ const Navbar = () => {
                         </IconButton>
                     )}
 
+                    {/* Logo - Tambahkan onClick */}
                     <Box
                         component="img"
                         src={Logoweb}
                         alt="Logo"
-                        sx={{ height: 40, marginRight: 2 }}
+                        sx={{
+                            height: 40,
+                            marginRight: 2,
+                            cursor: 'pointer', // Ubah kursor menjadi pointer saat dihover
+                        }}
+                        onClick={() => navigate('/')} // Tambahkan event onClick
                     />
 
+                    {/* Teks CoE Treemine - Tambahkan onClick */}
                     {!isMobile && (
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        <Typography
+                            variant="h6"
+                            component="div"
+                            sx={{
+                                flexGrow: 1,
+                                cursor: 'pointer', // Ubah kursor menjadi pointer saat dihover
+                            }}
+                            onClick={() => navigate('/')} // Tambahkan event onClick
+                        >
                             CoE Treemine
                         </Typography>
                     )}
@@ -201,7 +214,7 @@ const Navbar = () => {
                                 ml: 1,
                                 bgcolor: '#54cbbb',
                                 '&:hover': { bgcolor: '#7fd685' },
-                                ...(isMobile && { fontSize: '0.8rem', padding: '6px 12px' })
+                                ...(isMobile && { fontSize: '0.8rem', padding: '6px 12px' }),
                             }}
                             onClick={handleLoginClick}
                         >
@@ -209,9 +222,8 @@ const Navbar = () => {
                         </Button>
                     ) : (
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Box
-                                onClick={handleKeranjang}>
-                                <IconButton color="inherit" size={isMobile ? "small" : "medium"}>
+                            <Box onClick={handleKeranjang}>
+                                <IconButton color="inherit" size={isMobile ? 'small' : 'medium'}>
                                     <Badge badgeContent={4} color="error">
                                         <ShoppingCartIcon />
                                     </Badge>
@@ -223,7 +235,7 @@ const Navbar = () => {
                                 sx={{
                                     cursor: 'pointer',
                                     bgcolor: 'primary.main',
-                                    ...(isMobile && { width: 32, height: 32 })
+                                    ...(isMobile && { width: 32, height: 32 }),
                                 }}
                             >
                                 U
@@ -243,7 +255,12 @@ const Navbar = () => {
                                 }}
                             >
                                 <MenuItem onClick={handleProfileMenu}>Profile</MenuItem>
-                                <MenuItem onClick={() => { logout(); handleCloseMenu(); }}>
+                                <MenuItem
+                                    onClick={() => {
+                                        logout();
+                                        handleCloseMenu();
+                                    }}
+                                >
                                     Logout
                                 </MenuItem>
                             </Menu>
