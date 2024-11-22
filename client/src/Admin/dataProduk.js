@@ -186,7 +186,7 @@ export default function CustomizedTables() {
                   {displayValue(product.product_name, 'Nama produk tidak ada')}
                 </StyledTableCell>
                 <StyledTableCell align="right">
-                  {displayValue(product.id_category?.nama, 'Kategori tidak ada')}
+                  {displayValue(product.id_category?.category_name, 'Kategori tidak ada')}
                 </StyledTableCell>
                 <StyledTableCell align="right">
                  Rp. {displayValue(product.harga.toLocaleString('id-ID'), 'Harga tidak ada')}

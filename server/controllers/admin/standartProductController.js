@@ -49,7 +49,7 @@ const addProduct = async (req, res) => {
 // show Product
 const showProduct = async (req, res) => {
     try {
-        const products = await Product.find().populate('id_category', 'nama')
+        const products = await Product.find().populate('id_category', 'category_name')
         if (!products || products.length === 0) {
             return res.status(404).json({ message: "products not found!" });
         }

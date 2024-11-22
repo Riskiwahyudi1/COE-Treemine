@@ -201,7 +201,7 @@ export default function ProductForm() {
                                 >
                                     {categories.map((cat) => (
                                         <MenuItem key={cat._id} value={cat._id}>
-                                            {cat.nama}
+                                            {cat.category_name}
                                         </MenuItem>
                                     ))}
                                 </Select>
