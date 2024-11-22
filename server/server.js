@@ -41,12 +41,20 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/product-picture', express.static(path.join(__dirname, 'storage/product-picture')));
+app.use('/category-picture', express.static(path.join(__dirname, 'storage/category-picture')));
 
-// membuat folder simpan foto produk
+
 const productPictureStorage = path.join(__dirname, 'storage/product-picture');
+const categoryPictureStorage = path.join(__dirname, 'storage/category-picture');
 
+// Membuat folder untuk gambar produk 
 if (!fs.existsSync(productPictureStorage)) {
     fs.mkdirSync(productPictureStorage, { recursive: true });
+}
+
+// Membuat folder untuk gambar kategori 
+if (!fs.existsSync(categoryPictureStorage)) {
+    fs.mkdirSync(categoryPictureStorage, { recursive: true });
 }
 
 

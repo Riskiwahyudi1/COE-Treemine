@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -9,35 +9,85 @@ import {
   CardContent,
   CardActions,
   CardMedia,
+  Alert
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import pcb1 from '../assets/images/pcb1.jpeg';
-import pcb2 from '../assets/images/pcb2.jpg';
-import pcb3 from '../assets/images/pcb3.jpg';
+import getCategories from './api/categoriesApi';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
-const categories = [
-  { id: 1, title: 'Micro controller board', img: pcb1 },
-  { id: 2, title: 'Industrial Arduino Shield', img: pcb2 },
-  { id: 3, title: 'Breakout Boards', img: pcb3 },
-  { id: 4, title: 'Serial Boards', img: pcb3 },
-  { id: 5, title: 'Motor Control', img: pcb2 },
-  { id: 6, title: 'Upgrades and Components', img: pcb1 },
-];
+const showToast = (message, icon) => {
+  Swal.fire({
+      toast: true,
+      position: 'bottom-end', 
+      icon: icon,
+      title: message,
+      showConfirmButton: false,
+      timer: 3000, 
+      timerProgressBar: true,
+      didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer);
+          toast.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+  });
+};
 
 const KategoriPortfolioPage = () => {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+  const [error, setError] = useState('');
 
   const handleAddCategory = () => {
     navigate('./addCategory');
   };
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+        try {
+            const data = await getCategories();
+            setCategories(data);
+            if (Array.isArray(data) && data.length === 0) {
+              setError('Categories is empty!');
+          }
+        } catch (error) {
+            setError('Failed to load categories');
+        }
+    };
+    fetchCategories();
+}, []);
+
+const handleDelete = async (id) => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel'
+  });
+
+  if (result.isConfirmed) {
+    try {
+      const response = await axios.delete(`http://localhost:5000/admin/product/categories/delete/${id}`);
+      setCategories(categories.filter((category) => category._id !== id)); 
+      if (response.status === 200) {
+        showToast('category has been deleted', 'success');
+      }
+    } catch (error) {
+      showToast('Failed to delete categoryy', 'error');
+    }
+  };
+};
 
   return (
     <Container sx={{ mt: 2, minHeight: '100vh', p: 2 }}>
       <Typography variant="h4" fontWeight="bold" mb={3}>
         Kategori Portofolio
       </Typography>
-
+      {error && <Alert severity="error">{error}</Alert>}
       <Button
         variant="contained"
         onClick={handleAddCategory}
@@ -51,7 +101,7 @@ const KategoriPortfolioPage = () => {
       >
         + Add Kategori
       </Button>
-
+    {categories.length > 0 && (
       <Grid container spacing={3}>
         {categories.map((category) => (
           <Grid item xs={12} sm={6} md={4} key={category.id}>
@@ -66,12 +116,12 @@ const KategoriPortfolioPage = () => {
               <CardMedia
                 component="img"
                 height="140"
-                image={category.img}
-                alt={category.title}
+                src={`http://localhost:5000${category.picture_url}`}
+                alt={category.category_name}
               />
               <CardContent>
                 <Typography variant="h6" fontWeight="bold" color="#333333">
-                  {category.title}
+                  {category.category_name}
                 </Typography>
               </CardContent>
               <CardActions
@@ -99,6 +149,7 @@ const KategoriPortfolioPage = () => {
                 </Button>
                 <Button
                   variant="outlined"
+                  onClick={() => handleDelete(category._id)}
                   sx={{
                     borderColor: '#f44336',
                     color: '#f44336',
@@ -117,6 +168,7 @@ const KategoriPortfolioPage = () => {
           </Grid>
         ))}
       </Grid>
+    )}
     </Container>
   );
 };

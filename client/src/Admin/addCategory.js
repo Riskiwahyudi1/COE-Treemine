@@ -6,19 +6,54 @@ import {
     Box,
     Container,
     Paper,
-    IconButton
+    IconButton,
+    Alert,
+    CircularProgress,
 } from '@mui/material';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+
+// Setup Toast 
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'bottom-end',
+    showConfirmButton: false,
+    timer: 2000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+    },
+});
 
 const UpdateCategoryPage = () => {
-    const [categoryName, setCategoryName] = useState('');
+    const [formData, setFormData] = useState({
+        category_name: '',
+        image: '',
+    });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const [imagePreview, setImagePreview] = useState(null);
     const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
 
     const handleImageChange = (event) => {
         const file = event.target.files[0];
         if (file && file.type.startsWith('image/')) {
+            setFormData((prevData) => ({
+                ...prevData,
+                image: file,
+            }));
+
             const reader = new FileReader();
             reader.onloadend = () => {
                 setImagePreview(reader.result);
@@ -27,9 +62,59 @@ const UpdateCategoryPage = () => {
         }
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        console.log('Category submitted:', { categoryName, imagePreview });
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        // Validasi input
+        if (!formData.category_name || !formData.image) {
+            setError('All fields are required.');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const data = new FormData();
+            data.append('category_name', formData.category_name);
+            data.append('image', formData.image);
+
+            const response = await axios.post(
+                'http://localhost:5000/admin/product/categories/add',
+                data,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
+            if (response.status === 201) {
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Category added successfully',
+                });
+                navigate('/admin/kategoriPortofolio', { state: { showToast: true } });
+            } else {
+                setError('Failed to add category. Please try again!');
+            }
+
+        } catch (error) {
+            if (error.response) {
+                const { data, status } = error.response;
+                setError(data.message || 'Server error. Please try again later.');
+                if (status >= 500) {
+                    setError('Server error. Please try again later.');
+                }
+            } else if (error.request) {
+                setError('Network error. Please check your internet connection.');
+            } else {
+                console.error('Error:', error.message);
+                setError('An unexpected error occurred.');
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleBack = () => {
@@ -55,12 +140,17 @@ const UpdateCategoryPage = () => {
                 </Box>
 
                 {/* Form Section */}
-                <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+                >
                     <TextField
                         label="Category Name"
                         variant="outlined"
-                        value={categoryName}
-                        onChange={(e) => setCategoryName(e.target.value)}
+                        name="category_name"
+                        value={formData.category_name}
+                        onChange={handleChange}
                         fullWidth
                         required
                     />
@@ -72,15 +162,15 @@ const UpdateCategoryPage = () => {
                         </Typography>
                         <Box display="flex" alignItems="center" gap={2}>
                             {imagePreview && (
-                                <img 
-                                    src={imagePreview} 
-                                    alt="Preview" 
-                                    style={{ 
-                                        width: 128, 
-                                        height: 128, 
-                                        objectFit: 'cover', 
-                                        borderRadius: 8 
-                                    }} 
+                                <img
+                                    src={imagePreview}
+                                    alt="Preview"
+                                    style={{
+                                        width: 128,
+                                        height: 128,
+                                        objectFit: 'cover',
+                                        borderRadius: 8,
+                                    }}
                                 />
                             )}
                             <Button
@@ -98,7 +188,7 @@ const UpdateCategoryPage = () => {
                             </Button>
                         </Box>
                     </Box>
-
+                    {error && <Alert severity="error">{error}</Alert>}
                     {/* Action Buttons */}
                     <Box display="flex" justifyContent="flex-end" gap={2} mt={3}>
                         <Button
@@ -108,7 +198,7 @@ const UpdateCategoryPage = () => {
                                 width: '150px',
                                 fontWeight: 'bold',
                                 borderColor: '#9c27b0',
-                                color: '#9c27b0'
+                                color: '#9c27b0',
                             }}
                             onClick={handleBack}
                         >
@@ -121,10 +211,11 @@ const UpdateCategoryPage = () => {
                                 width: '150px',
                                 backgroundColor: '#4caf50',
                                 fontWeight: 'bold',
-                                '&:hover': { backgroundColor: '#45a049' }
+                                '&:hover': { backgroundColor: '#45a049' },
                             }}
+                            disabled={loading}
                         >
-                            SAVE
+                            {loading ? <CircularProgress size={24} /> : 'SAVE'}
                         </Button>
                     </Box>
                 </Box>
