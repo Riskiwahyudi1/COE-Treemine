@@ -88,9 +88,61 @@ const showCategories = async (req, res) => {
     };
 };
 
+// Update Product
+const updateCategory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { category_name } = req.body;
+        const image = req.file;
+
+        // kelolah foto
+         const existingProduct = await Categories.findById(id);
+         if (!existingProduct) {
+             return res.status(404).json({ message: "Caategory not found" });
+         }
+         const imagePath = path.join(__dirname, '../../storage/category-picture', path.basename(existingProduct.picture_url));
+         let pictureUrl = existingProduct.picture_url;
+         if (image) {
+            // calback delete image
+            await deleteImage(imagePath);
+
+            pictureUrl = `/category-picture/${image.filename}`;
+         }
+
+        const updateProduct = await Categories.findByIdAndUpdate(id, {
+            category_name,
+            picture_url: pictureUrl,
+        }, { new: true });
+
+        if (!updateProduct) {
+            return res.status(404).json({ message: "Category not found" });
+        }
+        res.status(200).json({ message: 'Product Update successfully', data: updateProduct, });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete productt' });
+    }
+};
+
+// endpoin update data product
+const getCategoryById = async (req, res) => {
+    const { id } = req.params; 
+    try {
+        const product = await Categories.findById(id) 
+        if (!product) {
+            return res.status(404).json({ message: 'Category not found' });
+        }
+        res.json(product); 
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
 module.exports = {
     showCategories,
     addCategories,
     deleteCategory,
+    getCategoryById,
+    updateCategory,
     upload
 };

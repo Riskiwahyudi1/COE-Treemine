@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     TextField,
     Button,
@@ -11,7 +11,7 @@ import {
     CircularProgress,
 } from '@mui/material';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Toast from '../utils/Toast';
 
@@ -24,6 +24,26 @@ const UpdateCategoryPage = () => {
     const [error, setError] = useState('');
     const [imagePreview, setImagePreview] = useState(null);
     const navigate = useNavigate();
+    const { id } = useParams();
+
+    useEffect(() => {
+        const fetchCategory = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/admin/product/categories/${id}`);
+                setFormData({
+                    category_name: response.data.category_name || '',
+                    image: response.data.picture_url || '',
+                });
+                if (response.data.image_url) {
+                    setImagePreview(response.data.picture_url);
+                }
+            } catch (error) {
+                console.error('Error fetching category:', error);
+                setError('Failed to fetch category data.');
+            }
+        };
+        fetchCategory();
+    }, [id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -54,8 +74,7 @@ const UpdateCategoryPage = () => {
         setError('');
         setLoading(true);
 
-        // Validasi input
-        if (!formData.category_name || !formData.image) {
+        if (!formData.category_name || (!formData.image && !imagePreview)) {
             setError('All fields are required.');
             setLoading(false);
             return;
@@ -64,10 +83,12 @@ const UpdateCategoryPage = () => {
         try {
             const data = new FormData();
             data.append('category_name', formData.category_name);
-            data.append('image', formData.image);
+            if (formData.image) {
+                data.append('image', formData.image);
+            }
         
-            const response = await axios.post(
-                'http://localhost:5000/admin/product/categories/add',
+            const response = await axios.put(
+                `http://localhost:5000/admin/product/categories/edit/${id}`,
                 data,
                 {
                     headers: {
@@ -76,37 +97,35 @@ const UpdateCategoryPage = () => {
                 }
             );
         
-            if (response.status === 201) {
+            if (response.status === 200) {
                 Toast.fire({
                     icon: 'success',
-                    title: 'Category added successfully',
+                    title: 'Category updated successfully',
                 });
                 navigate('/admin/kategoriPortofolio', { state: { showToast: true } });
             } else {
-                setError('Failed to add category. Please try again!');
+                setError('Failed to update category. Please try again!');
             }
         } catch (error) {
             if (error.response) {
-                const { data, status } = error.response;
+                const { status, data } = error.response;
         
                 if (status === 400 && data.errors) {
-                    // Error validasi dari express-validator
-                    setError(data.errors.map((err) => err.msg).join(', ')); // Gabungkan semua pesan error
+                    const errors = data.errors.map((err) => err.msg).join(', ');
+                    setError(errors);
                 } else if (status >= 500) {
                     setError('Server error. Please try again later.');
                 } else {
-                    setError(data.message || 'An unexpected error occurred.');
+                    setError(data.message || 'An error occurred. Please try again.');
                 }
             } else if (error.request) {
                 setError('Network error. Please check your internet connection.');
             } else {
-                console.error('Error:', error.message);
                 setError('An unexpected error occurred.');
             }
         } finally {
             setLoading(false);
         }
-        
     };
 
     const handleBack = () => {
@@ -116,10 +135,9 @@ const UpdateCategoryPage = () => {
     return (
         <Container maxWidth="md">
             <Paper elevation={3} sx={{ p: 4, mt: 4, borderRadius: 2 }}>
-                {/* Header Section */}
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                     <Typography variant="h5" fontWeight="bold">
-                        Add Category
+                        Edit Category
                     </Typography>
                     <Box display="flex" alignItems="center">
                         <Typography variant="body2" mr={1}>
@@ -131,7 +149,6 @@ const UpdateCategoryPage = () => {
                     </Box>
                 </Box>
 
-                {/* Form Section */}
                 <Box
                     component="form"
                     onSubmit={handleSubmit}
@@ -147,13 +164,12 @@ const UpdateCategoryPage = () => {
                         required
                     />
 
-                    {/* Image Upload Section */}
                     <Box>
                         <Typography variant="body1" gutterBottom>
                             Category Image
                         </Typography>
                         <Box display="flex" alignItems="center" gap={2}>
-                            {imagePreview && (
+                        {imagePreview && (
                                 <img
                                     src={imagePreview}
                                     alt="Preview"
@@ -170,7 +186,7 @@ const UpdateCategoryPage = () => {
                                 component="label"
                                 sx={{ backgroundColor: '#982953' }}
                             >
-                                Upload Image
+                                Change Image
                                 <input
                                     type="file"
                                     hidden
@@ -181,7 +197,6 @@ const UpdateCategoryPage = () => {
                         </Box>
                     </Box>
                     {error && <Alert severity="error">{error}</Alert>}
-                    {/* Action Buttons */}
                     <Box display="flex" justifyContent="flex-end" gap={2} mt={3}>
                         <Button
                             variant="outlined"

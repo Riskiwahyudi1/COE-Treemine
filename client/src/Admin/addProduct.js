@@ -16,23 +16,8 @@ import {
 import { CalendarToday as Calendar } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import getCategories from './api/categoriesApi';
-import Swal from 'sweetalert2';
-
+import Toast from '../utils/Toast';
 import axios from 'axios';
-
-
-// Setup Toast untuk notifikasi
-const Toast = Swal.mixin({
-    toast: true,
-    position: 'bottom-end',
-    showConfirmButton: false,
-    timer: 2000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer);
-        toast.addEventListener('mouseleave', Swal.resumeTimer);
-    },
-});
 
 export default function ProductForm() {
     const [formData, setFormData] = useState({

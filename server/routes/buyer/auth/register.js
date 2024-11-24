@@ -30,7 +30,6 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: error.details[0].message });
     };
     const { username, email, password } = req.body;
-    console.log('Received data:', req.body);
 
     try {
       // cek username/email

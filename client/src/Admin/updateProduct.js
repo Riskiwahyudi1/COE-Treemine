@@ -16,21 +16,8 @@ import {
 import { CalendarToday as Calendar } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import getCategories from './api/categoriesApi';
-import Swal from 'sweetalert2';
 import axios from 'axios';
-
-const Toast = Swal.mixin({
-    toast: true,
-    position: 'bottom-end',
-    showConfirmButton: false,
-    timer: 2000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer);
-      toast.addEventListener('mouseleave', Swal.resumeTimer);
-    },
-});
-
+import Toast from '../utils/Toast';
 export default function UpdateProductForm() {
     const [formData, setFormData] = useState({
         product_name: '',

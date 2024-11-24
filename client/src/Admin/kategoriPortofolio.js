@@ -134,6 +134,7 @@ const handleDelete = async (id) => {
               >
                 <Button
                   variant="contained"
+                  onClick={() => navigate(`./edit-category/${category._id}`)}
                   sx={{
                     backgroundColor: '#54cbbb',
                     color: '#ffffff',

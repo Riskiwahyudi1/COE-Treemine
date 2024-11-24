@@ -12,21 +12,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { useAuth } from '../contexts/AuthContext';  // Import sesuai perubahan
+import { useAuth } from '../contexts/AuthContext'; 
 import Videocontoh from '../assets/images/Tablet login.gif';
-
-// Setup Toast untuk notifikasi
-const Toast = Swal.mixin({
-  toast: true,
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 2000,
-  timerProgressBar: true,
-  didOpen: (toast) => {
-    toast.addEventListener('mouseenter', Swal.stopTimer);
-    toast.addEventListener('mouseleave', Swal.resumeTimer);
-  },
-});
+import Toast from '../utils/Toast';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -171,7 +159,7 @@ const LoginPage = () => {
                 mt: 3,
                 mb: 2,
                 bgcolor: '#54cbbb',
-                '&:hover': { bgcolor: '#2f98cd' } // Darker shade for hover
+                '&:hover': { bgcolor: '#2f98cd' } 
               }}
             >
               {loading ? <CircularProgress size={24} /> : 'Login'}
@@ -186,7 +174,7 @@ const LoginPage = () => {
                   borderColor: '#54cbbb',
                   '&:hover': {
                     bgcolor: '#54cbbb',
-                    color: '#fff', // Ensure text is visible on hover
+                    color: '#fff', 
                   }
                 }}
               >

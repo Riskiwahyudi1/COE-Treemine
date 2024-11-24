@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import Videocontoh from '../assets/images/Mobile login.gif';
+import Toast from '../utils/Toast';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(''); // Reset error message before submitting
+    setError(''); 
     try {
       const response = await axios.post('http://localhost:5000/register/buyer', formData, {
         headers: {
@@ -29,26 +30,19 @@ const RegisterPage = () => {
 
       if (response.status === 201) {
         console.log('Register successful', response.data);
-        Swal.fire({
-          title: 'Success!',
-          text: 'Registration successful!',
+        Toast.fire({
           icon: 'success',
-          showConfirmButton: false,
-          timer: 1000,
-        }).then(() => {
-          navigate('/login');
+          title: 'Register successful',
         });
+        navigate('/', { state: { showToast: true } });
+          navigate('/login');
       }
     } catch (error) {
-      // Handle different error scenarios
       if (error.response) {
-        // Server responded with a status code
         setError(error.response.data.message);
       } else if (error.request) {
-        // Request was made but no response received
         setError('No response from the server. Please try again later.');
       } else {
-        // Something happened in setting up the request
         setError('An error occurred. Please try again.');
       }
     } finally {
