@@ -62,7 +62,7 @@ export default function ProfileSettings() {
             }}
             src="/default-avatar.png"
           />
-          <Button variant="contained" sx={{ backgroundColor: "#54cbbb", textTransform: "none" }}>
+          <Button variant="contained" sx={{ backgroundColor: "#00A63F", textTransform: "none" }}>
             Ganti Foto
           </Button>
         </Box>
@@ -156,7 +156,7 @@ export default function ProfileSettings() {
           </Button>
           <Button
             variant="contained"
-            sx={{ backgroundColor: "#54cbbb", textTransform: "none", color: "#fff" }}
+            sx={{ backgroundColor: "#00A63F", textTransform: "none", color: "#fff" }}
           >
             Simpan Perubahan
           </Button>

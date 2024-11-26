@@ -26,7 +26,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
 }));
 
 const StyledTableHead = styled(TableHead)(({ theme }) => ({
-  backgroundColor: '#54cbbb',  
+  backgroundColor: '#00A63F',  
   '& .MuiTableCell-head': {
     fontWeight: 'bold',
     color: theme.palette.text.primary
@@ -83,7 +83,7 @@ const Dashboard = () => {
               onChange={(e) => setMonth(e.target.value)}
               size="small"
               sx={{ 
-                bgcolor: '#54cbbb',
+                bgcolor: '#00A63F',
                 '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                 '& .MuiSelect-select': { color: '#ffff', py: 0.5, px: 1.5 },
                 marginTop:'35px'

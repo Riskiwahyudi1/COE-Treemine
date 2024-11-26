@@ -5,7 +5,6 @@ import {
     Typography,
     Grid,
     Paper,
-    Button,
     CardMedia,
     CardContent,
     Card,
@@ -13,23 +12,21 @@ import {
     useMediaQuery
 } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { Pagination, Autoplay } from 'swiper/modules';
 
 // Import gambar produk
-import product1 from '../assets/images/1.png';
+import product1 from '../assets/images/foto5.png';
 import product2 from '../assets/images/3.png';
 import product3 from '../assets/images/2.png';
 
 // Import Swiper styles
 import 'swiper/css';
-import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-const TicketLandingPage = () => {
+const PCBLandingPage = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-    // Array produk dengan gambar yang diimport
     const productGalleries = [
         {
             photo: product1,
@@ -84,92 +81,167 @@ const TicketLandingPage = () => {
     ];
 
     return (
-        <Box sx={{
-            minHeight: '100vh',
-            background: `linear-gradient(to bottom, #2f98cd, white)`,
-            px: 8 // Menambahkan padding kiri-kanan
-        }}>
-            <Container maxWidth="xl" sx={{ pt: 10 }}>
-                {/* Hero Section */}
-                <Grid container spacing={4} alignItems="center">
-                    <Grid item xs={12} md={7}>
-                        <Box sx={{ color: 'white' }}>
-                            <Typography variant="h2" sx={{
-                                fontWeight: 'bold',
-                                mb: 2
+        <Box>
+            {/* Hero Section with Green Background */}
+            <Box sx={{
+                background: '#00A63F',
+                px: { xs: 2, sm: 4, md: 8 }, // Responsive padding
+                color: 'white'
+            }}>
+                <Container maxWidth="xl" sx={{ 
+                    pt: { xs: 2, sm: 3, md: 1 }, 
+                    pb: { xs: 2, sm: 3, md: 1 } 
+                }}>
+                    <Grid container spacing={4} alignItems="center">
+                        <Grid item xs={12} md={8}>
+                            <Box>
+                                <Typography variant="h3" sx={{
+                                    fontWeight: 'bold',
+                                    mb: 2,
+                                    color: 'white',
+                                    fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } // Responsive font size
+                                }}>
+                                    The best PCB buying experience
+                                </Typography>
+                                <Typography variant="body1" sx={{ 
+                                    color: 'white', 
+                                    mb: 1, 
+                                    pt: { xs: 2, sm: 3, md: 4 },
+                                    opacity: 0.9,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' } // Responsive font size
+                                }}>
+                                    Dapatkan layanan PCB berkualitas tinggi dengan proses yang mudah dan cepat. Kami menyediakan solusi lengkap untuk kebutuhan elektronika Anda.
+                                </Typography>
+                            </Box>
+                        </Grid>
+
+                        <Grid item xs={12} md={4}>
+                            <Box sx={{ 
+                                width: '100%',
+                                maxWidth: { xs: '100%', sm: '400px' },
+                                margin: '0 auto'
                             }}>
-                                The best PCB buying experience
-                            </Typography>
-                            <Typography variant="body1" sx={{  color: 'black', mb: 1 ,pt: 5 }}>
-                                Dapatkan layanan PCB berkualitas tinggi dengan proses yang mudah dan cepat. Kami menyediakan solusi lengkap untuk kebutuhan elektronika Anda.
-                            </Typography>
-                        </Box>
-                    </Grid>
-
-                    <Grid item xs={12} md={4.5}>
-                        <Swiper
-                            modules={[ Pagination, Autoplay]}
-                            spaceBetween={20}
-                            slidesPerView={1}
-                            pagination={{ clickable: true }}
-                            autoplay={{
-                                delay: 3000,
-                                disableOnInteraction: false,
-                            }}
-                        >
-                            {productGalleries.map((gallery, index) => (
-                                <SwiperSlide key={index}>
-                                    <Box sx={{ position: 'relative', mb: 6 }}>
-                                        <Card
-                                            sx={{
-                                                overflow: 'hidden',
-                                                borderRadius: 2,
-                                                height: '300px', // Fixed height untuk konsistensi
+                                <Swiper
+                                    modules={[Pagination, Autoplay]}
+                                    spaceBetween={20}
+                                    slidesPerView={1}
+                                    centeredSlides={true}
+                                    loop={true}
+                                    pagination={{ 
+                                        clickable: true,
+                                        bulletActiveClass: 'swiper-pagination-bullet-active',
+                                        bulletClass: 'swiper-pagination-bullet',
+                                        modifierClass: 'swiper-pagination-',
+                                        bulletElement: 'span',
+                                    }}
+                                    autoplay={{
+                                        delay: 3000,
+                                        disableOnInteraction: false,
+                                    }}
+                                    style={{
+                                        '--swiper-pagination-color': '#ffffff',
+                                        '--swiper-pagination-bullet-inactive-color': 'rgba(255, 255, 255, 0.5)',
+                                    }}
+                                >
+                                    {productGalleries.map((gallery, index) => (
+                                        <SwiperSlide key={index}>
+                                            <Box sx={{ 
+                                                position: 'relative', 
+                                                mb: 6,
                                                 display: 'flex',
-                                                flexDirection: 'column',
-                                                boxShadow: 'none', // Hilangkan bayangan
-                                                backgroundColor: 'transparent', // Tidak ada background
-                                            }}
-                                        >
-                                            <CardMedia
-                                                component="img"
-                                                image={gallery.photo}
-                                                alt={gallery.nama_kegiatan}
-                                                sx={{
-                                                    width: '100%',
-                                                    height: '250px', // Tinggi gambar
-                                                    objectFit: 'cover' // Untuk memastikan gambar terlihat penuh
-                                                }}
-                                            />
-                                            <CardContent sx={{
-                                                px: 2,
-                                                py: 1,
-                                                textAlign: 'center',
-                                                backgroundColor: '#2f98cd',
-                                                color: 'white'
+                                                justifyContent: 'center'
                                             }}>
-                                                <Typography variant="subtitle1">
-                                                    {gallery.nama_kegiatan}
-                                                </Typography>
-                                            </CardContent>
-                                        </Card>
-                                    </Box>
-                                </SwiperSlide>
-                            ))}
-                        </Swiper>
+                                                <Card
+                                                    sx={{
+                                                        overflow: 'hidden',
+                                                        borderRadius: 2,
+                                                        height: { xs: '200px', sm: '250px' },
+                                                        width: '100%',
+                                                        maxWidth: '500px',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        boxShadow: 'none',
+                                                        backgroundColor: 'transparent',
+                                                    }}
+                                                >
+                                                    <Box sx={{
+                                                        position: 'relative',
+                                                        height: { xs: '150px', sm: '200px' },
+                                                        width: '100%',
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center'
+                                                    }}>
+                                                        <CardMedia
+                                                            component="img"
+                                                            image={gallery.photo}
+                                                            alt={gallery.nama_kegiatan}
+                                                            sx={{
+                                                                width: '100%',
+                                                                height: '100%',
+                                                                objectFit: 'contain'
+                                                            }}
+                                                        />
+                                                    </Box>
+                                                    <CardContent sx={{
+                                                        px: 2,
+                                                        py: 1,
+                                                        textAlign: 'center',
+                                                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                                        color: 'white'
+                                                    }}>
+                                                        <Typography variant="subtitle1" sx={{
+                                                            fontSize: { xs: '0.875rem', sm: '1rem' }
+                                                        }}>
+                                                            {gallery.nama_kegiatan}
+                                                        </Typography>
+                                                    </CardContent>
+                                                </Card>
+                                            </Box>
+                                        </SwiperSlide>
+                                    ))}
+                                </Swiper>
+                            </Box>
+                        </Grid>
                     </Grid>
-                </Grid>
+                </Container>
+            </Box>
 
-                {/* Bagian Features */}
-                <Box sx={{ mt: 4, pb: 8, overflowX: 'auto' }}>
-                    <Typography variant="h4" sx={{ color: 'black', mb: 4, fontWeight: 'bold' }}>
+            {/* How to Use Section with White Background */}
+            <Box sx={{ 
+                bgcolor: 'white',
+                px: { xs: 3, sm: 5, md: 8 },
+                pt: 1
+            }}>
+                <Container maxWidth="xl">
+                    <Typography variant="h4" sx={{ 
+                        color: '#00A63F',
+                        mb: 1, 
+                        fontWeight: 'bold',
+                        fontSize: { xs: '1.5rem', sm: '2rem' }
+                    }}>
                         How to Use?
                     </Typography>
+                    
                     <Box sx={{
                         display: 'flex',
-                        gap: 2,
+                        gap: { xs: 1, sm: 2 },
                         minWidth: 'min-content',
                         position: 'relative',
+                        overflowX: 'auto',
+                        pb: 4,
+                        px: 2,
+                        '&::-webkit-scrollbar': {
+                            height: '8px',
+                        },
+                        '&::-webkit-scrollbar-track': {
+                            backgroundColor: '#f1f1f1',
+                            borderRadius: '4px',
+                        },
+                        '&::-webkit-scrollbar-thumb': {
+                            backgroundColor: '#00A63F',
+                            borderRadius: '4px',
+                        },
                         '&::after': {
                             content: '""',
                             position: 'absolute',
@@ -177,7 +249,8 @@ const TicketLandingPage = () => {
                             left: '60px',
                             right: '60px',
                             height: '2px',
-                            backgroundColor: '#e0e0e0',
+                            backgroundColor: '#00A63F',
+                            opacity: 0.3,
                             zIndex: 0
                         }
                     }}>
@@ -186,40 +259,39 @@ const TicketLandingPage = () => {
                                 key={index}
                                 elevation={0}
                                 sx={{
-                                    p: 2,
+                                    p: { xs: 1.5, sm: 2 },
                                     minWidth: {
-                                        xs: '160px',
-                                        sm: '140px',
-                                        md: '120px',
-                                        lg: '100px'
+                                        xs: '140px',
+                                        sm: '160px',
+                                        md: '140px',
+                                        lg: '120px'
                                     },
                                     textAlign: 'center',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
                                     gap: 1,
-                                    backgroundColor: 'rgba(255,255,255,0.8)',
-                                    backdropFilter: 'blur(8px)',
+                                    backgroundColor: '#00A63F',
                                     borderRadius: 2,
-                                    transition: 'all 0.3s',
+                                    transition: 'all 0.3s ease',
                                     position: 'relative',
                                     zIndex: 1,
                                     '&:hover': {
-                                        boxShadow: 3,
-                                        transform: 'translateY(-4px)'
+                                        transform: 'translateY(-4px)',
+                                        boxShadow: '0 4px 20px rgba(0, 166, 63, 0.2)'
                                     }
                                 }}
                             >
                                 <Box sx={{
-                                    width: 28,
-                                    height: 28,
-                                    bgcolor: '#2f98cd',
+                                    width: { xs: 24, sm: 28 },
+                                    height: { xs: 24, sm: 28 },
+                                    bgcolor: 'rgba(255, 255, 255, 0.2)',
                                     borderRadius: 1,
                                     color: 'white',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    fontSize: '0.8rem',
+                                    fontSize: { xs: '0.7rem', sm: '0.8rem' },
                                     fontWeight: 'bold',
                                     mb: 1
                                 }}>
@@ -227,36 +299,25 @@ const TicketLandingPage = () => {
                                 </Box>
                                 <Typography sx={{
                                     fontWeight: 600,
-                                    color: 'text.primary',
-                                    fontSize: '0.875rem'
+                                    color: 'white',
+                                    fontSize: { xs: '0.75rem', sm: '0.875rem' }
                                 }}>
                                     {feature.title}
                                 </Typography>
                                 <Typography variant="body2" sx={{
-                                    color: 'text.secondary',
-                                    fontSize: '0.75rem'
+                                    color: 'rgba(255, 255, 255, 0.85)',
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                    px: 1
                                 }}>
                                     {feature.description}
                                 </Typography>
-                                {index < features.length - 1 && (
-                                    <Box sx={{
-                                        position: 'absolute',
-                                        right: '-10px',
-                                        top: '32px',
-                                        color: '#2f98cd',
-                                        fontWeight: 'bold',
-                                        zIndex: 2
-                                    }}>
-                                        →
-                                    </Box>
-                                )}
                             </Paper>
                         ))}
                     </Box>
-                </Box>
-            </Container>
+                </Container>
+            </Box>
         </Box>
     );
 };
 
-export default TicketLandingPage;
+export default PCBLandingPage;

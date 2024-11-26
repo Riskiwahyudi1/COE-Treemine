@@ -11,9 +11,9 @@ const LandingPage = () => {
             minHeight: '100vh'
         }}>
             <Autoslider />
-            <About />
             <ShopCard />
             <PCBcustom />
+            <About />
         </Box>
     );
 };

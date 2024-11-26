@@ -161,10 +161,10 @@ const ProductPage = () => {
                         </Typography>
 
                         <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-                            <Button variant="outlined" onClick={handleSubmitCart}>
+                            <Button variant="outlined" onClick={handleSubmitCart}sx={{ outlineColor: '#00A63F', color: '#00A63F' }} >
                                 Add to cart
                             </Button>
-                            <Button variant="contained" onClick={handleBuy} sx={{ backgroundColor: '#d565be', color: '#fff' }}>
+                            <Button variant="contained" onClick={handleBuy} sx={{ backgroundColor: '#00A63F', color: '#fff' }}>
                                 Buy now
                             </Button>
                         </Box>

@@ -164,7 +164,7 @@ const PaymentPage = () => {
                     >
                         Back
                     </Button>
-                    <Button variant="contained" color="success">
+                    <Button variant="contained" color="#00A63F">
                         Pay Now
                     </Button>
                 </Box>

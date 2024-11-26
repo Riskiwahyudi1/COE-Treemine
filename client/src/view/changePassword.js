@@ -146,7 +146,7 @@ export default function ChangePassword() {
                     <Button
                         variant="contained"
                         sx={{
-                            backgroundColor: "#54cbbb",
+                            backgroundColor: "#00A63F",
                             textTransform: "none",
                             color: "#fff",
                         }}

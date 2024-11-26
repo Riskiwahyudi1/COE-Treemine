@@ -8,8 +8,8 @@ const Footer = () => {
     <Box
       component="footer"
       sx={{
-        backgroundColor: "#2f98cd", // Warna biru seperti di gambar
-        color: "#ffffff",
+        backgroundColor: "#00A63F", // Warna netral gelap
+        color: "#F5F5F5", // Teks abu-abu terang
         padding: "40px 20px",
         textAlign: "center", // Menengahkan teks di setiap grid
       }}
@@ -59,4 +59,3 @@ const Footer = () => {
 };
 
 export default Footer;
-

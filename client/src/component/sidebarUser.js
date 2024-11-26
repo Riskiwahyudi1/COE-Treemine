@@ -48,7 +48,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const openedMixin = (theme) => ({
     width: drawerWidth,
-    background: 'linear-gradient(135deg, #2f98cd, #006c88)',
+    background: '#00A63F',
     transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen,
@@ -61,7 +61,7 @@ const closedMixin = (theme) => ({
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
     }),
-    background: 'linear-gradient(135deg, #2f98cd, #006c88)',
+    background: '#00A63F',
     overflowX: 'hidden',
     width: `calc(${theme.spacing(7)} + 1px)`,
     [theme.breakpoints.up('sm')]: {
@@ -73,7 +73,7 @@ const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
     zIndex: theme.zIndex.drawer + 1,
-    background: '#2f98cd',
+    background: '#00A63F',
     transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,

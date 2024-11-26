@@ -92,7 +92,7 @@ const handleDelete = async (id) => {
         variant="contained"
         onClick={handleAddCategory}
         sx={{
-          bgcolor: '#54cbbb',
+          bgcolor: '#00A63F',
           color: '#FFFFFF',
           borderRadius: '8px',
           mb: 3,
@@ -136,7 +136,7 @@ const handleDelete = async (id) => {
                   variant="contained"
                   onClick={() => navigate(`./edit-category/${category._id}`)}
                   sx={{
-                    backgroundColor: '#54cbbb',
+                    backgroundColor: '#00A63F',
                     color: '#ffffff',
                     '&:hover': {
                       bgcolor: '#7fd685',

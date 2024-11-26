@@ -27,18 +27,18 @@ import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
 import ShopIcon from '@mui/icons-material/Shop';
 import BuildIcon from '@mui/icons-material/Build';
-import CategoryIcon from '@mui/icons-material/Category'; // Icon for Category Product
+import CategoryIcon from '@mui/icons-material/Category';
 import { useNavigate } from 'react-router-dom';
-import Logoweb from '../assets/images/logo.png';
+import Logoweb from '../assets/images/logo9.png';
 import { useAuth } from '../contexts/AuthContext';
 
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#2f98cd',
+            main: '#00A63F',
         },
         secondary: {
-            main: '#ffffff', // Set secondary color to white
+            main: '#00A63F',
         },
     },
 });
@@ -46,9 +46,9 @@ const theme = createTheme({
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    backgroundColor: alpha(theme.palette.common.black, 0.05),
     '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
+        backgroundColor: alpha(theme.palette.common.black, 0.1),
     },
     marginRight: theme.spacing(2),
     marginLeft: 0,
@@ -67,10 +67,11 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    color: '#00A63F',
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
+    color: '#00A63F',
     '& .MuiInputBase-input': {
         padding: theme.spacing(1, 1, 1, 0),
         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
@@ -78,6 +79,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         width: '100%',
         [theme.breakpoints.up('md')]: {
             width: '20ch',
+        },
+        '&::placeholder': {
+            color: '#00A63F',
+            opacity: 0.7,
         },
     },
 }));
@@ -91,10 +96,10 @@ const Navbar = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const menuItems = [
-        { text: 'Home', icon: <HomeIcon />, path: '/' },
-        { text: 'Product', icon: <ShopIcon />, path: '/product' },
-        { text: 'Category Product', icon: <CategoryIcon />, path: '/category-product' },
-        { text: 'Custom Product', icon: <BuildIcon />, path: '/custom' },
+        { text: 'Home', icon: <HomeIcon sx={{ color: '#00A63F' }} />, path: '/' },
+        { text: 'Product', icon: <ShopIcon sx={{ color: '#00A63F' }} />, path: '/product' },
+        // { text: 'Category Product', icon: <CategoryIcon sx={{ color: '#00A63F' }} />, path: '/category-product' },
+        { text: 'Custom Product', icon: <BuildIcon sx={{ color: '#00A63F' }} />, path: '/custom' },
     ];
 
     const handleOpenMenu = (event) => {
@@ -133,7 +138,7 @@ const Navbar = () => {
             open={mobileMenuOpen}
             onClose={() => setMobileMenuOpen(false)}
         >
-            <Box sx={{ width: 250 }}>
+            <Box sx={{ width: 250, bgcolor: 'white' }}>
                 <List>
                     {menuItems.map((item) => (
                         <ListItem
@@ -142,7 +147,14 @@ const Navbar = () => {
                             onClick={() => handleMobileMenuClick(item.path)}
                         >
                             <ListItemIcon>{item.icon}</ListItemIcon>
-                            <ListItemText primary={item.text} />
+                            <ListItemText
+                                primary={item.text}
+                                sx={{
+                                    '& .MuiListItemText-primary': {
+                                        color: '#00A63F'
+                                    }
+                                }}
+                            />
                         </ListItem>
                     ))}
                 </List>
@@ -152,20 +164,18 @@ const Navbar = () => {
 
     return (
         <ThemeProvider theme={theme}>
-            <AppBar position="fixed" sx={{ bgcolor: '#2f98cd' }} elevation={0}>
+            <AppBar position="fixed" sx={{ bgcolor: 'white' }} elevation={1}>
                 <Toolbar>
                     {isMobile && (
                         <IconButton
-                            color="inherit"
                             edge="start"
                             onClick={() => setMobileMenuOpen(true)}
-                            sx={{ mr: 2 }}
+                            sx={{ mr: 2, color: '#00A63F' }}
                         >
                             <MenuIcon />
                         </IconButton>
                     )}
 
-                    {/* Logo - Tambahkan onClick */}
                     <Box
                         component="img"
                         src={Logoweb}
@@ -173,21 +183,21 @@ const Navbar = () => {
                         sx={{
                             height: 40,
                             marginRight: 2,
-                            cursor: 'pointer', // Ubah kursor menjadi pointer saat dihover
+                            cursor: 'pointer',
                         }}
-                        onClick={() => navigate('/')} // Tambahkan event onClick
+                        onClick={() => navigate('/')}
                     />
 
-                    {/* Teks CoE Treemine - Tambahkan onClick */}
                     {!isMobile && (
                         <Typography
                             variant="h6"
                             component="div"
                             sx={{
                                 flexGrow: 1,
-                                cursor: 'pointer', // Ubah kursor menjadi pointer saat dihover
+                                cursor: 'pointer',
+                                color: '#00A63F',
                             }}
-                            onClick={() => navigate('/')} // Tambahkan event onClick
+                            onClick={() => navigate('/')}
                         >
                             CoE Treemine
                         </Typography>
@@ -212,8 +222,8 @@ const Navbar = () => {
                             variant="contained"
                             sx={{
                                 ml: 1,
-                                bgcolor: '#54cbbb',
-                                '&:hover': { bgcolor: '#7fd685' },
+                                bgcolor: '#00A63F',
+                                '&:hover': { bgcolor: '#008f37' },
                                 ...(isMobile && { fontSize: '0.8rem', padding: '6px 12px' }),
                             }}
                             onClick={handleLoginClick}
@@ -223,8 +233,11 @@ const Navbar = () => {
                     ) : (
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Box onClick={handleKeranjang}>
-                                <IconButton color="inherit" size={isMobile ? 'small' : 'medium'}>
-                                    <Badge badgeContent={4} color="error">
+                                <IconButton
+                                    size={isMobile ? 'small' : 'medium'}
+                                    sx={{ color: '#00A63F' }}
+                                >
+                                    <Badge>
                                         <ShoppingCartIcon />
                                     </Badge>
                                 </IconButton>
@@ -234,7 +247,8 @@ const Navbar = () => {
                                 onClick={handleOpenMenu}
                                 sx={{
                                     cursor: 'pointer',
-                                    bgcolor: 'primary.main',
+                                    bgcolor: '#00A63F',
+                                    ml: 1,
                                     ...(isMobile && { width: 32, height: 32 }),
                                 }}
                             >
@@ -270,13 +284,25 @@ const Navbar = () => {
             </AppBar>
 
             {!isMobile && (
-                <AppBar position="fixed" sx={{ bgcolor: '#2f98cd', top: 64 }} elevation={0}>
+                <AppBar
+                    position="fixed"
+                    sx={{
+                        bgcolor: 'white',
+                        top: 64,
+                        '& .MuiTab-root': {
+                            color: '#00A63F',
+                            '&.Mui-selected': {
+                                color: '#00A63F',
+                            }
+                        }
+                    }}
+                    elevation={1}
+                >
                     <Tabs
                         value={value}
                         onChange={handleChange}
                         centered
-                        indicatorColor="secondary" // Set indicator color to white
-                        textColor="inherit"
+                        indicatorColor="secondary"
                     >
                         {menuItems.map((item) => (
                             <Tab key={item.text} label={item.text} />
@@ -287,7 +313,6 @@ const Navbar = () => {
 
             {renderMobileDrawer()}
 
-            {/* Add padding to main content to avoid being covered by fixed AppBar */}
             <Box sx={{ mt: { xs: 8, md: 14 } }}>
                 {/* Konten utama website Anda di sini */}
             </Box>

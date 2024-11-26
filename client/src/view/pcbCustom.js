@@ -18,7 +18,7 @@ const CustomPage = () => {
     return (
         <div
             style={{
-                background: `linear-gradient(to bottom, white, #2f98cd)`,
+                background: `linear-gradient(to bottom, white, white)`,
                 height: '90vh',
                 margin: 0,
                 padding: 0,
@@ -96,11 +96,11 @@ const CustomPage = () => {
                                     variant="outlined"
                                     onClick={handlePrototypeClick}
                                     sx={{
-                                        borderColor: '#54cbbb',
-                                        color: '#54cbbb',
+                                        borderColor: '#00A63F',
+                                        color: '#00A63F',
                                         padding: '10px 20px',
                                         '&:hover': {
-                                            backgroundColor: '#54cbbb',
+                                            backgroundColor: '#00A63F',
                                             color: '#ffffff',
                                         },
                                     }}
@@ -167,11 +167,11 @@ const CustomPage = () => {
                                     variant="outlined"
                                     onClick={handleAssemblyClick}
                                     sx={{
-                                        borderColor: '#54cbbb',
-                                        color: '#54cbbb',
+                                        borderColor: '#00A63F',
+                                        color: '#00A63F',
                                         padding: '10px 20px',
                                         '&:hover': {
-                                            backgroundColor: '#54cbbb',
+                                            backgroundColor: '#00A63F',
                                             color: '#ffffff',
                                         },
                                     }}

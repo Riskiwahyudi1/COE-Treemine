@@ -11,7 +11,7 @@ import { Box, Typography, Button } from '@mui/material';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: '#54cbbb',
+        backgroundColor: '#00A63F',
         color: theme.palette.common.white,
         fontWeight: 'bold',
         fontSize: 16,

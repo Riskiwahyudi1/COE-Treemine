@@ -117,9 +117,9 @@ const ShoppingCartItem = ({
                 </Box>
             </CardContent>
             <CardActions>
-                <Button size="small" variant="text" color="primary" onClick={() => onView(id)}>
+                {/* <Button size="small" variant="text" color="primary" onClick={() => onView(id)}>
                     View Product
-                </Button>
+                </Button> */}
                 <IconButton color="error" onClick={() => onDelete(id)}>
                     <DeleteIcon />
                 </IconButton>
@@ -288,12 +288,12 @@ const ShoppingCart = () => {
                     variant="contained"
                     size="large"
                     sx={{
-                        backgroundColor: '#7f91eb',
+                        backgroundColor: '#00A63F',
                         color: '#fff',
                         borderRadius: 3,
                         padding: '10px 30px',
                         '&:hover': {
-                            backgroundColor: '#5a6dd6',
+                            backgroundColor: '#00A64J',
                         },
                     }}
                 >

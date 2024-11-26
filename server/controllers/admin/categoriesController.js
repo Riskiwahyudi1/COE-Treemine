@@ -7,7 +7,7 @@ const path = require('path');
 // foto  lokasi kategori
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'storage/category-picture'); 
+        cb(null, 'storage/category-picture');
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -59,9 +59,9 @@ const deleteCategory = async (req, res) => {
     try {
         const { id } = req.params;
         const deletedProduct = await Categories.findByIdAndDelete(id);
-        
-        if(!deletedProduct){
-            return res.status(404).json({message : 'Product id not found!'})
+
+        if (!deletedProduct) {
+            return res.status(404).json({ message: 'Product id not found!' })
         }
 
         // hapus foto
@@ -96,18 +96,18 @@ const updateCategory = async (req, res) => {
         const image = req.file;
 
         // kelolah foto
-         const existingProduct = await Categories.findById(id);
-         if (!existingProduct) {
-             return res.status(404).json({ message: "Caategory not found" });
-         }
-         const imagePath = path.join(__dirname, '../../storage/category-picture', path.basename(existingProduct.picture_url));
-         let pictureUrl = existingProduct.picture_url;
-         if (image) {
+        const existingProduct = await Categories.findById(id);
+        if (!existingProduct) {
+            return res.status(404).json({ message: "Caategory not found" });
+        }
+        const imagePath = path.join(__dirname, '../../storage/category-picture', path.basename(existingProduct.picture_url));
+        let pictureUrl = existingProduct.picture_url;
+        if (image) {
             // calback delete image
             await deleteImage(imagePath);
 
             pictureUrl = `/category-picture/${image.filename}`;
-         }
+        }
 
         const updateProduct = await Categories.findByIdAndUpdate(id, {
             category_name,
@@ -125,13 +125,13 @@ const updateCategory = async (req, res) => {
 
 // endpoin update data product
 const getCategoryById = async (req, res) => {
-    const { id } = req.params; 
+    const { id } = req.params;
     try {
-        const product = await Categories.findById(id) 
+        const product = await Categories.findById(id)
         if (!product) {
             return res.status(404).json({ message: 'Category not found' });
         }
-        res.json(product); 
+        res.json(product);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });

@@ -64,9 +64,9 @@ const ProductCard = ({ product_id, product_name, harga, description, picture_url
                     variant="contained"
                     onClick={() => navigate(`/product/detail/${product_id}`)}
                     sx={{
-                        backgroundColor: '#54cbbb',
+                        backgroundColor: '#00A63F',
                         '&:hover': {
-                            backgroundColor: '#47b4a7',
+                            backgroundColor: '#00A66F',
                         },
                         flex: 1,
                         marginRight: '10px',
@@ -78,11 +78,11 @@ const ProductCard = ({ product_id, product_name, harga, description, picture_url
                     variant="outlined"
                     onClick={() => onAddToCart(product_id)}
                     sx={{
-                        borderColor: '#54cbbb',
-                        color: '#54cbbb',
+                        borderColor: '#00A63F',
+                        color: '#00A63F',
                         '&:hover': {
-                            borderColor: '#47b4a7',
-                            color: '#47b4a7',
+                            borderColor: '#00A66F',
+                            color: '#00A66F',
                         },
                         flex: 1,
                     }}
@@ -130,7 +130,7 @@ const App = () => {
                 alignItems: 'center',
                 minHeight: '100vh',
                 padding: '20px',
-                background: 'linear-gradient(to bottom, #2f98cd, white)',
+                background: 'linear-gradient(to bottom, white, white)',
             }}
         >
             <Container>

@@ -37,7 +37,7 @@ const showToast = (message, icon) => {
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: '#54cbbb',
+    backgroundColor: '#00A63F',
     color: theme.palette.common.white,
   },
   [`&.${tableCellClasses.body}`]: {
@@ -132,7 +132,7 @@ export default function CustomizedTables() {
         {/* Add Produk Button with Icon */}
         <StyledButton variant="contained" 
             onClick={handleAddProduk} 
-            sx={{backgroundColor: '#54cbbb',
+            sx={{backgroundColor: '#00A63F',
             color: '#ffffff',
             textTransform: 'none',
             '&:hover': {
