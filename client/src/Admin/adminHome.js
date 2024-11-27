@@ -7,6 +7,7 @@ import UpdateProdukPage from './updateProduct';
 import Dashboard from './dashboard';
 import CustomPrototype from './customPrototype';
 import AddPrototype from './addPrototype';
+import EditPrototype from './editItemPrototype';
 import CustomAssembly from './customAssembly';
 import AddAssembly from './addAssembly';
 import KategoriPortofolio from './kategoriPortofolio';
@@ -41,7 +42,8 @@ export function AdminHome() {
           <Route path="dataProduct/updateProduct/:id" element={<UpdateProdukPage />} />
 
           <Route path="/custom-prototype" element={<CustomPrototype />} />
-          <Route path="custom-prototype/addPrototype" element={<AddPrototype />} />
+          <Route path="custom-prototype/addPrototype/:id" element={<AddPrototype />} />
+          <Route path="custom-prototype/editItemPrototype/:typeId/item/:itemId" element={<EditPrototype />} />
 
           <Route path="/custom-assembly" element={<CustomAssembly />} />
           <Route path="custom-assembly/addAssembly" element={<AddAssembly />} />

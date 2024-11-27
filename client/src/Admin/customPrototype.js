@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -16,6 +16,11 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
+import { getPrototypeItem, getProductById } from './api/costomPrototypePartApi';
+import { InputLabel } from '@mui/material';
+import axios from 'axios';
+import Toast from '../utils/Toast';
+import Swal from 'sweetalert2';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -40,41 +45,123 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
     '&:hover': {
         backgroundColor: '#cbe7f6',
-        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.15)', // Hover effect shadow
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.15)', 
     },
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-  borderRadius: '15px', // Rounded corners
-  boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)', // Shadow for 3D effect
+  borderRadius: '15px',
+  boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)', 
   overflow: 'hidden',
 }));
 
 const BoardTypePage = () => {
   const navigate = useNavigate();
   const [selectedBoard, setSelectedBoard] = useState('');
-  
-  const boardTypeData = [
-    {id: 1, name: 'Single Piece', price: 35000},
-    {id: 2, name: 'Panel by Customers', price: 0},
-    {id: 3, name: 'Panel by Polibatam', price: 15000}
-  ];
+  const [prototypeItem, setPrototypeItem] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [productData, setProductData] = useState(null);
 
   const handleAddBoard = () => {
-    navigate('./addPrototype');
+    navigate(`./addPrototype/${selectedBoard}`);
   };
 
-  const handleEditBoard = (id) => {
-    // Implement edit logic
+  const handleEditBoard = (itemId) => {
+    navigate(`./editItemPrototype/${selectedBoard}/item/${itemId}`);
   };
-
-  const handleDeleteBoard = (id) => {
-    // Implement delete logic
-  };
-
+  
   const handleSelectChange = (event) => {
-    setSelectedBoard(event.target.value);
+    const selectedValue = event.target.value;
+    setSelectedBoard(selectedValue);
   };
+
+  useEffect(() => {
+    const fetchPrototypeItem = async () => {
+      try {
+        const data = await getPrototypeItem();
+        setPrototypeItem(data);
+      } catch (error) {
+        setError('Failed to load categories');
+      }
+    };
+    fetchPrototypeItem();
+  }, []);
+
+  useEffect(() => {
+    const fetchProductById = async () => {
+      try {
+        if (selectedBoard) {
+          const data = await getProductById(selectedBoard);
+          setProductData(data);
+        }
+      } catch (error) {
+        setError('Failed to load categories');
+      }
+    };
+    fetchProductById();
+  }, [selectedBoard]);
+
+  const handleDeleteData = async (typeId, itemId) => {
+    
+    if (!typeId || !itemId) {
+      setError("Invalid typeId or itemId. Please try again.");
+      return;
+    }
+  
+    try {
+      setLoading(true);
+      const isValidTypeId = /^[a-fA-F0-9]{24}$/.test(itemId);
+      const isValidItemId = /^[a-fA-F0-9]{24}$/.test(itemId);
+  
+      if (!isValidTypeId || !isValidItemId) {
+        setError("Invalid typeId or itemId format.");
+        return;
+      }
+  
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "Delete this item?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+      });
+  
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(
+            `http://localhost:5000/admin/costom-prototype/${typeId}/item/${itemId}`
+          );
+  
+          if (response.status === 200) {
+            Toast.fire({
+              icon: 'success',
+              title: 'Item deleted successfully',
+            });
+
+            setLoading(false)
+  
+            const updatedData = productData.data.filter((item) => item._id !== itemId);
+            setProductData({ ...productData, data: updatedData });
+          } else {
+            setError("Failed to delete data. Please try again.");
+          }
+        } catch (error) {
+          console.error("Failed to delete data:", error);
+          setError("Failed to delete data. Please try again later.");
+        }
+      }
+    } catch (error) {
+      console.error("Validation failed:", error);
+      setError("An error occurred while processing your request.");
+    }
+
+  };
+  
+
 
   return (
     <div>
@@ -86,6 +173,7 @@ const BoardTypePage = () => {
           gap: 2,
         }}
       >
+       {selectedBoard && (
         <Button
           variant="contained"
           onClick={handleAddBoard}
@@ -97,38 +185,39 @@ const BoardTypePage = () => {
             '&:hover': {
               backgroundColor: '#7fd685',
             },
-            height:'54px',
+            height: '54px',
           }}
         >
           Add
         </Button>
-
-        <FormControl sx={{ width: '250px' }}>
+      )}
+       
+       <FormControl sx={{ width: '250px' }} variant="outlined">
           <Select
+            defaultValue=""
             value={selectedBoard}
             onChange={handleSelectChange}
             displayEmpty
-            inputProps={{ 'aria-label': 'Select Board Type' }}
+            inputProps={{
+              'aria-label': 'Select Prototype Item',
+            }}
+            sx={{
+              '& .MuiSelect-outlined': {
+                padding: '15px', 
+              },
+            }}
           >
-            <MenuItem value="">
-              <em>Board Type</em>
+            <MenuItem value="" disabled>
+              Select an item
             </MenuItem>
-            <MenuItem value="Design">Designs in Panel</MenuItem>
-            <MenuItem value="Size">Size</MenuItem>
-            <MenuItem value="Layers">Layers</MenuItem>
-            <MenuItem value="Coppers Layer">Coppers Layer</MenuItem>
-            <MenuItem value="Material">Material</MenuItem>
-            <MenuItem value="FR4-TG">FR4-TG</MenuItem>
-            <MenuItem value="Thickness">Thickness</MenuItem>
-            <MenuItem value="Spacing">Min Track / Spacing</MenuItem>
-            <MenuItem value="Solder Mask">Solder Mask</MenuItem>
-            <MenuItem value="Surface Finish">Surface Finish</MenuItem>
-            <MenuItem value="Via Process">Via Process</MenuItem>
-            <MenuItem value="Finished Copper">Finished Copper</MenuItem>
+            {prototypeItem.map((item) => (
+              <MenuItem key={item.id} value={item._id}>
+                {item.type}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </Box>
-
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -139,49 +228,69 @@ const BoardTypePage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {boardTypeData.map((row) => (
-              <StyledTableRow key={row.id}>
-                <StyledTableCell>{row.name}</StyledTableCell>
-                <StyledTableCell align="center">
-                  Rp. {row.price.toLocaleString('id-ID')}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <Button
-                    variant="contained"
-                    sx={{
-                      backgroundColor: '#54cbbb',
-                      color: '#ffffff',
-                      textTransform: 'none',
-                      marginRight: 1,
-                      '&:hover': {
-                        backgroundColor: '#7fd685',
-                      },
-                    }}
-                    startIcon={<EditIcon />}
-                    onClick={() => handleEditBoard(row.id)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    sx={{
-                      textTransform: 'none',
-                      borderColor: '#f44336',
-                      color: '#f44336',
-                      '&:hover': {
-                        backgroundColor: '#e0f4fc',
-                        borderColor: '#f44336',
-                        color: '#f44336',
-                      },
-                    }}
-                    startIcon={<DeleteIcon />}
-                    onClick={() => handleDeleteBoard(row.id)}
-                  >
-                    Delete
-                  </Button>
+            {loading ? (
+              <StyledTableRow>
+                <StyledTableCell colSpan={3} align="center">
+                  Loading...
                 </StyledTableCell>
               </StyledTableRow>
-            ))}
+            ) : error ? (
+              <StyledTableRow>
+                <StyledTableCell colSpan={3} align="center" sx={{ color: 'red' }}>
+                  {error}
+                </StyledTableCell>
+              </StyledTableRow>
+            ) : productData && productData.data && productData.data.length > 0 ? (
+              productData.data.map((row) => (
+                <StyledTableRow key={row._id}>
+                  <StyledTableCell>{row.type}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Rp. {row.cost.toLocaleString('id-ID')}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: '#54cbbb',
+                        color: '#ffffff',
+                        textTransform: 'none',
+                        marginRight: 1,
+                        '&:hover': {
+                          backgroundColor: '#7fd685',
+                        },
+                      }}
+                      startIcon={<EditIcon />}
+                      onClick={() => handleEditBoard(row._id)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        textTransform: 'none',
+                        borderColor: '#f44336',
+                        color: '#f44336',
+                        '&:hover': {
+                          backgroundColor: '#e0f4fc',
+                          borderColor: '#f44336',
+                          color: '#f44336',
+                        },
+                      }}
+                      startIcon={<DeleteIcon />}
+                      onClick={() => handleDeleteData(selectedBoard, row._id)} 
+                    >
+                      Delete
+                    </Button>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))
+            ) : (
+              <StyledTableRow>
+                <StyledTableCell colSpan={3} align="center">
+                  Select prototype item to load data!
+                </StyledTableCell>
+              </StyledTableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

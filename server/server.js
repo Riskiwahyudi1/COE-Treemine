@@ -10,6 +10,8 @@ const verifyRoutes = require('./routes/buyer/auth/verify');
 const loginRoute = require('./routes/buyer/auth/login');
 const dashbord = require('./routes/buyer/dashbord');
 
+const costomPrototype = require('./routes/admin/costomPrototype');
+
 // memanggil routes admin 
 const productCategories = require('./routes/admin/categories');
 const products = require('./routes/admin/product');
@@ -78,6 +80,7 @@ app.use('/dashbord', dashbord);
 // admin
 app.use('/admin/product/categories', productCategories);
 app.use('/admin/product', products);
+app.use('/admin/costom-prototype', costomPrototype);
 
 // buyer
 app.use('/cart', cart);

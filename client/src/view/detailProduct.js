@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, TextField, IconButton } from '@mui/material';
+import { Box, Typography, Button, TextField, IconButton, CircularProgress } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -11,6 +11,7 @@ const ProductPage = () => {
     const [error, setError] = useState('');
     const [imagePreview, setImagePreview] = useState(null);
     const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(false)
 
     const handleBack = () => {
         navigate(-1); 
@@ -49,6 +50,7 @@ const ProductPage = () => {
         setError('');
     
         try {
+            setLoading(true)
             const token = localStorage.getItem('token'); 
     
             if (!token) {
@@ -80,7 +82,9 @@ const ProductPage = () => {
                     icon: 'success',
                     title: 'Product added to cart!',
                 });  
+                setLoading(false)
             } else {
+                setLoading(false)
                 setError('Failed to add product. Please try again!');
                 Toast.fire({
                     icon: 'error',
@@ -88,6 +92,7 @@ const ProductPage = () => {
                 }); 
             }
         } catch (error) {
+            setLoading(false)
             if (error.response) {
                 const { status, data } = error.response;
                 if (status === 401) {
@@ -110,12 +115,14 @@ const ProductPage = () => {
                     });
                 }
             } else if (error.request) {
+                setLoading(false)
                 setError('Network error. Please check your internet connection.');
                 Toast.fire({
                     icon: 'error',
                     title: 'Network error. Please check your internet connection.',
                 });
             } else {
+                setLoading(false)
                 setError('Failed to add product. Please try again.');
                 Toast.fire({
                     icon: 'error',
@@ -162,7 +169,7 @@ const ProductPage = () => {
 
                         <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
                             <Button variant="outlined" onClick={handleSubmitCart}sx={{ outlineColor: '#00A63F', color: '#00A63F' }} >
-                                Add to cart
+                                 {loading ? <CircularProgress sx={6} /> : 'Add to cart'}
                             </Button>
                             <Button variant="contained" onClick={handleBuy} sx={{ backgroundColor: '#00A63F', color: '#fff' }}>
                                 Buy now
