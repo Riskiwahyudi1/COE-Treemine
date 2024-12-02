@@ -136,6 +136,9 @@ const ShoppingCart = () => {
     const handleBack = () => {
         navigate(-1);
     };
+    const handleLinkCostom = () => {
+        navigate('./costom-product');
+    };
 
     const handleViewProduct = (id) => {
         navigate(`/product/detail/${id}`);

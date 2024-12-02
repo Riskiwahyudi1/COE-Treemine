@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -9,6 +9,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Box, Typography, Button } from '@mui/material';
+import {getWaitingPaymentPrototype} from '../api/requestCostomPrototypeApi'
+import Toast from '../utils/Toast';
+import axios from 'axios';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -46,13 +49,61 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
 export default function OrdersTable() {
     const navigate = useNavigate();
 
-    const orders = [
-        { id: 1, orderNumber: 'ORD001', name: 'John Doe', date: '2024-11-20', price: 150000 },
-        { id: 2, orderNumber: 'ORD002', name: 'Jane Smith', date: '2024-11-18', price: 250000 },
-        { id: 3, orderNumber: 'ORD003', name: 'Alice Johnson', date: '2024-11-17', price: 175000 },
-        { id: 4, orderNumber: 'ORD004', name: 'Bob Brown', date: '2024-11-15', price: 300000 },
-        { id: 5, orderNumber: 'ORD005', name: 'Charlie White', date: '2024-11-14', price: 225000 },
-    ];
+    const [waitingPayment, setWaitingPaymentPrototype] = useState('');
+
+    useEffect(() => {
+        const fetchWaitingPaymentPrototype = async () => {
+          try {
+            const data = await getWaitingPaymentPrototype();
+            setWaitingPaymentPrototype(data);
+          } catch (error) {
+            console.error('Failed to load request', error);
+          }
+        };
+        fetchWaitingPaymentPrototype();
+      }, []);
+
+      const handleSendProcess = async (orderId) => {
+        try {
+            const response = await axios.put(`http://localhost:5000/admin/request-costom-prototype/${orderId}/send-process`, {
+                status: 'Process', 
+            });
+    
+            if (response.status === 200) {
+                
+                setWaitingPaymentPrototype((prev) =>
+                    prev.filter((order) => order._id !== orderId)
+                );
+    
+                Toast.fire({
+                    icon: 'success',
+                    title: 'successfully',
+                });
+            }
+        } catch (error) {
+            console.error('Error approving order:', error.response?.data || error.message);
+        }
+    };
+      const handleReject = async (orderId) => {
+        try {
+            const response = await axios.put(`http://localhost:5000/admin/request-costom-prototype/${orderId}/reject`, {
+                status: 'Reject', 
+            });
+    
+            if (response.status === 200) {
+                setWaitingPaymentPrototype((prev) =>
+                    prev.filter((order) => order._id !== orderId)
+                );
+    
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Item reject successfully',
+                });
+            }
+        } catch (error) {
+            console.error('Error approving order:', error.response?.data || error.message);
+        }
+    };
 
     return (
         <Box
@@ -94,14 +145,14 @@ export default function OrdersTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {orders.map((order) => (
+                    {(Array.isArray(waitingPayment) ? waitingPayment : []).map((order, index) => (
                             <StyledTableRow key={order.id}>
-                                <StyledTableCell>{order.id}</StyledTableCell>
-                                <StyledTableCell align="center">{order.orderNumber}</StyledTableCell>
+                                <StyledTableCell>{index+1}</StyledTableCell>
+                                <StyledTableCell align="center">{order._id}</StyledTableCell>
                                 <StyledTableCell align="center">{order.name}</StyledTableCell>
-                                <StyledTableCell align="center">{order.date}</StyledTableCell>
+                                <StyledTableCell align="center">{order.createdAt}</StyledTableCell>
                                 <StyledTableCell align="center">
-                                    Rp. {order.price.toLocaleString('id-ID')}
+                                    Rp. {order.total_cost.toLocaleString('id-ID')}
                                 </StyledTableCell>
                                 <StyledTableCell
                                     align="center"
@@ -110,7 +161,7 @@ export default function OrdersTable() {
                                         fontWeight: 'bold',
                                     }}
                                 >
-                                    Review Payment
+                                    {order.status}
                                 </StyledTableCell>
                                 <StyledTableCell align="center">
                                     <Button
@@ -123,7 +174,7 @@ export default function OrdersTable() {
                                                 backgroundColor: '#46b2a6',
                                             },
                                         }}
-                                        onClick={() => navigate(`/order-detail/${order.id}`)}
+                                        onClick={() => navigate(`/order-detail/${order._id}`)}
                                     >
                                         View Detail
                                     </Button>
@@ -156,9 +207,9 @@ export default function OrdersTable() {
                                                     backgroundColor: '#46b2a6',
                                                 },
                                             }}
-                                            onClick={() => console.log(`Approved order ${order.id}`)}
+                                            onClick={() => handleSendProcess(order._id)}
                                         >
-                                            Approve
+                                            Process Order
                                         </Button>
                                         <Button
                                             variant="outlined"
@@ -172,9 +223,9 @@ export default function OrdersTable() {
                                                     color: '#e53935',
                                                 },
                                             }}
-                                            onClick={() => console.log(`Cancelled order ${order.id}`)}
+                                            onClick={() => handleReject(order._id)}
                                         >
-                                            Cancel
+                                            Reject
                                         </Button>
                                     </Box>
                                 </StyledTableCell>

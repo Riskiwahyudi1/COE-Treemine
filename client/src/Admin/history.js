@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import React, {useEffect, useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,6 +9,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Box, Typography, Button } from '@mui/material';
+import {getPrototypeHistory} from '../api/requestCostomPrototypeApi'
+import Toast from '../utils/Toast';
+import axios from 'axios';
+
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -38,21 +42,30 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-    borderRadius: '15px', // Rounded corners
-    boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)', // Shadow for 3D effect
+    borderRadius: '15px', 
+    boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)', 
     overflow: 'hidden',
 }));
 
 export default function OrdersTable() {
-    const navigate = useNavigate(); // Properly use useNavigate here
+    const navigate = useNavigate();
 
-    const orders = [
-        { id: 1, orderNumber: 'ORD001', name: 'John Doe', date: '2024-11-20', price: 150000 },
-        { id: 2, orderNumber: 'ORD002', name: 'Jane Smith', date: '2024-11-18', price: 250000 },
-        { id: 3, orderNumber: 'ORD003', name: 'Alice Johnson', date: '2024-11-17', price: 175000 },
-        { id: 4, orderNumber: 'ORD004', name: 'Bob Brown', date: '2024-11-15', price: 300000 },
-        { id: 5, orderNumber: 'ORD005', name: 'Charlie White', date: '2024-11-14', price: 225000 },
-    ];
+    const [prototypeHistory, setPrototypeHistory] = useState('');
+
+    useEffect(() => {
+        const fetchPrototypeHostory = async () => {
+          try {
+            const data = await getPrototypeHistory();
+            setPrototypeHistory(data);
+          } catch (error) {
+            console.error('Failed to load products', error);
+          }
+        };
+        fetchPrototypeHostory();
+      }, []);
+
+      
+
 
     return (
         <Box
@@ -93,14 +106,14 @@ export default function OrdersTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {orders.map((order) => (
-                            <StyledTableRow key={order.id}>
-                                <StyledTableCell>{order.id}</StyledTableCell>
-                                <StyledTableCell align="center">{order.orderNumber}</StyledTableCell>
+                    {(Array.isArray(prototypeHistory) ? prototypeHistory : []).map((order, index) => (
+                            <StyledTableRow key={order._id}>
+                                <StyledTableCell>{index + 1}</StyledTableCell>
+                                <StyledTableCell align="center">{order._id}</StyledTableCell>
                                 <StyledTableCell align="center">{order.name}</StyledTableCell>
-                                <StyledTableCell align="center">{order.date}</StyledTableCell>
+                                <StyledTableCell align="center">{order.createdAt}</StyledTableCell>
                                 <StyledTableCell align="center">
-                                    Rp. {order.price.toLocaleString('id-ID')}
+                                    Rp. {order.total_cost.toLocaleString('id-ID')}
                                 </StyledTableCell>
                                 <StyledTableCell
                                     align="center"
@@ -109,7 +122,7 @@ export default function OrdersTable() {
                                         fontWeight: 'bold',
                                     }}
                                 >
-                                    Finish
+                                    {order.status}
                                 </StyledTableCell>
                                 <StyledTableCell align="center">
                                     <Button

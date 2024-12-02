@@ -34,7 +34,7 @@ const UpdateBoardTypePage = () => {
       return;
     }
   
-    if (typeof boardName !== 'string' || boardName.trim().length < 3) {
+    if (typeof boardName !== 'string') {
       setError('Board name must be at least 3 characters long');
       return;
     }

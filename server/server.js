@@ -10,14 +10,16 @@ const verifyRoutes = require('./routes/buyer/auth/verify');
 const loginRoute = require('./routes/buyer/auth/login');
 const dashbord = require('./routes/buyer/dashbord');
 
-const costomPrototype = require('./routes/admin/costomPrototype');
 
 // memanggil routes admin 
 const productCategories = require('./routes/admin/categories');
 const products = require('./routes/admin/product');
+const costomPrototype = require('./routes/admin/costomPrototype');
+const admReqCostomPrptptype = require('./routes/admin/requestCostomPrototype');
 
 // memanggil routes buyer
 const cart = require('./routes/buyer/cart');
+const costomPrototypeBuyer = require('./routes/buyer/costomPrototype');
 
 
 const app = express();
@@ -81,10 +83,11 @@ app.use('/dashbord', dashbord);
 app.use('/admin/product/categories', productCategories);
 app.use('/admin/product', products);
 app.use('/admin/costom-prototype', costomPrototype);
+app.use('/admin/request-costom-prototype', admReqCostomPrptptype);
 
 // buyer
 app.use('/cart', cart);
-
+app.use('/costom-prototype', costomPrototypeBuyer);
 
 
 app.listen(port, () => {

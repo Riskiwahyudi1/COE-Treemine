@@ -15,6 +15,7 @@ import ProductAssemblyPage from './view/customAssembly';
 import ProtectedRoute from "./component/ProtectedRoute";
 import DetailProduct from "./view/detailProduct";
 import Keranjang from "./view/keranjang";
+import KeranjangCostomProduct from "./view/keranjangCostomProduct";
 import SidebarProfile from "./component/sidebarUser";
 import ChangePassword from './view/changePassword';
 import UserPage from './view/userPage';
@@ -68,6 +69,7 @@ function AppContent() {
           <Route path="/custom" element={<CustomPage />} />
           <Route path="/product-assembly" element={<ProductAssemblyPage />} />
           <Route path="/keranjang" element={<Keranjang />} />
+          <Route path="/keranjang/costom-product" element={<KeranjangCostomProduct />} />
           <Route path="/product/detail/:id" element={<DetailProduct />} />
           <Route path="/custom-prototype" element={<CustomPrototype />} />
           <Route path="/custom-assembly" element={<ProductAssemblyPage />} />
