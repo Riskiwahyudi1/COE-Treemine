@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -143,6 +144,9 @@ const ShoppingCart = () => {
     const handleViewProduct = (id) => {
         navigate(`/product/detail/${id}`);
     };
+    const handleCostomCart = () => {
+        navigate(`./costom-product`);
+    };
 
     useEffect(() => {
         const fetchCartList = async () => {
@@ -225,7 +229,20 @@ const ShoppingCart = () => {
                 backgroundColor: '#f3f4f6',
             }}
         >
-            <Box onClick={handleBack} sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+             <Box
+            sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 4,
+                px: 2,
+                backgroundColor: '#f5f5f5',
+                borderRadius: '8px',
+                padding: '10px',
+            }}
+        >
+            {/* Bagian Kiri - Tombol Back */}
+            <Box onClick={handleBack} sx={{ display: 'flex', alignItems: 'center' }}>
                 <IconButton>
                     <ArrowBackIcon />
                 </IconButton>
@@ -233,6 +250,17 @@ const ShoppingCart = () => {
                     Shopping Cart
                 </Typography>
             </Box>
+
+            {/* Bagian Kanan - Custom Card dengan panah */}
+            <Box onClick={handleCostomCart} sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography variant="h5" sx={{ fontWeight: 'bold', mr: 1 }}>
+                    Custom Cart
+                </Typography>
+                <IconButton>
+                    <ArrowForwardIcon />
+                </IconButton>
+            </Box>
+        </Box>
 
             <Box sx={{ flex: 1 }}>
                 {productListInCart.length > 0 ? (

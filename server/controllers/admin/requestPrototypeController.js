@@ -3,7 +3,7 @@ const RequestCustomPrototype = require('../../models/request-costom-prototype')
 
 const showRequestPrototype = async (req, res) => {
     try {
-        const products = await RequestCustomPrototype.find({status: 'Review'})
+        const products = await RequestCustomPrototype.find({status: 'Review By Admin'})
 
         if (!products || products.length === 0) {
             return res.status(404).json({ message: "Request not found!" });

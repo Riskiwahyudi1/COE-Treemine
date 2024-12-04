@@ -1,5 +1,8 @@
 const CustomPrototype = require('../../models/custom-prototype'); 
 const RequestCustomPrototype = require('../../models/request-costom-prototype')
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 const showCustomPrototypeData = async (req, res) => {
     try {
@@ -13,12 +16,31 @@ const showCustomPrototypeData = async (req, res) => {
         res.status(500).json({ message: "Terjadi kesalahan server!" });
     }
 };
+const showCustomPrototypeByUser = async (req, res) => {
+    const user = req.user;
+    try {
+        const customPrototypeData = await RequestCustomPrototype.find({id_user: user.id}); 
+        if (!customPrototypeData || customPrototypeData.length === 0) {
+            return res.status(404).json({ message: 'Data tidak ditemukan!' });
+        }
+        res.json(customPrototypeData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Terjadi kesalahan server!" });
+    }
+};
 
 const requestCostomPrototype = async (req, res) => {
-    console.log(req.body)
+    const user = req.user;
     
+    if (!user) {
+        return res.status(401).json({ message: 'User not logged in' });
+    }
+    const id_user = user.id;
+    console.log('user',user)
     try {
         const { 
+
             name,
             x_out,
             panel_Requirement,
@@ -43,12 +65,14 @@ const requestCostomPrototype = async (req, res) => {
             surface_finish,
             finish_copper,
             remove_product_no,
+            design_file,
             status,
             shiping_cost,
             total_cost,
          } = req.body;
 
         const newProduct = {
+            id_user,
             name,
             x_out,
             panel_Requirement,
@@ -73,6 +97,7 @@ const requestCostomPrototype = async (req, res) => {
             surface_finish,
             finish_copper,
             remove_product_no,
+            design_file,
             status,
             shiping_cost,
             total_cost,
@@ -89,8 +114,89 @@ const requestCostomPrototype = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'storage/prototype-design'); 
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + '-' + file.originalname); 
+    },
+});
+const upload = multer({ storage: storage });
+
+const requestPrototypeToAdmin = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!req.file) {
+            return res.status(400).json({ message: 'Design file is required.' });
+        }
+
+        const design_file = `/prototype-design/${req.file.filename}`;
+
+        const updateProduct = await RequestCustomPrototype.findByIdAndUpdate(
+            id,
+            { status, design_file },
+            { new: true }
+        );
+
+        if (!updateProduct) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        res.status(200).json({
+            message: 'Product updated successfully',
+            data: updateProduct,
+        });
+    } catch (error) {
+        console.error('Error in Controller:', error);
+        res.status(500).json({ error: 'Failed to update product' });
+    }
+};
+
+// delete request
+const deleteRequestPrototype = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleteRequest = await RequestCustomPrototype.findByIdAndDelete(id);
+        
+        if(!deleteRequest){
+            return res.status(404).json({message : 'Request id not found!'})
+        }
+        res.status(200).json({ message: 'Request deleted successfully' });
+
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete Request' });
+    };
+};
+
+const cancelRequestPrototype = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const cancelRequest = await RequestCustomPrototype.findByIdAndUpdate(id, {
+            status            
+        }, { new: true });
+
+        if (!cancelRequest) {
+            return res.status(404).json({ message: "request not found" });
+        }
+        res.status(200).json({ message: 'request Canceled ', data: cancelRequest, });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete request' });
+    }
+};
+
 
 module.exports = {
     showCustomPrototypeData,
-    requestCostomPrototype
+    requestCostomPrototype,
+    showCustomPrototypeByUser,
+    requestPrototypeToAdmin,
+    deleteRequestPrototype,
+    cancelRequestPrototype,
+    upload
 };

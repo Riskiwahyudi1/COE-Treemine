@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const requestCustomPrototypeSchema = new mongoose.Schema(
     {
+        id_user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Users',
+            required: true
+        },
         name: { type: String, required: false  },
         board_type: { type: String, required: false  },
         x_out: { type: String, required: false  },
@@ -27,6 +32,7 @@ const requestCustomPrototypeSchema = new mongoose.Schema(
         surface_finish: { type: String, required: false  },
         finish_copper: { type: String, required: false  },
         remove_product_no: { type: String, required: false  }, 
+        design_file: { type: String, required: false  }, 
         status: { type: String, required: false  }, 
         shiping_cost: { type: String, required: false  }, 
         total_cost: { type: String, required: false  }, 

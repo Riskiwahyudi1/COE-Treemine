@@ -60,7 +60,8 @@ const CustomPrototype = (part) => {
         via_process: '',
         finish_copper: '',
         remove_product_no: '',
-        status: 'Review',
+        design_file: '',
+        status: 'Waiting Request',
         shiping_cost: '35000',
         total_cost: '150000',
        
@@ -164,6 +165,17 @@ const CustomPrototype = (part) => {
         ];
     
         try {
+            const token = localStorage.getItem('token'); 
+    
+            if (!token) {
+                setError('Unauthorized access. Please log in first.');
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Please log in first',
+                }); 
+                return;
+            }
+
             const data = new FormData();
             Object.keys(formData).forEach((key) => {
                 data.append(key, formData[key]);
@@ -172,7 +184,13 @@ const CustomPrototype = (part) => {
             const response = await axios.post(
                 'http://localhost:5000/costom-prototype/request-costom', 
                 data,
-                { headers: { 'Content-Type': 'application/json' } }
+                 {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,  
+                        'Content-Type': 'application/json',
+                    },
+                    timeout: 10000,
+                }
             );
     
             if (response.status === 201) {
@@ -180,7 +198,7 @@ const CustomPrototype = (part) => {
                     icon: 'success',
                     title: 'Data submitted successfully',
                 });
-                navigate('/custom-prototype', { state: { showToast: true } }); 
+                navigate('../keranjang/costom-product', { state: { showToast: true } }); 
             } else {
                 setError(response.data?.message || 'Failed to submit data. Please try again!');
             }

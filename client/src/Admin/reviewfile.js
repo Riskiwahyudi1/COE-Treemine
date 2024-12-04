@@ -86,7 +86,7 @@ export default function OrdersTable() {
       const handleReject = async (orderId) => {
         try {
             const response = await axios.put(`http://localhost:5000/admin/request-costom-prototype/${orderId}/reject`, {
-                status: 'Reject', 
+                status: 'Reject By Admin', 
             });
     
             if (response.status === 200) {
