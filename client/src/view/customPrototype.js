@@ -31,7 +31,6 @@ const CustomPrototype = (part) => {
     const [selectedLayer, setSelectedLayer] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [totalCost, setTotalCost] = useState(0)
     const [formData, setFormData] = useState({
         
         name: 'Costom Prototype',
@@ -63,12 +62,75 @@ const CustomPrototype = (part) => {
         design_file: '',
         status: 'Waiting Request',
         shiping_cost: '35000',
-        total_cost: '150000',
+        total_cost: 0,
        
     });
+    console.log(selectedLayer)
+    const [getCost, setGetCost] = useState({
+        board_type: 0,
+        x_out: 0,
+        panel_Requirement: 0,
+        notes: 0,
+        route_process: 0,
+        design_in_panel: 0,
+        width: 0,
+        length: 0,
+        quantity: 0,
+        layer: 0,
+        copper_layer: 0,
+        solder_mask_position: 0,
+        silkscreen_position: 0,
+        material: 0,
+        thickness: 0,
+        min_track: 0,
+        min_hole: 0,
+        solder_mask: 0,
+        silkscreen: 0,
+        uv_printing: 0,
+        edge_conector: 0,
+        surface_finish: 0,
+        via_process: 0,
+        finish_copper: 0,
+        remove_product_no: 0,
+        design_file: 0,
+    })
+    const [totalCost, setTotalCost] = useState(0);
 
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        let parsedValue;
 
-    console.log(formData)
+        try {
+            parsedValue = JSON.parse(value);
+        } catch (error) {
+            parsedValue = value; 
+        }
+
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: parsedValue, 
+        }));
+
+        setGetCost((prevCost) => {
+            const updatedCost = {
+                ...prevCost,
+                [name]: parseFloat(parsedValue.cost) || 0,
+            };
+
+            const total = Object.values(updatedCost).reduce((acc, val) => acc + val, 0);
+            setTotalCost(total);
+
+            return updatedCost;
+        });
+    };
+
+    useEffect(() => {
+        setFormData((prevData) => ({
+            ...prevData,
+            total_cost: totalCost,
+        }));
+    }, [totalCost]);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -102,7 +164,7 @@ const CustomPrototype = (part) => {
     };
 
     const handleLayyerChange = (event) => {
-        setSelectedLayer(event.target.value); 
+        setSelectedLayer(JSON.parse(event.target.value)); 
     };
     const handleMaterialChange = (event) => {
         setSelectedMaterial(event.target.value);
@@ -112,44 +174,9 @@ const CustomPrototype = (part) => {
     const handleBack = () => {
         navigate("/custom");
     };
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
 
-           // Set cost baru untuk setiap perubahan
-        let newCost = 0;
-
-        // Mencari biaya berdasarkan tipe yang dipilih
-        partList.forEach((obj) => {
-            const selectedItem = obj.data.find((item) => item.type === value); // Menyesuaikan value dengan tipe item
-
-            // Jika item ditemukan, ambil biaya baru
-            if (selectedItem) {
-                newCost = selectedItem.cost; // ambil cost yang baru
-            }
-        });
-
-        // Update total cost dengan menambahkan biaya baru
-        calculateTotalCost();
-    };
-
-    // Fungsi untuk menghitung total cost berdasarkan semua pilihan yang dipilih
-    const calculateTotalCost = () => {
-        let allSelectedCosts = 0;
-
-        // Menjumlahkan semua biaya berdasarkan pilihan yang ada
-        Object.keys(formData).forEach((key) => {
-            const selectedItem = partList.find((obj) => obj.type === formData[key]);
-            const selectedData = selectedItem?.data.find((item) => item.type === formData[key]);
-            allSelectedCosts += selectedData ? selectedData.cost : 0;
-        });
-
-        // Update state total cost
-        setTotalCost(allSelectedCosts);
-        }
+    
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -290,16 +317,22 @@ const CustomPrototype = (part) => {
                                 <RadioGroup row defaultValue={part.data[0]?.cost}>
                                     {part.data.map((obj, idx) => (
                                         <FormControlLabel
-                                            name="x_out"
                                             key={idx}
-                                            value={obj.type}
-                                            control={<Radio />}
                                             label={obj.type}
-                                            onChange={handleChange}
+                                            control={
+                                                <Radio
+                                                name="x_out"
+                                key={idx}
+                                value={JSON.stringify({ type: obj.type, cost: obj.cost })}
+                                label={obj.type}
+                                onChange={handleChange}
+                                                />
+                                            }
                                         />
                                     ))}
                                 </RadioGroup>
                             </Grid>
+
                         );
                     }
 
@@ -317,7 +350,7 @@ const CustomPrototype = (part) => {
                                                     <FormControlLabel
                                                         name="panel_Requirement"
                                                         key={idx}
-                                                        value={obj.type}
+                                                        value={JSON.stringify({ type: obj.type, cost: obj.cost })}
                                                         control={<Radio />}
                                                         label={obj.type}
                                                         onChange={handleChange}
@@ -354,12 +387,12 @@ const CustomPrototype = (part) => {
                                                 <InputLabel>Route Process</InputLabel>
                                                 <Select 
                                                     name="route_process"
-                                                    value={formData.route_process} 
+                                                    value={JSON.stringify(formData.route_process)} 
                                                     label="Route Process"
                                                     onChange={handleChange} 
                                                 >
                                                     {part.data.map((obj, idx) => (
-                                                        <MenuItem key={idx} value={obj.type}>
+                                                        <MenuItem key={idx} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                                             {obj.type}
                                                         </MenuItem>
                                                     ))}
@@ -379,7 +412,7 @@ const CustomPrototype = (part) => {
                                                         <FormControlLabel
                                                             name="x_out"
                                                             key={idx}
-                                                            value={obj.type}
+                                                            value={JSON.stringify({ type: obj.type, cost: obj.cost })}
                                                             control={<Radio />}
                                                             label={obj.type}
                                                             onChange={handleChange}
@@ -405,7 +438,7 @@ const CustomPrototype = (part) => {
                                         <FormControlLabel
                                             name="design_in_panel"
                                             key={obj.type}
-                                            value={obj.type}
+                                            value={JSON.stringify({ type: obj.type, cost: obj.cost })}
                                             control={<Radio />}
                                             label={obj.type}
                                             onChange={handleChange}
@@ -430,7 +463,7 @@ const CustomPrototype = (part) => {
                                                     labelId="length-label"
                                                     defaultValue={part.data.find((obj) => obj.type === "length")?.cost || ""}
                                                     label="Length"
-                                                    value={formData.length}
+                                                    value={JSON.stringify(formData.length)}
                                                     onChange={handleChange}
                                                 >
                                                     <MenuItem value="" disabled>
@@ -439,7 +472,7 @@ const CustomPrototype = (part) => {
                                                     {part.data
                                                         
                                                         .map((obj) => (
-                                                            <MenuItem key={obj.idx || obj.type} value={obj.type}>
+                                                            <MenuItem key={obj.idx || obj.type} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                                                 {obj.type}
                                                             </MenuItem>
                                                         ))}
@@ -454,7 +487,7 @@ const CustomPrototype = (part) => {
                                                     labelId="width-label"
                                                     defaultValue={part.data.find((obj) => obj.type === "width")?.cost || ""}
                                                     label="Width"
-                                                    value={formData.width}
+                                                    value={JSON.stringify(formData.width)}
                                                     onChange={handleChange}
                                                 >
                                                     <MenuItem value="" disabled>
@@ -462,7 +495,7 @@ const CustomPrototype = (part) => {
                                                     </MenuItem>
                                                     {part.data
                                                         .map((obj) => (
-                                                            <MenuItem key={ obj.value} value={obj.type}>
+                                                            <MenuItem key={ obj.value} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                                                 {obj.type}
                                                             </MenuItem>
                                                         ))}
@@ -484,12 +517,12 @@ const CustomPrototype = (part) => {
                                 <Select 
                                     name="quantity"
                                     defaultValue="" 
-                                    value={formData.quantity}
+                                    value={JSON.stringify(formData.quantity)}
                                     label="Select Quantity"
                                     onChange={handleChange}
                                     >
                                     {part.data.map((obj) => (
-                                        <MenuItem key={obj.type} value={obj.type}>
+                                        <MenuItem key={obj.type} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                             {obj.type}
                                         </MenuItem>
                                     ))}
@@ -507,13 +540,13 @@ const CustomPrototype = (part) => {
                                 <RadioGroup 
 
                                     row 
-                                    value={selectedLayer} 
+                                    value={JSON.stringify(selectedLayer)} 
                                     onChange={ handleLayyerChange } 
                                 >
                                     {part.data.map((obj) => (
                                         <FormControlLabel 
                                             key={obj.type}
-                                            value={obj.type}
+                                            value={JSON.stringify({ type: obj.type, cost: obj.cost })}
                                             control={<Radio />} 
                                             label={obj.type} 
                                         />
@@ -524,7 +557,7 @@ const CustomPrototype = (part) => {
                     }
                     
                    // Kondisi pertama untuk "Copper Layer"
-                    if (selectedLayer === '1 Layer' &&  part.type === 'Copper Layer') {
+                    if (selectedLayer?.type === '1 Layer' &&  part.type === 'Copper Layer') {
                         return (
                             <React.Fragment key="copper-layer">
                                 <Grid container item xs={12} spacing={2}>
@@ -534,12 +567,12 @@ const CustomPrototype = (part) => {
                                             <Select 
                                                 name="copper_layer"
                                                 defaultValue="" 
-                                                value={formData.copper_layer}
+                                                value={JSON.stringify(formData.copper_layer)}
                                                 label="Copper Layer"
                                                 onChange={handleChange}
                                                 >
                                                 {part.data.map((obj) => (
-                                                    <MenuItem key={obj.type} value={obj.type}>
+                                                    <MenuItem key={obj.type} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                                         {obj.type}
                                                     </MenuItem>
                                                 ))}
@@ -552,7 +585,7 @@ const CustomPrototype = (part) => {
                     }
 
                     // Kondisi kedua untuk "Solder Mask Position"
-                    if (selectedLayer === '1 Layer' &&  part.type === 'Solder Mask Position') {
+                    if (selectedLayer?.type === '1 Layer' &&  part.type === 'Solder Mask Position') {
                         return (
                             <React.Fragment key="solder-mask-position">
                                 <Grid container item xs={12} spacing={2}>
@@ -562,12 +595,12 @@ const CustomPrototype = (part) => {
                                             <Select 
                                                 name="solder_mask_position"
                                                 defaultValue="" 
-                                                value={formData.solder_mask_position}
+                                                value={JSON.stringify(formData.solder_mask_position)}
                                                 label="Solder Mask Position"
                                                 onChange={handleChange}
                                                 >
                                                 {part.data.map((obj) => (
-                                                    <MenuItem key={obj.type} value={obj.type}>
+                                                    <MenuItem key={obj.type} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                                         {obj.type}
                                                     </MenuItem>
                                                 ))}
@@ -580,8 +613,7 @@ const CustomPrototype = (part) => {
                     }
 
                     // Kondisi ketiga untuk "Silkscreen Position"
-                    if (selectedLayer === '1 Layer' &&  part.type === 'Silkscreen Position') {
-                        console.log(selectedLayer)
+                    if (selectedLayer?.type === '1 Layer' &&  part.type === 'Silkscreen Position') {
                         return (
                             <React.Fragment key="silkscreen-position">
                                 <Grid container item xs={12} spacing={2}>
@@ -591,12 +623,12 @@ const CustomPrototype = (part) => {
                                             <Select 
                                                 name="silkscreen_position"
                                                 defaultValue="" 
-                                                value={formData.silkscreen_position}
+                                                value={JSON.stringify(formData.solder_mask_position)}
                                                 label="Silkscreen Position"
                                                 onChange={handleChange}
                                                 >
                                                 {part.data.map((obj) => (
-                                                    <MenuItem key={obj.type} value={obj.type}>
+                                                    <MenuItem key={obj.type} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                                         {obj.type}
                                                     </MenuItem>
                                                 ))}
@@ -681,13 +713,13 @@ const CustomPrototype = (part) => {
                                 <Select 
                                     name="thickness"
                                     defaultValue="" 
-                                    value={formData.thickness}
+                                    value={JSON.stringify(formData.thickness)}
                                     label="Select Thickness"
                                     onChange={handleChange}
                                     >
 
                                     {part.data.map((obj) => (
-                                        <MenuItem key={obj.type} value={obj.type}>
+                                        <MenuItem key={obj.type} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                             {obj.type}
                                         </MenuItem>
                                     ))}
@@ -707,13 +739,13 @@ const CustomPrototype = (part) => {
                                     <Select 
                                         name="min_track"
                                         defaultValue=""
-                                        value={formData.min_track} 
+                                        value={JSON.stringify(formData.min_track)} 
                                         label="Select Spacing"
                                         onChange={handleChange}
                                         >
 
                                         {part.data.map((obj) => (
-                                            <MenuItem key={obj.type} value={obj.type}>
+                                            <MenuItem key={obj.type} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                                 {obj.type} 
                                             </MenuItem>
                                         ))}
@@ -733,12 +765,12 @@ const CustomPrototype = (part) => {
                                     <Select 
                                         name="min_hole"
                                         defaultValue="" 
-                                        value={formData.min_hole}
+                                        value={JSON.stringify(formData.min_hole)}
                                         label="Select Hole Size"
                                         onChange={handleChange}
                                         >
                                         {part.data.map((obj) => (
-                                            <MenuItem key={obj.type} value={obj.type}>
+                                            <MenuItem key={obj.type} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                                 {obj.type}
                                             </MenuItem>
                                         ))}
@@ -760,11 +792,11 @@ const CustomPrototype = (part) => {
                                         name="solder_mask"
                                         defaultValue="" 
                                         label="Select Mask"
-                                        value={formData.solder_mask}
+                                        value={JSON.stringify(formData.solder_mask)}
                                         onChange={handleChange}
                                         >
                                     {part.data.map((obj) => (
-                                                <MenuItem key={obj.type} value={obj.type}>
+                                                <MenuItem key={obj.type} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                                     {obj.type}
                                                 </MenuItem>
                                             ))}
@@ -789,7 +821,7 @@ const CustomPrototype = (part) => {
 
                                     {part.data.map((obj) => (
                                         <FormControlLabel
-                                            value={obj.type}
+                                        value={JSON.stringify({ type: obj.type, cost: obj.cost })}
                                             control={<Radio />}
                                             label={obj.type}
                                         />
@@ -810,12 +842,12 @@ const CustomPrototype = (part) => {
                                     <Select 
                                         name="uv_printing"
                                         defaultValue="" 
-                                        value={formData.uv_printing}
+                                        value={JSON.stringify(formData.uv_printing)}
                                         label="Select UV Printing Multi Color"
                                         onChange={handleChange}
                                         >
                                     {part.data.map((obj) => (
-                                                <MenuItem key={obj.type} value={obj.type}>
+                                                <MenuItem key={obj.type} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                                     {obj.type}
                                                 </MenuItem>
                                             ))}
@@ -839,7 +871,7 @@ const CustomPrototype = (part) => {
                                     >
                                     {part.data.map((obj) => (
                                         <FormControlLabel
-                                            value={obj.type}
+                                            value={JSON.stringify({ type: obj.type, cost: obj.cost })}
                                             control={<Radio />}
                                             label={obj.type}
                                         />
@@ -861,11 +893,11 @@ const CustomPrototype = (part) => {
                                         name="surface_finish"
                                         defaultValue="" 
                                         label="Select Surface Finish"
-                                        value={formData.surface_finish}
+                                        value={JSON.stringify(formData.surface_finish)}
                                         onChange={handleChange}
                                         >
                                         {part.data.map((obj) => (
-                                            <MenuItem key={obj.type} value={obj.type}>
+                                            <MenuItem key={obj.type} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                                 {obj.type}
                                             </MenuItem>
                                         ))}
@@ -888,7 +920,7 @@ const CustomPrototype = (part) => {
                                     >
                                     {part.data.map((obj) => (
                                         <FormControlLabel
-                                            value={obj.type}
+                                            value={JSON.stringify({ type: obj.type, cost: obj.cost })}
                                             control={<Radio />}
                                             label={obj.type}
                                         />
@@ -911,11 +943,11 @@ const CustomPrototype = (part) => {
                                         name="finish_copper"
                                         defaultValue="" 
                                         label="Select Finished Copper"
-                                        value={formData.finish_copper}
+                                        value={JSON.stringify(formData.finish_copper)}
                                         onChange={handleChange}
                                         >
                                         {part.data.map((obj) => (
-                                            <MenuItem key={obj.type} value={obj.type}>
+                                            <MenuItem key={obj.type} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
                                                 {obj.type}
                                             </MenuItem>
                                         ))}
@@ -938,7 +970,7 @@ const CustomPrototype = (part) => {
                                     >
                                     {part.data.map((obj) => (
                                         <FormControlLabel
-                                            value={obj.type}
+                                            value={JSON.stringify({ type: obj.type, cost: obj.cost })}
                                             control={<Radio />}
                                             label={obj.type}
                                         />
