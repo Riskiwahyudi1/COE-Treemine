@@ -72,7 +72,7 @@ const ProductCard = ({ product_id, product_name, harga, description, picture_url
                         marginRight: '10px',
                     }}
                 >
-                    Buy Now
+                    Detail
                 </Button>
                 <Button
                     variant="outlined"
@@ -143,7 +143,7 @@ const App = () => {
                         marginTop: '-130px',
                     }}
                 >
-                    Our Products
+                    Produk Kami
                 </Typography>
                 <Grid container spacing={3} justifyContent="center">
                     {products.map((product) => (

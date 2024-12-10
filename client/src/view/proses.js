@@ -109,14 +109,14 @@ export default function OrdersTable() {
                                     Proses
                                 </StyledTableCell>
                                 <StyledTableCell align="center">
-                                    <Button
+                                <Button
                                         variant="contained"
                                         sx={{
-                                            backgroundColor: '#54cbbb',
+                                            backgroundColor: '#00A63F',
                                             color: '#ffffff',
                                             textTransform: 'none',
                                             '&:hover': {
-                                                backgroundColor: '#46b2a6',
+                                                backgroundColor: '#00A65F',
                                             },
                                         }}
                                     >

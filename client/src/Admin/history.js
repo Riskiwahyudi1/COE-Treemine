@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -8,11 +7,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Box, Typography, Button } from '@mui/material';
-import {getPrototypeHistory} from '../api/requestCostomPrototypeApi'
-import Toast from '../utils/Toast';
-import axios from 'axios';
-
+import { Box, Typography, Button, Modal } from '@mui/material';
+import { getPrototypeHistory } from '../api/requestCostomPrototypeApi';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -37,35 +33,57 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
     '&:hover': {
         backgroundColor: '#cbe7f6',
-        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.15)', // Hover effect shadow
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.15)',
     },
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-    borderRadius: '15px', 
-    boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)', 
+    borderRadius: '15px',
+    boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
     overflow: 'hidden',
 }));
 
-export default function OrdersTable() {
-    const navigate = useNavigate();
+const StyledModal = styled(Modal)(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+}));
 
-    const [prototypeHistory, setPrototypeHistory] = useState('');
+const ModalContent = styled(Box)(({ theme }) => ({
+    width: 500,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    boxShadow: 24,
+    padding: theme.spacing(4),
+    outline: 'none',
+}));
+
+export default function OrdersTable() {
+    const [prototypeHistory, setPrototypeHistory] = useState([]);
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null);
 
     useEffect(() => {
-        const fetchPrototypeHostory = async () => {
-          try {
-            const data = await getPrototypeHistory();
-            setPrototypeHistory(data);
-          } catch (error) {
-            console.error('Failed to load products', error);
-          }
+        const fetchPrototypeHistory = async () => {
+            try {
+                const data = await getPrototypeHistory();
+                setPrototypeHistory(data);
+            } catch (error) {
+                console.error('Failed to load prototype history:', error);
+            }
         };
-        fetchPrototypeHostory();
-      }, []);
+        fetchPrototypeHistory();
+    }, []);
 
-      
+    const handleOpenModal = (order) => {
+        setSelectedOrder(order);
+        setOpenModal(true);
+    };
 
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        setSelectedOrder(null);
+    };
 
     return (
         <Box
@@ -79,7 +97,6 @@ export default function OrdersTable() {
                 padding: 4,
             }}
         >
-            {/* Header */}
             <Typography
                 variant="h3"
                 sx={{
@@ -106,7 +123,7 @@ export default function OrdersTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                    {(Array.isArray(prototypeHistory) ? prototypeHistory : []).map((order, index) => (
+                        {(Array.isArray(prototypeHistory) ? prototypeHistory : []).map((order, index) => (
                             <StyledTableRow key={order._id}>
                                 <StyledTableCell>{index + 1}</StyledTableCell>
                                 <StyledTableCell align="center">{order._id}</StyledTableCell>
@@ -118,7 +135,7 @@ export default function OrdersTable() {
                                 <StyledTableCell
                                     align="center"
                                     sx={{
-                                        color: '#FF9800', // Oranye untuk status
+                                        color: '#FF9800',
                                         fontWeight: 'bold',
                                     }}
                                 >
@@ -135,16 +152,67 @@ export default function OrdersTable() {
                                                 backgroundColor: '#46b2a6',
                                             },
                                         }}
+                                        onClick={() => handleOpenModal(order)}
                                     >
                                         View Detail
                                     </Button>
                                 </StyledTableCell>
-                                
                             </StyledTableRow>
                         ))}
                     </TableBody>
                 </Table>
             </StyledTableContainer>
+
+            <StyledModal open={openModal} onClose={handleCloseModal}>
+                <ModalContent>
+                    {selectedOrder ? (
+                        <>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
+                                Detail Pesanan
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>No Order:</strong> {selectedOrder._id}
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>Nama:</strong> {selectedOrder.name}
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>Tanggal:</strong> {selectedOrder.createdAt}
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>Harga:</strong> Rp. {selectedOrder.total_cost.toLocaleString('id-ID')}
+                            </Typography>
+                            <Typography variant="body1">
+                                <strong>Status:</strong> {selectedOrder.status}
+                            </Typography>
+                            <Typography variant="body1" sx={{ marginTop: 2, fontWeight: 'bold' }}>
+                                Produk yang Dipesan:
+                            </Typography>
+                            <Box>
+                                {selectedOrder.items?.map((item, idx) => (
+                                    <Typography key={idx} variant="body2">
+                                        - {item.name} (x{item.quantity}) - Rp. {item.price.toLocaleString('id-ID')}
+                                    </Typography>
+                                ))}
+                            </Box>
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        backgroundColor: '#54cbbb',
+                                        '&:hover': { backgroundColor: '#46b2a6' },
+                                    }}
+                                    onClick={handleCloseModal}
+                                >
+                                    Close
+                                </Button>
+                            </Box>
+                        </>
+                    ) : (
+                        <Typography variant="body1">Loading...</Typography>
+                    )}
+                </ModalContent>
+            </StyledModal>
         </Box>
     );
 }

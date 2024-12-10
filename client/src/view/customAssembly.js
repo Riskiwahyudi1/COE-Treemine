@@ -13,7 +13,9 @@ import {
     FormLabel,
     Checkbox,
     Divider,
+    IconButton
 } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 
 const CustomAssembly = () => {
@@ -45,32 +47,30 @@ const CustomAssembly = () => {
                 }}
             >
                 {/* Header */}
-                <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-                    <Button
-                        variant="contained"
-                        onClick={handleBack}
-                        sx={{
-                            bgcolor: '#54cbbb',
-                            color: '#FFFFFF',
-                            borderRadius: 1,
-                            '&:hover': { bgcolor: '#3da38f' },
-                        }}
-                    >
-                        Back
-                    </Button>
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            bgcolor: '#54cbbb',
-                            color: '#FFFFFF',
-                            p: 1,
-                            borderRadius: 1,
-                            display: 'inline-block',
-                        }}
-                    >
-                        Custom Assembly
-                    </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <IconButton onClick={handleBack}>
+                            <ArrowBackIcon />
+                        </IconButton>
+                        <Box
+                            sx={{
+                                bgcolor: '#00A63F',
+                                color: '#FFFFFF',
+                                px: 2,
+                                py: 1,
+                                borderRadius: 2,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                            }}
+                        >
+                            <Typography variant="h6" sx={{ fontWeight: 600, letterSpacing: 0.5 }}>
+                                Custom Assembly
+                            </Typography>
+                        </Box>
+                    </Box>
                 </Box>
+
 
                 <Divider sx={{ mb: 3 }} />
 
@@ -259,63 +259,25 @@ const CustomAssembly = () => {
             </Paper>
 
             {/* Right Panel */}
-            <Paper
-                elevation={3}
-                sx={{
-                    flex: 1,
-                    p: 3,
-                    borderRadius: 2,
-                    bgcolor: '#FFFFFF',
-                    alignSelf: 'flex-start',
-                }}
-            >
-                <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold' }}>
-                    Pricing and Build Time
+            <Paper sx={{ width: "33%", p: 2, alignSelf: "flex-start" }}>
+                <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                    Kalkulasi Harga
                 </Typography>
 
-                <Box sx={{ mb: 4 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography>PCB Cost:</Typography>
-                        <Typography>Rp. 210.000</Typography>
+                <Box sx={{ mb: 3 }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                        <Typography>Harga PCB:</Typography>
+                        <Typography>Rp. </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography>Shipping:</Typography>
-                        <Typography>Rp. 30.000</Typography>
-                    </Box>
-                    <Divider sx={{ my: 1 }} />
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                         <Typography>Total:</Typography>
-                        <Typography>Rp. 240.000</Typography>
+                        <Typography>Rp. </Typography>
                     </Box>
                 </Box>
 
-                <Button variant="outlined" fullWidth sx={{ mb: 2 }}>
-                    Save To Cart
+                <Button type="submit" variant="contained" onClick="" fullWidth sx={{ mb: 2, backgroundColor: '#00A63F', color: '#fff' }}>
+                    Simpan Ke Keranjang
                 </Button>
-
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{
-                            bgcolor: '#F87171',
-                            '&:hover': { bgcolor: '#DC2626' },
-                        }}
-                    >
-                        Reset
-                    </Button>
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{
-                            bgcolor: '#86EFAC',
-                            color: '#000',
-                            '&:hover': { bgcolor: '#4ADE80' },
-                        }}
-                    >
-                        Calculate
-                    </Button>
-                </Box>
             </Paper>
         </Box>
     );

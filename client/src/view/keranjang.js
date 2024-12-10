@@ -135,7 +135,7 @@ const ShoppingCart = () => {
     const [selectedItems, setSelectedItems] = useState({});
 
     const handleBack = () => {
-        navigate(-1);
+        navigate('/');
     };
     const handleLinkCostom = () => {
         navigate('./costom-product');
@@ -247,14 +247,14 @@ const ShoppingCart = () => {
                     <ArrowBackIcon />
                 </IconButton>
                 <Typography variant="h5" sx={{ ml: 1, fontWeight: 'bold' }}>
-                    Shopping Cart
+                    Keranjang Produk
                 </Typography>
             </Box>
 
             {/* Bagian Kanan - Custom Card dengan panah */}
             <Box onClick={handleCostomCart} sx={{ display: 'flex', alignItems: 'center' }}>
                 <Typography variant="h5" sx={{ fontWeight: 'bold', mr: 1 }}>
-                    Custom Cart
+                Keranjang Custom
                 </Typography>
                 <IconButton>
                     <ArrowForwardIcon />

@@ -14,12 +14,12 @@ import {
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 
-// Import gambar produk
+// Impor gambar produk
 import product1 from '../assets/images/foto5.png';
 import product2 from '../assets/images/3.png';
 import product3 from '../assets/images/2.png';
 
-// Import Swiper styles
+// Impor gaya Swiper
 import 'swiper/css';
 import 'swiper/css/pagination';
 
@@ -27,65 +27,65 @@ const PCBLandingPage = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-    const productGalleries = [
+    const galeriProduk = [
         {
-            photo: product1,
-            nama_kegiatan: "PCB Prototype"
+            foto: product1,
+            nama_kegiatan: "Prototipe PCB"
         },
         {
-            photo: product2,
-            nama_kegiatan: "PCB Assembly"
+            foto: product2,
+            nama_kegiatan: "Perakitan PCB"
         },
         {
-            photo: product3,
-            nama_kegiatan: "Electronic Components"
+            foto: product3,
+            nama_kegiatan: "Komponen Elektronik"
         }
     ];
 
-    const features = [
+    const fitur = [
         {
-            icon: "01",
-            title: "Online Quote",
-            description: "Place an order on CoE Timeline"
+            ikon: "01",
+            judul: "Kutipan Online",
+            deskripsi: "Pesan melalui CoE Treemine"
         },
         {
-            icon: "02",
-            title: "Upload PCB file",
-            description: "Submit your PCB design files"
+            ikon: "02",
+            judul: "Unggah File PCB",
+            deskripsi: "Kirimkan file desain PCB Anda"
         },
         {
-            icon: "03",
-            title: "Order Review",
-            description: "We check your specifications"
+            ikon: "03",
+            judul: "Tinjauan Pesanan",
+            deskripsi: "Kami memeriksa spesifikasi Anda"
         },
         {
-            icon: "04",
-            title: "Payment",
-            description: "Secure payment processing"
+            ikon: "04",
+            judul: "Pembayaran",
+            deskripsi: "Proses pembayaran aman"
         },
         {
-            icon: "05",
-            title: "Fabrication",
-            description: "PCB manufacturing begins"
+            ikon: "05",
+            judul: "Pembuatan",
+            deskripsi: "Proses pembuatan PCB dimulai"
         },
         {
-            icon: "06",
-            title: "Delivery",
-            description: "Ships to your location"
+            ikon: "06",
+            judul: "Pengiriman",
+            deskripsi: "Dikirim ke lokasi Anda"
         },
         {
-            icon: "07",
-            title: "Confirm Received",
-            description: "Order completion verified"
+            ikon: "07",
+            judul: "Konfirmasi Diterima",
+            deskripsi: "Penyelesaian pesanan diverifikasi"
         }
     ];
 
     return (
         <Box>
-            {/* Hero Section with Green Background */}
+            {/* Bagian Hero dengan Latar Hijau */}
             <Box sx={{
                 background: '#00A63F',
-                px: { xs: 2, sm: 4, md: 8 }, // Responsive padding
+                px: { xs: 2, sm: 4, md: 8 }, // Padding responsif
                 color: 'white'
             }}>
                 <Container maxWidth="xl" sx={{ 
@@ -99,16 +99,16 @@ const PCBLandingPage = () => {
                                     fontWeight: 'bold',
                                     mb: 2,
                                     color: 'white',
-                                    fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } // Responsive font size
+                                    fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } // Ukuran font responsif
                                 }}>
-                                    The best PCB buying experience
+                                    Pengalaman Terbaik Membeli PCB
                                 </Typography>
                                 <Typography variant="body1" sx={{ 
                                     color: 'white', 
                                     mb: 1, 
                                     pt: { xs: 2, sm: 3, md: 4 },
                                     opacity: 0.9,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' } // Responsive font size
+                                    fontSize: { xs: '0.875rem', sm: '1rem' } // Ukuran font responsif
                                 }}>
                                     Dapatkan layanan PCB berkualitas tinggi dengan proses yang mudah dan cepat. Kami menyediakan solusi lengkap untuk kebutuhan elektronika Anda.
                                 </Typography>
@@ -143,7 +143,7 @@ const PCBLandingPage = () => {
                                         '--swiper-pagination-bullet-inactive-color': 'rgba(255, 255, 255, 0.5)',
                                     }}
                                 >
-                                    {productGalleries.map((gallery, index) => (
+                                    {galeriProduk.map((galeri, index) => (
                                         <SwiperSlide key={index}>
                                             <Box sx={{ 
                                                 position: 'relative', 
@@ -174,8 +174,8 @@ const PCBLandingPage = () => {
                                                     }}>
                                                         <CardMedia
                                                             component="img"
-                                                            image={gallery.photo}
-                                                            alt={gallery.nama_kegiatan}
+                                                            image={galeri.foto}
+                                                            alt={galeri.nama_kegiatan}
                                                             sx={{
                                                                 width: '100%',
                                                                 height: '100%',
@@ -193,7 +193,7 @@ const PCBLandingPage = () => {
                                                         <Typography variant="subtitle1" sx={{
                                                             fontSize: { xs: '0.875rem', sm: '1rem' }
                                                         }}>
-                                                            {gallery.nama_kegiatan}
+                                                            {galeri.nama_kegiatan}
                                                         </Typography>
                                                     </CardContent>
                                                 </Card>
@@ -207,7 +207,7 @@ const PCBLandingPage = () => {
                 </Container>
             </Box>
 
-            {/* How to Use Section with White Background */}
+            {/* Bagian Cara Menggunakan dengan Latar Putih */}
             <Box sx={{ 
                 bgcolor: 'white',
                 px: { xs: 3, sm: 5, md: 8 },
@@ -220,7 +220,7 @@ const PCBLandingPage = () => {
                         fontWeight: 'bold',
                         fontSize: { xs: '1.5rem', sm: '2rem' }
                     }}>
-                        How to Use?
+                        Cara Menggunakan?
                     </Typography>
                     
                     <Box sx={{
@@ -254,7 +254,7 @@ const PCBLandingPage = () => {
                             zIndex: 0
                         }
                     }}>
-                        {features.map((feature, index) => (
+                        {fitur.map((fitur, index) => (
                             <Paper
                                 key={index}
                                 elevation={0}
@@ -295,21 +295,21 @@ const PCBLandingPage = () => {
                                     fontWeight: 'bold',
                                     mb: 1
                                 }}>
-                                    {feature.icon}
+                                    {fitur.ikon}
                                 </Box>
                                 <Typography sx={{
                                     fontWeight: 600,
                                     color: 'white',
                                     fontSize: { xs: '0.75rem', sm: '0.875rem' }
                                 }}>
-                                    {feature.title}
+                                    {fitur.judul}
                                 </Typography>
                                 <Typography variant="body2" sx={{
                                     color: 'rgba(255, 255, 255, 0.85)',
                                     fontSize: { xs: '0.7rem', sm: '0.75rem' },
                                     px: 1
                                 }}>
-                                    {feature.description}
+                                    {fitur.deskripsi}
                                 </Typography>
                             </Paper>
                         ))}

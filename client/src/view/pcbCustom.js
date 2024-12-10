@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box, Typography, Button, Grid } from '@mui/material';
+import { Container, Box, Typography, Button, Grid, Card } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import product1 from '../assets/images/5.png';
 import product2 from '../assets/images/5.png';
@@ -16,12 +16,13 @@ const CustomPage = () => {
         navigate('/custom-assembly'); // Navigasi ke halaman custom assembly
     };
     return (
-        <div
+        <Card
             style={{
                 background: `linear-gradient(to bottom, white, white)`,
                 height: '90vh',
                 margin: 0,
                 padding: 0,
+                marginTop:'20px',
             }}
         >
             <Container>
@@ -33,7 +34,8 @@ const CustomPage = () => {
                         textAlign: 'center',
                         fontWeight: 'bold',
                         color: '#000000',
-                        marginBottom: '50px',
+                        marginBottom: '30px',
+                        marginTop:'30px',
                     }}
                 >
                     Product Custom
@@ -183,7 +185,7 @@ const CustomPage = () => {
                     </Grid>
                 </Grid>
             </Container>
-        </div>
+        </Card>
     );
 };
 

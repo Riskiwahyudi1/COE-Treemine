@@ -92,6 +92,23 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
           <Typography variant="text">{status}</Typography>
 
           {/* Kondisi: Waiting Request */}
+
+          <Button
+                variant="contained"
+                size="small"
+                // onClick={() => handleDetail(id)}
+                sx={{
+                  height: 32,
+                  backgroundColor: '#0077B5',
+                  color: '#fff',
+                  '&:hover': {
+                    backgroundColor: '#0066A1',
+                  },
+                }}
+              >
+                Detail
+              </Button>
+              
           {status === 'Waiting Request' ? (
             <>
               <Button
@@ -101,14 +118,14 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
                 sx={{
                   backgroundColor: '#00A63F',
                   color: '#fff',
-                  borderRadius: 3,
+                  borderRadius: 1,
                   height: 32,
                   '&:hover': {
                     backgroundColor: '#007F2E',
                   },
                 }}
               >
-                Request Now
+                Request Sekarang
               </Button>
 
               <Button
@@ -117,7 +134,7 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
                 size="small"
                 sx={{ height: 32 }}
               >
-                Upload design
+                Lampirkan Desain
                 <input type="file" hidden onChange={handleFileChange} />
               </Button>
 
@@ -145,7 +162,7 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
                   },
                 }}
               >
-                Delete
+                Hapus
               </Button>
 
               
@@ -167,7 +184,7 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
                   },
                 }}
               >
-                Cancel
+                Batal
               </Button>
 
               
@@ -190,7 +207,7 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
                   },
                 }}
               >
-                Checkout
+                Pesan Sekarang
               </Button>
 
               <Button
@@ -205,27 +222,12 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
                   },
                 }}
               >
-                Cancel
+                Batal
               </Button>
 
               
             </>
           ) : null}
-          <Button
-                variant="contained"
-                size="small"
-                // onClick={() => handleDetail(id)}
-                sx={{
-                  height: 32,
-                  backgroundColor: '#0077B5',
-                  color: '#fff',
-                  '&:hover': {
-                    backgroundColor: '#0066A1',
-                  },
-                }}
-              >
-                Detail
-              </Button>
         </CardActions>
 
 
@@ -368,7 +370,7 @@ const ShoppingCart = () => {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h5" sx={{ ml: 1, fontWeight: 'bold' }}>
-          Shopping Cart
+          Keranjang Custom
         </Typography>
       </Box>
 

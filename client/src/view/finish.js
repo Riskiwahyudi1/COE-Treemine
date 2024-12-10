@@ -113,14 +113,14 @@ export default function OrdersTable() {
                                     Finish
                                 </StyledTableCell>
                                 <StyledTableCell align="center">
-                                    <Button
+                                <Button
                                         variant="contained"
                                         sx={{
-                                            backgroundColor: '#54cbbb',
+                                            backgroundColor: '#00A63F',
                                             color: '#ffffff',
                                             textTransform: 'none',
                                             '&:hover': {
-                                                backgroundColor: '#46b2a6',
+                                                backgroundColor: '#00A65F',
                                             },
                                         }}
                                     >
@@ -132,12 +132,12 @@ export default function OrdersTable() {
                                         variant="outlined"
                                         sx={{
                                             textTransform: 'none',
-                                            borderColor: '#54cbbb',
-                                            color: '#54cbbb',
+                                            borderColor: '#00A63F',
+                                            color: '#00A63F',
                                             '&:hover': {
-                                                backgroundColor: '#e0f4fc',
-                                                borderColor: '#46b2a6',
-                                                color: '#46b2a6',
+                                                backgroundColor: '#00A63F',
+                                                borderColor: '#00A63F',
+                                                color: '#fff',
                                             },
                                         }}
                                         onClick={() => navigate(`/review`)}

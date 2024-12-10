@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, TextField, IconButton, CircularProgress } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import Swal from 'sweetalert2';  
+import Swal from 'sweetalert2';
 
 const ProductPage = () => {
     const navigate = useNavigate();
@@ -14,10 +15,10 @@ const ProductPage = () => {
     const [loading, setLoading] = useState(false)
 
     const handleBack = () => {
-        navigate(-1); 
+        navigate(-1);
     };
     const handleBuy = () => {
-        navigate('/checkout'); 
+        navigate('/checkout');
     };
 
     useEffect(() => {
@@ -25,7 +26,7 @@ const ProductPage = () => {
             try {
                 const response = await axios.get(`http://localhost:5000/admin/product/${id}`);
                 setProduct(response.data);
-                setImagePreview(response.data.image_url); 
+                setImagePreview(response.data.image_url);
             } catch (error) {
                 setError('Failed to load product data');
             }
@@ -48,40 +49,40 @@ const ProductPage = () => {
     const handleSubmitCart = async (e) => {
         e.preventDefault();
         setError('');
-    
+
         try {
             setLoading(true)
-            const token = localStorage.getItem('token'); 
-    
+            const token = localStorage.getItem('token');
+
             if (!token) {
                 setError('Unauthorized access. Please log in first.');
                 Toast.fire({
                     icon: 'error',
                     title: 'Please log in first',
-                }); 
+                });
                 return;
             }
-    
+
             const data = { id_product: id };
-    
+
             const response = await axios.post(
-                'http://localhost:5000/cart/add-product', 
+                'http://localhost:5000/cart/add-product',
                 data,
                 {
                     headers: {
-                        'Authorization': `Bearer ${token}`,  
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                     timeout: 10000,
                 }
             );
-    
+
             if (response.status === 201) {
                 navigate(`/product/detail/${id}`, { state: { showToast: true } });
                 Toast.fire({
                     icon: 'success',
                     title: 'Product added to cart!',
-                });  
+                });
                 setLoading(false)
             } else {
                 setLoading(false)
@@ -89,7 +90,7 @@ const ProductPage = () => {
                 Toast.fire({
                     icon: 'error',
                     title: 'Failed to add product. Please try again!',
-                }); 
+                });
             }
         } catch (error) {
             setLoading(false)
@@ -133,8 +134,8 @@ const ProductPage = () => {
     };
 
     return (
-        <Box sx={{ minHeight: "50vh",p: 3 }}>
-            <Box 
+        <Box sx={{ minHeight: "50vh", p: 3 }}>
+            <Box
                 onClick={handleBack}
                 sx={{ display: 'flex', alignItems: 'center', mb: 2 }}
             >
@@ -168,11 +169,11 @@ const ProductPage = () => {
                         </Typography>
 
                         <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-                            <Button variant="outlined" onClick={handleSubmitCart}sx={{ outlineColor: '#00A63F', color: '#00A63F' }} >
-                                 {loading ? <CircularProgress sx={6} /> : 'Add to cart'}
+                            <Button variant="contained" onClick={handleSubmitCart} sx={{ backgroundColor: '#00A63F', color: '#fff' }} >
+                                {loading ? <CircularProgress sx={6} /> :  <ShoppingCartIcon />}
                             </Button>
                             <Button variant="contained" onClick={handleBuy} sx={{ backgroundColor: '#00A63F', color: '#fff' }}>
-                                Buy now
+                                Beli Sekarang
                             </Button>
                         </Box>
                     </Box>
