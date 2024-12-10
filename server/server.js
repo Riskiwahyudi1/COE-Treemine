@@ -18,8 +18,13 @@ const costomPrototype = require('./routes/admin/costomPrototype');
 const admReqCostomPrptptype = require('./routes/admin/requestCostomPrototype');
 
 // memanggil routes buyer
+const account = require('./routes/buyer/auth/accountSetting')
 const cart = require('./routes/buyer/cart');
 const costomPrototypeBuyer = require('./routes/buyer/costomPrototype');
+
+
+// service
+const rajaOngkirService = require('./routes/services/rajaOngkir')
 
 
 const app = express();
@@ -86,8 +91,12 @@ app.use('/admin/costom-prototype', costomPrototype);
 app.use('/admin/request-costom-prototype', admReqCostomPrptptype);
 
 // buyer
+app.use('/account', account)
 app.use('/cart', cart);
 app.use('/costom-prototype', costomPrototypeBuyer);
+
+// service
+app.use('/raja-ongkir', rajaOngkirService);
 
 
 app.listen(port, () => {

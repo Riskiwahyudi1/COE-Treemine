@@ -62,7 +62,6 @@ router.post('/', async (req, res) => {
             `,
             });
 
-      console.log('User berhasil disimpan:', newUser);
       res.status(201).json({ message: 'User berhasil disimpan', user: newUser });
   
     } catch (error) {

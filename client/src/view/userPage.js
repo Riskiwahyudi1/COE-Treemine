@@ -1,7 +1,72 @@
-import React from "react";
-import { Box, Typography, Avatar, Button, TextField, Grid, Paper, MenuItem } from "@mui/material";
+import React, {useEffect, useState} from "react";
+import { Box, Typography, Avatar, Button, TextField, Grid, Paper, MenuItem , Alert} from "@mui/material";
+import { getProvinces, getCities } from "../api/service/rajaOngkirApi"
+import { getDataAccount } from "../api/auth/dataAccount"
+
 
 export default function ProfileSettings() {
+  const [provinces, setProvinces] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [dataAccount, setDataAccount] = useState("");
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    province: ''
+
+  })
+
+console.log(formData)
+  useEffect(() => {
+    const fetchDataAccount = async () => {
+        try {
+            const data = await getDataAccount();
+            setDataAccount(data);
+        } catch (error) {
+
+        }
+    };
+    fetchDataAccount();
+}, []);
+
+  useEffect(() => {
+    const fetchProvinces = async () => {
+        try {
+            const data = await getProvinces();
+            setProvinces(data);
+        } catch (error) {
+
+        }
+    };
+    fetchProvinces();
+}, []);
+
+  useEffect(() => {
+    if (selectedProvince) {
+      const fetchCities = async () => {
+        try {
+          const data = await getCities(selectedProvince);
+          setCities(data);
+        } catch (error) {
+          console.error("Error fetching cities", error);
+        }
+      };
+      fetchCities();
+    } else {
+      setCities([]); 
+    }
+  }, [selectedProvince]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+    }));
+};
+
   return (
     <Box
       sx={{
@@ -42,7 +107,7 @@ export default function ProfileSettings() {
           padding: 4,
           borderRadius: 4,
           width: "100%",
-          maxWidth: "800px", // Membuat form lebih lebar
+          maxWidth: "800px", 
         }}
       >
         {/* Avatar */}
@@ -73,9 +138,11 @@ export default function ProfileSettings() {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
+              name="name"
               label="Nama Lengkap"
               variant="outlined"
               defaultValue="John Doe"
+              onChange={handleChange}
             />
           </Grid>
 
@@ -111,11 +178,15 @@ export default function ProfileSettings() {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
+              name="phone"
               label="Nomor Telepon"
               variant="outlined"
-              defaultValue="08123456789"
+              onChange={handleChange}
+              value={dataAccount.phone || ''}
             />
           </Grid>
+
+
 
           {/* Email */}
           <Grid item xs={12}>
@@ -123,10 +194,59 @@ export default function ProfileSettings() {
               fullWidth
               label="Email"
               variant="outlined"
-              defaultValue="johndoe@example.com"
+              value={dataAccount.email}
               InputProps={{
                 readOnly: true,
               }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              select
+              name="province"
+              label="Province"
+              variant="outlined"
+              defaultValue=""
+              id="province"
+              value={selectedProvince}
+              onChange={(e) => setSelectedProvince(e.target.value)}
+            >
+              {provinces?.data?.map((province) => (
+                <MenuItem key={province.province_id} value={province.province_id}>
+                  {province.province}
+                </MenuItem>
+              ))}
+
+            </TextField>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              select
+              label="District/City"
+              variant="outlined"
+              defaultValue=""
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+            >
+              <MenuItem value="">
+                {selectedProvince ? "Select City" : "Select the province first!"}
+              </MenuItem>
+              {cities.map((city) => (
+                    <MenuItem key={city.city_id} value={city.city_id}>
+                        {city.city_name}
+                    </MenuItem>
+                ))}
+            </TextField>
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Postal Code"
+              variant="outlined"
+              defaultValue=""
             />
           </Grid>
 
@@ -134,9 +254,9 @@ export default function ProfileSettings() {
           <Grid item xs={12}>
             <TextField
               fullWidth
-              label="Alamat"
+              label="Detai Alamat"
               variant="outlined"
-              defaultValue="Jl. Contoh Alamat No.123, Jakarta"
+              defaultValue="Jl. Contoh Alamat No.123"
               multiline
               rows={3}
             />

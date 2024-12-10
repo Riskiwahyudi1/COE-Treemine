@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
         unique: true,
         match: /.+\@.+\..+/ 
     },
+    name: {
+        type: String,
+        default: null
+    },
     role: {
         type: String,
         enum: ['admin', 'buyer'], 
@@ -29,11 +33,7 @@ const userSchema = new mongoose.Schema({
     },
    
     address: {
-        jalan: {
-            type: String,
-            default: null
-        },
-        subdistrict: {
+        detail: {
             type: String,
             default: null
         },

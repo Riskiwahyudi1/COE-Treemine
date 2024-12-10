@@ -99,14 +99,12 @@ const App = () => {
     const [products, setProducts] = useState([]);
 
     const handleAddToCart = (productId) => {
-        // Simulasi penambahan ke keranjang belanja
         Swal.fire({
             icon: 'success',
             title: 'Product added to cart!',
             showConfirmButton: false,
             timer: 1500,
         });
-        console.log(`Product with ID: ${productId} added to cart`);
     };
 
     useEffect(() => {
