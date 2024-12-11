@@ -17,6 +17,7 @@ import ReviewFile from './reviewfile';
 import ReviewPayment from './reviewpayment';
 import OnProgress from './onprogress';
 import History from './history';
+import Kirim from './kirim';
 import { Routes, Route } from 'react-router-dom';
 
 export function AdminHome() {
@@ -56,6 +57,8 @@ export function AdminHome() {
           <Route path="/reviewpayment" element={<ReviewPayment />} />
           <Route path="/onprogress" element={<OnProgress />} />
           <Route path="/history" element={<History />} />
+          <Route path="/kirim" element={<Kirim />} />
+
 
         </Routes>
       </Box>

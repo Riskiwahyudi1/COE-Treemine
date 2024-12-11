@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -7,15 +7,19 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { IconButton } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import Paper from '@mui/material/Paper';
 import { Box, Typography, Button } from '@mui/material';
-import {getRequestCostomPrototype} from '../api/requestCostomPrototypeApi'
+import { getRequestCostomPrototype } from '../api/requestCostomPrototypeApi'
 import axios from 'axios';
 import Toast from '../utils/Toast';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: '#54cbbb',
+        backgroundColor: '#00A63F',
         color: theme.palette.common.white,
         fontWeight: 'bold',
         fontSize: 16,
@@ -41,39 +45,39 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-    borderRadius: '15px', // Rounded corners
+    borderRadius: '10px', // Rounded corners
     boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)', // Shadow for 3D effect
     overflow: 'hidden',
 }));
 
 export default function OrdersTable() {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const [requestPrototype, setRequestPrototype] = useState('');
 
     useEffect(() => {
         const fetchRequestPrototype = async () => {
-          try {
-            const data = await getRequestCostomPrototype();
-            setRequestPrototype(data);
-          } catch (error) {
-            console.error('Failed to load products', error);
-          }
+            try {
+                const data = await getRequestCostomPrototype();
+                setRequestPrototype(data);
+            } catch (error) {
+                console.error('Failed to load products', error);
+            }
         };
         fetchRequestPrototype();
-      }, []);
+    }, []);
 
-      const handleApprove = async (orderId) => {
+    const handleApprove = async (orderId) => {
         try {
             const response = await axios.put(`http://localhost:5000/admin/request-costom-prototype/${orderId}/approve`, {
-                status: 'Waiting Payment', 
+                status: 'Waiting Payment',
             });
-    
+
             if (response.status === 200) {
-                
+
                 setRequestPrototype((prev) =>
                     prev.filter((order) => order._id !== orderId)
                 );
-    
+
                 Toast.fire({
                     icon: 'success',
                     title: 'Item approved successfully',
@@ -83,17 +87,17 @@ export default function OrdersTable() {
             console.error('Error approving order:', error.response?.data || error.message);
         }
     };
-      const handleReject = async (orderId) => {
+    const handleReject = async (orderId) => {
         try {
             const response = await axios.put(`http://localhost:5000/admin/request-costom-prototype/${orderId}/reject`, {
-                status: 'Reject By Admin', 
+                status: 'Reject By Admin',
             });
-    
+
             if (response.status === 200) {
                 setRequestPrototype((prev) =>
                     prev.filter((order) => order._id !== orderId)
                 );
-    
+
                 Toast.fire({
                     icon: 'success',
                     title: 'Item approved successfully',
@@ -146,7 +150,7 @@ export default function OrdersTable() {
                     <TableBody>
                         {(Array.isArray(requestPrototype) ? requestPrototype : []).map((order, index) => (
                             <StyledTableRow key={order.id}>
-                                <StyledTableCell>{index+1}</StyledTableCell>
+                                <StyledTableCell>{index + 1}</StyledTableCell>
                                 <StyledTableCell align="center">{order._id}</StyledTableCell>
                                 <StyledTableCell align="center">{order.name}</StyledTableCell>
                                 <StyledTableCell align="center">{order.createdAt}</StyledTableCell>
@@ -156,60 +160,39 @@ export default function OrdersTable() {
                                 <StyledTableCell
                                     align="center"
                                     sx={{
-                                        color: '#FF9800', 
+                                        color: '#FF9800',
                                         fontWeight: 'bold',
                                     }}
                                 >
                                     {order.status}
                                 </StyledTableCell>
                                 <StyledTableCell align="center">
-                                    <Button
-                                        variant="contained"
+                                    <IconButton
                                         sx={{
-                                            backgroundColor: '#54cbbb',
-                                            color: '#ffffff',
-                                            textTransform: 'none',
-                                            '&:hover': {
-                                                backgroundColor: '#46b2a6',
-                                            },
+                                            color: '#00A63F',
                                         }}
                                     >
-                                        View Detail
-                                    </Button>
+                                        <VisibilityIcon />
+                                    </IconButton>
                                 </StyledTableCell>
                                 <StyledTableCell align="center">
                                     <Box sx={{ display: 'flex', gap: 1 }}>
-                                        
-                                        <Button
-                                            variant="contained"
+                                        <IconButton
                                             sx={{
-                                                backgroundColor: '#54cbbb',
-                                                color: '#ffffff',
-                                                textTransform: 'none',
-                                                '&:hover': {
-                                                    backgroundColor: '#46b2a6',
-                                                },
+                                                color: '#00A63F',
                                             }}
                                             onClick={() => handleApprove(order._id)}
                                         >
-                                            Approve
-                                        </Button>
-                                        <Button
-                                            variant="outlined"
+                                            <CheckCircleIcon />
+                                        </IconButton>
+                                        <IconButton
                                             sx={{
-                                                textTransform: 'none',
-                                                borderColor: '#f44336',
                                                 color: '#f44336',
-                                                '&:hover': {
-                                                    backgroundColor: '#fddede',
-                                                    borderColor: '#e53935',
-                                                    color: '#e53935',
-                                                },
                                             }}
                                             onClick={() => handleReject(order._id)}
                                         >
-                                            Reject
-                                        </Button>
+                                            <CancelIcon />
+                                        </IconButton>
                                     </Box>
                                 </StyledTableCell>
                             </StyledTableRow>

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -6,8 +7,15 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import { IconButton } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { Box, Typography, Button } from '@mui/material';
+import { getPrototypeByProcess } from '../api/requestCostomPrototypeApi'
+import Toast from '../utils/Toast';
+import axios from 'axios';
+
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -43,13 +51,43 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
 }));
 
 export default function OrdersTable() {
-    const orders = [
-        { id: 1, orderNumber: 'ORD001', name: 'John Doe', date: '2024-11-20', price: 150000 },
-        { id: 2, orderNumber: 'ORD002', name: 'Jane Smith', date: '2024-11-18', price: 250000 },
-        { id: 3, orderNumber: 'ORD003', name: 'Alice Johnson', date: '2024-11-17', price: 175000 },
-        { id: 4, orderNumber: 'ORD004', name: 'Bob Brown', date: '2024-11-15', price: 300000 },
-        { id: 5, orderNumber: 'ORD005', name: 'Charlie White', date: '2024-11-14', price: 225000 },
-    ];
+    const navigate = useNavigate(); // Properly use useNavigate here
+
+    const [prototypeByProcess, setPrototypeByProcess] = useState('');
+
+    useEffect(() => {
+        const fetchPrototypeByProcess = async () => {
+            try {
+                const data = await getPrototypeByProcess();
+                setPrototypeByProcess(data);
+            } catch (error) {
+                console.error('Failed to load products', error);
+            }
+        };
+        fetchPrototypeByProcess();
+    }, []);
+
+    const handleSendRequest = async (orderId) => {
+        try {
+            const response = await axios.put(`http://localhost:5000/admin/request-costom-prototype/${orderId}/delivered`, {
+                status: 'on delivered',
+            });
+
+            if (response.status === 200) {
+
+                setPrototypeByProcess((prev) =>
+                    prev.filter((order) => order._id !== orderId)
+                );
+
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Item approved successfully',
+                });
+            }
+        } catch (error) {
+            console.error('Error approving order:', error.response?.data || error.message);
+        }
+    };
 
     return (
         <Box
@@ -63,9 +101,9 @@ export default function OrdersTable() {
                 padding: 4,
             }}
         >
-            {/* Keterangan di atas tabel */}
+            {/* Header */}
             <Typography
-                variant="h6"
+                variant="h3"
                 sx={{
                     color: '#1B2D3F',
                     fontWeight: 'bold',
@@ -73,7 +111,7 @@ export default function OrdersTable() {
                     textAlign: 'center',
                 }}
             >
-                Data Pesanan - Status: Cancel
+                Dikirim
             </Typography>
 
             <StyledTableContainer component={Paper}>
@@ -87,17 +125,18 @@ export default function OrdersTable() {
                             <StyledTableCell align="center">Harga</StyledTableCell>
                             <StyledTableCell align="center">Status</StyledTableCell>
                             <StyledTableCell align="center">Detail</StyledTableCell>
+                            <StyledTableCell align="center">Action</StyledTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {orders.map((order) => (
+                        {(Array.isArray(prototypeByProcess) ? prototypeByProcess : []).map((order, index) => (
                             <StyledTableRow key={order.id}>
-                                <StyledTableCell>{order.id}</StyledTableCell>
-                                <StyledTableCell align="center">{order.orderNumber}</StyledTableCell>
+                                <StyledTableCell>{index + 1}</StyledTableCell>
+                                <StyledTableCell align="center">{order._id}</StyledTableCell>
                                 <StyledTableCell align="center">{order.name}</StyledTableCell>
-                                <StyledTableCell align="center">{order.date}</StyledTableCell>
+                                <StyledTableCell align="center">{order.createdAt}</StyledTableCell>
                                 <StyledTableCell align="center">
-                                    Rp. {order.price.toLocaleString('id-ID')}
+                                    Rp. {order.total_cost.toLocaleString('id-ID')}
                                 </StyledTableCell>
                                 <StyledTableCell
                                     align="center"
@@ -106,22 +145,27 @@ export default function OrdersTable() {
                                         fontWeight: 'bold',
                                     }}
                                 >
-                                    Cancel
+                                    {order.status}
                                 </StyledTableCell>
                                 <StyledTableCell align="center">
-                                <Button
-                                        variant="contained"
+                                    <IconButton
                                         sx={{
-                                            backgroundColor: '#00A63F',
-                                            color: '#ffffff',
-                                            textTransform: 'none',
-                                            '&:hover': {
-                                                backgroundColor: '#00A65F',
-                                            },
+                                            color: '#00A63F',
                                         }}
+                                        onClick={() => navigate(`/order-detail/${order.id}`)}
                                     >
-                                        View Detail
-                                    </Button>
+                                        <AssignmentOutlinedIcon />
+                                    </IconButton>
+                                </StyledTableCell>
+                                <StyledTableCell align="center">
+                                    <IconButton
+                                        sx={{
+                                            color: '#00A63F',
+                                        }}
+                                        onClick={() => handleSendRequest(order._id)}
+                                    >
+                                        <DoneAllIcon  />
+                                    </IconButton>
                                 </StyledTableCell>
                             </StyledTableRow>
                         ))}

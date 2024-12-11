@@ -8,30 +8,30 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField'; 
-import InputAdornment from '@mui/material/InputAdornment';  
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import getProducts from '../api/productListApi';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import SearchIcon from '@mui/icons-material/Search';  
-import AddIcon from '@mui/icons-material/Add';  
-import PrintIcon from '@mui/icons-material/Print';  
+import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from '@mui/icons-material/Add';
+import PrintIcon from '@mui/icons-material/Print';
 
 const showToast = (message, icon) => {
   Swal.fire({
-      toast: true,
-      position: 'bottom-end', 
-      icon: icon,
-      title: message,
-      showConfirmButton: false,
-      timer: 3000, 
-      timerProgressBar: true,
-      didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer);
-          toast.addEventListener('mouseleave', Swal.resumeTimer);
-      }
+    toast: true,
+    position: 'bottom-end',
+    icon: icon,
+    title: message,
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer);
+      toast.addEventListener('mouseleave', Swal.resumeTimer);
+    }
   });
 };
 
@@ -55,6 +55,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:last-child td, &:last-child th': {
     border: 0,
   },
+}));
+
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  borderRadius: '10px',
+  boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
+  overflow: 'hidden',
 }));
 
 const StyledButton = styled(Button)({
@@ -97,7 +103,7 @@ export default function CustomizedTables() {
     if (result.isConfirmed) {
       try {
         const response = await axios.delete(`http://localhost:5000/admin/product/${id}`);
-        setProducts(products.filter((product) => product._id !== id)); 
+        setProducts(products.filter((product) => product._id !== id));
         if (response.status === 200) {
           showToast('Product has been deleted', 'success');
         }
@@ -130,15 +136,17 @@ export default function CustomizedTables() {
         }}
       >
         {/* Add Produk Button with Icon */}
-        <StyledButton variant="contained" 
-            onClick={handleAddProduk} 
-            sx={{backgroundColor: '#00A63F',
+        <StyledButton variant="contained"
+          onClick={handleAddProduk}
+          sx={{
+            backgroundColor: '#00A63F',
             color: '#ffffff',
             textTransform: 'none',
             '&:hover': {
               backgroundColor: '#7fd685',
-            }}} 
-            startIcon={<AddIcon />}>
+            }
+          }}
+          startIcon={<AddIcon />}>
           Add Produk
         </StyledButton>
 
@@ -161,12 +169,12 @@ export default function CustomizedTables() {
           }}
         />
 
-        <StyledButton variant="contained" onClick={handlePrint} startIcon={<PrintIcon />} sx={{bgcolor:'#2f98cd', width: '90px'}}>
+        <StyledButton variant="contained" onClick={handlePrint} startIcon={<PrintIcon />} sx={{ bgcolor: '#2f98cd', width: '90px' }}>
           Print
         </StyledButton>
       </Box>
 
-      <TableContainer component={Paper}>
+      <StyledTableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
@@ -189,7 +197,7 @@ export default function CustomizedTables() {
                   {displayValue(product.id_category?.category_name, 'Kategori tidak ada')}
                 </StyledTableCell>
                 <StyledTableCell align="right">
-                 Rp. {displayValue(product.harga.toLocaleString('id-ID'), 'Harga tidak ada')}
+                  Rp. {displayValue(product.harga.toLocaleString('id-ID'), 'Harga tidak ada')}
                 </StyledTableCell>
                 <StyledTableCell align="right">
                   {displayValue(product.stock, 'Stok tidak diketahui')}
@@ -209,7 +217,7 @@ export default function CustomizedTables() {
                   {displayValue(product.description, 'Deskripsi kosong')}
                 </StyledTableCell>
                 <StyledTableCell align="right">
-                <Button
+                  <Button
                     variant="outlined"
                     color="primary"
                     onClick={() => navigate(`./updateProduct/${product._id}`)}
@@ -236,7 +244,7 @@ export default function CustomizedTables() {
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </StyledTableContainer>
     </>
   );
 }

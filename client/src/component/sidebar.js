@@ -29,6 +29,7 @@ import DesignServicesIcon from '@mui/icons-material/DesignServices';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import HistoryIcon from '@mui/icons-material/History';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import EngineeringIcon from '@mui/icons-material/Engineering';
 import PaymentIcon from '@mui/icons-material/Payment';
 import { Link } from 'react-router-dom';
@@ -174,17 +175,22 @@ export default function MiniDrawer() {
           path: 'reviewFile'
         },
         {
-          text: 'Review Payment',
+          text: 'Review Pembayaran',
           icon: <PaymentIcon />,
           path: 'reviewPayment'
         },
         {
-          text: 'On Progress',
+          text: 'Proses',
           icon: <EngineeringIcon />,
           path: 'onprogress'
         },
         {
-          text: 'History',
+          text: 'Dikirim',
+          icon: <LocalShippingIcon />,
+          path: 'kirim'
+        },
+        {
+          text: 'Riwayat',
           icon: <HistoryIcon />,
           path: 'history'
         }

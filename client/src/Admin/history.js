@@ -5,14 +5,15 @@ import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
+import VisibilityIcon from '@mui/icons-material/Visibility'; //
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Box, Typography, Button, Modal } from '@mui/material';
+import { Box, Typography, Button, Modal, IconButton } from '@mui/material';
 import { getPrototypeHistory } from '../api/requestCostomPrototypeApi';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: '#54cbbb',
+        backgroundColor: '#00A63F',
         color: theme.palette.common.white,
         fontWeight: 'bold',
         fontSize: 16,
@@ -142,20 +143,14 @@ export default function OrdersTable() {
                                     {order.status}
                                 </StyledTableCell>
                                 <StyledTableCell align="center">
-                                    <Button
-                                        variant="contained"
+                                    <IconButton
                                         sx={{
-                                            backgroundColor: '#54cbbb',
-                                            color: '#ffffff',
-                                            textTransform: 'none',
-                                            '&:hover': {
-                                                backgroundColor: '#46b2a6',
-                                            },
+                                            color: '#54cbbb',
                                         }}
                                         onClick={() => handleOpenModal(order)}
                                     >
-                                        View Detail
-                                    </Button>
+                                        <VisibilityIcon />
+                                    </IconButton>
                                 </StyledTableCell>
                             </StyledTableRow>
                         ))}

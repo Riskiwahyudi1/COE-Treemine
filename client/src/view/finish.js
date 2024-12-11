@@ -38,7 +38,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-    borderRadius: '15px', // Rounded corners
+    borderRadius: '10px', // Rounded corners
     boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)', // Shadow for 3D effect
     overflow: 'hidden',
 }));

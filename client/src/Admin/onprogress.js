@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -7,16 +7,19 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import { IconButton } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { Box, Typography, Button } from '@mui/material';
-import {getPrototypeByProcess} from '../api/requestCostomPrototypeApi'
+import { getPrototypeByProcess } from '../api/requestCostomPrototypeApi'
 import Toast from '../utils/Toast';
 import axios from 'axios';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: '#54cbbb',
+        backgroundColor: '#00A63F',
         color: theme.palette.common.white,
         fontWeight: 'bold',
         fontSize: 16,
@@ -42,7 +45,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-    borderRadius: '15px', // Rounded corners
+    borderRadius: '10px', // Rounded corners
     boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)', // Shadow for 3D effect
     overflow: 'hidden',
 }));
@@ -54,28 +57,28 @@ export default function OrdersTable() {
 
     useEffect(() => {
         const fetchPrototypeByProcess = async () => {
-          try {
-            const data = await getPrototypeByProcess();
-            setPrototypeByProcess(data);
-          } catch (error) {
-            console.error('Failed to load products', error);
-          }
+            try {
+                const data = await getPrototypeByProcess();
+                setPrototypeByProcess(data);
+            } catch (error) {
+                console.error('Failed to load products', error);
+            }
         };
         fetchPrototypeByProcess();
-      }, []);
+    }, []);
 
-      const handleSendRequest = async (orderId) => {
+    const handleSendRequest = async (orderId) => {
         try {
             const response = await axios.put(`http://localhost:5000/admin/request-costom-prototype/${orderId}/delivered`, {
-                status: 'on delivered', 
+                status: 'on delivered',
             });
-    
+
             if (response.status === 200) {
-                
+
                 setPrototypeByProcess((prev) =>
                     prev.filter((order) => order._id !== orderId)
                 );
-    
+
                 Toast.fire({
                     icon: 'success',
                     title: 'Item approved successfully',
@@ -108,7 +111,7 @@ export default function OrdersTable() {
                     textAlign: 'center',
                 }}
             >
-                On Progress
+                Proses
             </Typography>
 
             <StyledTableContainer component={Paper}>
@@ -126,9 +129,9 @@ export default function OrdersTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                    {(Array.isArray(prototypeByProcess) ? prototypeByProcess : []).map((order, index) => (
+                        {(Array.isArray(prototypeByProcess) ? prototypeByProcess : []).map((order, index) => (
                             <StyledTableRow key={order.id}>
-                                <StyledTableCell>{index+1}</StyledTableCell>
+                                <StyledTableCell>{index + 1}</StyledTableCell>
                                 <StyledTableCell align="center">{order._id}</StyledTableCell>
                                 <StyledTableCell align="center">{order.name}</StyledTableCell>
                                 <StyledTableCell align="center">{order.createdAt}</StyledTableCell>
@@ -145,38 +148,24 @@ export default function OrdersTable() {
                                     {order.status}
                                 </StyledTableCell>
                                 <StyledTableCell align="center">
-                                    <Button
-                                        variant="contained"
+                                    <IconButton
                                         sx={{
-                                            backgroundColor: '#54cbbb',
-                                            color: '#ffffff',
-                                            textTransform: 'none',
-                                            '&:hover': {
-                                                backgroundColor: '#46b2a6',
-                                            },
+                                            color: '#00A63F',
                                         }}
                                         onClick={() => navigate(`/order-detail/${order.id}`)}
                                     >
-                                        View Detail
-                                    </Button>
+                                        <AssignmentOutlinedIcon />
+                                    </IconButton>
                                 </StyledTableCell>
                                 <StyledTableCell align="center">
-                                    <Button
-                                        variant="outlined"
+                                    <IconButton
                                         sx={{
-                                            borderColor: '#54cbbb',
-                                            color: '#54cbbb',
-                                            textTransform: 'none',
-                                            '&:hover': {
-                                                backgroundColor: '#e0f4fc',
-                                                borderColor: '#46b2a6',
-                                                color:'#46b2a6',
-                                            },
+                                            color: '#00A63F',
                                         }}
                                         onClick={() => handleSendRequest(order._id)}
                                     >
-                                        Delivered
-                                    </Button>
+                                        <LocalShippingIcon />
+                                    </IconButton>
                                 </StyledTableCell>
                             </StyledTableRow>
                         ))}

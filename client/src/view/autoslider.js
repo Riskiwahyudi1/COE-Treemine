@@ -34,7 +34,7 @@ const PCBLandingPage = () => {
         },
         {
             foto: product2,
-            nama_kegiatan: "Perakitan PCB"
+            nama_kegiatan: "Assembly PCB"
         },
         {
             foto: product3,

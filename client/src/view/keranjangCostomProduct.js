@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { getCostomPrototypeData } from '../api/requestCostomPrototypeApi';
-import CostomPrototypeImg from '../assets/images/1.png'; 
+import CostomPrototypeImg from '../assets/images/1.png';
 import Toast from '../utils/Toast';
 
 const showToast = (message, icon) => {
@@ -43,192 +43,191 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     const maxFileSize = 2 * 1024 * 1024; // 2MB limit
-  
+
     if (selectedFile) {
-        // Validasi ekstensi file
-        const allowedExtensions = /\.(zip|rar)$/i; // regex untuk .zip dan .rar
-        if (!allowedExtensions.test(selectedFile.name)) {
-            setError('Only .zip or .rar files are allowed.');
-            return;
-        }
+      // Validasi ekstensi file
+      const allowedExtensions = /\.(zip|rar)$/i; // regex untuk .zip dan .rar
+      if (!allowedExtensions.test(selectedFile.name)) {
+        setError('Only .zip or .rar files are allowed.');
+        return;
+      }
 
-        // Validasi ukuran file
-        if (selectedFile.size > maxFileSize) {
-            setError('File size must be less than 2MB.');
-            return;
-        }
+      // Validasi ukuran file
+      if (selectedFile.size > maxFileSize) {
+        setError('File size must be less than 2MB.');
+        return;
+      }
 
-        // Jika valid, simpan file
-        setFile(selectedFile); 
-        setFileName(selectedFile.name); 
-        setError(''); 
+      // Jika valid, simpan file
+      setFile(selectedFile);
+      setFileName(selectedFile.name);
+      setError('');
     }
-};
+  };
 
 
 
   return (
     <Card
-        elevation={3}
-        sx={{
-            display: 'flex',
-            alignItems: 'center',
-            p: 2,
-            mb: 2,
-            backgroundColor: '#f9f9f9',
-            borderRadius: 3,
-        }}
+      elevation={3}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        p: 2,
+        mb: 2,
+        backgroundColor: '#f9f9f9',
+        borderRadius: 3,
+      }}
     >
-        <CardContent sx={{ display: 'flex', flex: 1, alignItems: 'center', gap: 2 }}>
-            {/* Foto Produk */}
-            <img src={CostomPrototypeImg} alt="Custom Prototype" width={64} height={64} style={{ borderRadius: 8 }} />
-            {/* Nama dan Harga */}
-            <Box>
-              <Typography variant="h6">{name}</Typography>
-              <Typography fontWeight="bold" color="primary">{`Rp. ${price.toLocaleString('id-ID')}`}</Typography>
-            </Box>
-        </CardContent>
-        <CardActions sx={{ gap: 2 }}>
-          <Typography variant="text">{status}</Typography>
+      <CardContent sx={{ display: 'flex', flex: 1, alignItems: 'center', gap: 2 }}>
+        {/* Foto Produk */}
+        <img src={CostomPrototypeImg} alt="Custom Prototype" width={64} height={64} style={{ borderRadius: 8 }} />
+        {/* Nama dan Harga */}
+        <Box>
+          <Typography variant="h6">{name}</Typography>
+          <Typography fontWeight="bold" color="primary">{`Rp. ${price.toLocaleString('id-ID')}`}</Typography>
+        </Box>
+      </CardContent>
+      <CardActions sx={{ gap: 2 }}>
+        <Typography variant="text">{status}</Typography>
 
-          {/* Kondisi: Waiting Request */}
+        {/* Kondisi: Waiting Request */}
+        {status === 'Waiting Request' ? (
+          <>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => handleRequest(id, file)}
+              sx={{
+                backgroundColor: '#00A63F',
+                color: '#fff',
+                borderRadius: 1,
+                height: 32,
+                '&:hover': {
+                  backgroundColor: '#007F2E',
+                },
+              }}
+            >
+              Request Sekarang
+            </Button>
 
-          <Button
-                variant="contained"
-                size="small"
-                // onClick={() => handleDetail(id)}
-                sx={{
-                  height: 32,
-                  backgroundColor: '#0077B5',
-                  color: '#fff',
-                  '&:hover': {
-                    backgroundColor: '#0066A1',
-                  },
-                }}
-              >
-                Detail
-              </Button>
-              
-          {status === 'Waiting Request' ? (
-            <>
-              <Button
-                variant="contained"
-                size="small"
-                onClick={() => handleRequest(id, file)}
-                sx={{
-                  backgroundColor: '#00A63F',
-                  color: '#fff',
-                  borderRadius: 1,
-                  height: 32,
-                  '&:hover': {
-                    backgroundColor: '#007F2E',
-                  },
-                }}
-              >
-                Request Sekarang
-              </Button>
+            <Button
+              variant="contained"
+              component="label"
+              size="small"
+              sx={{ height: 32 }}
+            >
+              Lampirkan Desain
+              <input type="file" hidden onChange={handleFileChange} />
+            </Button>
 
-              <Button
-                variant="contained"
-                component="label"
-                size="small"
-                sx={{ height: 32 }}
-              >
-                Lampirkan Desain
-                <input type="file" hidden onChange={handleFileChange} />
-              </Button>
+            {fileName && (
+              <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                Selected File: {fileName}
+              </Typography>
+            )}
 
-              {fileName && (
-                <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                  Selected File: {fileName}
-                </Typography>
-              )}
+            {error && (
+              <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                {error}
+              </Typography>
+            )}
 
-              {error && (
-                <Typography variant="body2" color="error" sx={{ mt: 1 }}>
-                  {error}
-                </Typography>
-              )}
+            <Button
+              variant="contained"
+              color="error"
+              size="small"
+              onClick={() => onDelete(id)}
+              sx={{
+                height: 32,
+                '&:hover': {
+                  backgroundColor: '#FF6B6B',
+                },
+              }}
+            >
+              Hapus
+            </Button>
 
-              <Button
-                variant="contained"
-                color="error"
-                size="small"
-                onClick={() => onDelete(id)}
-                sx={{
-                  height: 32,
-                  '&:hover': {
-                    backgroundColor: '#FF6B6B',
-                  },
-                }}
-              >
-                Hapus
-              </Button>
 
-              
-            </>
-          ) : null}
+          </>
+        ) : null}
 
-          {/* Kondisi: Review By Admin */}
-          {status === 'Review By Admin' ? (
-            <>
-              <Button
-                variant="contained"
-                size="small"
-                color="error"
-                onClick={() => handleCancel(id)}
-                sx={{
-                  height: 32,
-                  '&:hover': {
-                    backgroundColor: '#FF6B6B',
-                  },
-                }}
-              >
-                Batal
-              </Button>
+        {/* Kondisi: Review By Admin */}
+        {status === 'Review By Admin' ? (
+          <>
+            <Button
+              variant="contained"
+              size="small"
+              color="error"
+              onClick={() => handleCancel(id)}
+              sx={{
+                height: 32,
+                '&:hover': {
+                  backgroundColor: '#FF6B6B',
+                },
+              }}
+            >
+              Batal
+            </Button>
 
-              
-            </>
-          ) : null}
 
-          {/* Kondisi: Waiting Payment */}
-          {status === 'Waiting Payment' ? (
-            <>
-              <Button
-                variant="contained"
-                size="small"
-                // onClick={() => handleCheckout(id)}
-                sx={{
-                  height: 32,
-                  backgroundColor: '#00A63F',
-                  color: '#fff',
-                  '&:hover': {
-                    backgroundColor: '#007F2E',
-                  },
-                }}
-              >
-                Pesan Sekarang
-              </Button>
+          </>
+        ) : null}
 
-              <Button
-                variant="contained"
-                color="error"
-                size="small"
-                onClick={() => handleCancel(id)}
-                sx={{
-                  height: 32,
-                  '&:hover': {
-                    backgroundColor: '#FF6B6B',
-                  },
-                }}
-              >
-                Batal
-              </Button>
+        {/* Kondisi: Waiting Payment */}
+        {status === 'Waiting Payment' ? (
+          <>
+            <Button
+              variant="contained"
+              size="small"
+              // onClick={() => handleCheckout(id)}
+              sx={{
+                height: 32,
+                backgroundColor: '#00A63F',
+                color: '#fff',
+                '&:hover': {
+                  backgroundColor: '#007F2E',
+                },
+              }}
+            >
+              Pesan Sekarang
+            </Button>
 
-              
-            </>
-          ) : null}
-        </CardActions>
+            <Button
+              variant="contained"
+              color="error"
+              size="small"
+              onClick={() => handleCancel(id)}
+              sx={{
+                height: 32,
+                '&:hover': {
+                  backgroundColor: '#FF6B6B',
+                },
+              }}
+            >
+              Batal
+            </Button>
+
+
+          </>
+        ) : null}
+
+        <Button
+          variant="contained"
+          size="small"
+          // onClick={() => handleDetail(id)}
+          sx={{
+            height: 32,
+            backgroundColor: '#0077B5',
+            color: '#fff',
+            '&:hover': {
+              backgroundColor: '#0066A1',
+            },
+          }}
+        >
+          Detail
+        </Button>
+      </CardActions>
 
 
     </Card>
@@ -256,39 +255,39 @@ const ShoppingCart = () => {
   }, []);
 
   const handleRequest = async (id, file) => {
-    if (!file) { 
-        Toast.fire({
-            icon: 'error',
-            title: 'Please upload a file before submitting your request.',
-        });
-        return; 
+    if (!file) {
+      Toast.fire({
+        icon: 'error',
+        title: 'Please upload a file before submitting your request.',
+      });
+      return;
     }
-  
-    const formData = new FormData(); 
-    formData.append('status', 'Review By Admin'); 
-    formData.append('design_file', file); 
-    
+
+    const formData = new FormData();
+    formData.append('status', 'Review By Admin');
+    formData.append('design_file', file);
+
     try {
-        const response = await axios.put(`http://localhost:5000/costom-prototype/${id}/send-review`, formData);
+      const response = await axios.put(`http://localhost:5000/costom-prototype/${id}/send-review`, formData);
 
-        if (response.status === 200) {
-            setRequestPrototype((prevList) =>
-                prevList.map((request) =>
-                    request._id === id ? { ...request, status: 'Review By Admin' } : request
-                )
-            );
-            Toast.fire({
-                icon: 'success',
-                title: 'Item approved successfully',
-            });
-
-        }
-    } catch (error) {
+      if (response.status === 200) {
+        setRequestPrototype((prevList) =>
+          prevList.map((request) =>
+            request._id === id ? { ...request, status: 'Review By Admin' } : request
+          )
+        );
         Toast.fire({
-            icon: 'error',
-            title: error.response?.data?.message || 'Error processing request.',
+          icon: 'success',
+          title: 'Item approved successfully',
         });
-        console.error('Error approving order:', error.response?.data || error.message);
+
+      }
+    } catch (error) {
+      Toast.fire({
+        icon: 'error',
+        title: error.response?.data?.message || 'Error processing request.',
+      });
+      console.error('Error approving order:', error.response?.data || error.message);
     }
   };
 
@@ -330,30 +329,30 @@ const ShoppingCart = () => {
       confirmButtonText: 'Yes, delete it!',
       cancelButtonText: 'Cancel',
     });
-    if(result.isConfirmed){
+    if (result.isConfirmed) {
 
       try {
-          const response = await axios.put(`http://localhost:5000/costom-prototype/${orderId}/cancel`, {
-              status: 'Cancel by Buyer', 
-          });
-  
-          if (response.status === 200) {
-            setRequestPrototype((prevList) =>
-              prevList.map((request) =>
-                  request._id === orderId ? { ...request, status: 'Cancel by Buyer' } : request
-              )
+        const response = await axios.put(`http://localhost:5000/costom-prototype/${orderId}/cancel`, {
+          status: 'Cancel by Buyer',
+        });
+
+        if (response.status === 200) {
+          setRequestPrototype((prevList) =>
+            prevList.map((request) =>
+              request._id === orderId ? { ...request, status: 'Cancel by Buyer' } : request
+            )
           );
-  
-              Toast.fire({
-                  icon: 'success',
-                  title: 'Item approved successfully',
-              });
-          }
+
+          Toast.fire({
+            icon: 'success',
+            title: 'Item approved successfully',
+          });
+        }
       } catch (error) {
-          console.error('Error approving order:', error.response?.data || error.message);
+        console.error('Error approving order:', error.response?.data || error.message);
       }
     }
-};
+  };
 
   return (
     <Box

@@ -198,6 +198,9 @@ console.log(formData)
               InputProps={{
                 readOnly: true,
               }}
+              InputLabelProps={{
+                shrink: true, // Menjamin label tetap berada di posisi atas
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>

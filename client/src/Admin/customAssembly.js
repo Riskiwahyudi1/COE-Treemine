@@ -19,7 +19,7 @@ import Box from '@mui/material/Box';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: '#54cbbb',
+    backgroundColor: '#00A63F',
     color: theme.palette.common.white,
     fontWeight: 'bold',
     fontSize: 16,
@@ -42,6 +42,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     backgroundColor: '#cbe7f6',
     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.15)',
   },
+}));
+
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  borderRadius: '10px',
+  boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)', 
+  overflow: 'hidden',
 }));
 
 const CustomAssemblyPage = () => {
@@ -85,7 +91,7 @@ const CustomAssemblyPage = () => {
           onClick={handleAddAssembly}
           startIcon={<AddIcon />}
           sx={{
-            backgroundColor: '#54cbbb',
+            backgroundColor: '#00A63F',
             color: '#ffffff',
             textTransform: 'none',
             '&:hover': {
@@ -114,7 +120,7 @@ const CustomAssemblyPage = () => {
         </FormControl>
       </Box>
 
-      <TableContainer component={Paper}>
+      <StyledTableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
@@ -169,7 +175,7 @@ const CustomAssemblyPage = () => {
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </StyledTableContainer>
     </div>
   );
 };

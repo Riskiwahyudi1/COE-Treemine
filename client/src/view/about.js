@@ -38,7 +38,7 @@ const LandingPage = () => {
                     minHeight: '100vh',
                 }}
             >
-                {/* Product Features Section */}
+                {/* Bagian Fitur Produk */}
                 <Box sx={{ bgcolor: 'transparent' }}>
                     <Container sx={{ pt: 5, pb: 5 }}>
                         <Typography
@@ -47,7 +47,7 @@ const LandingPage = () => {
                             align="center"
                             sx={{ fontWeight: 'bold', color: '#000000' }}
                         >
-                            Why Choose Our PCBs?
+                            Kenapa Memilih PCB Kami?
                         </Typography>
                         <Grid
                             container
@@ -57,21 +57,21 @@ const LandingPage = () => {
                         >
                             {[
                                 {
-                                    title: 'High Quality',
+                                    title: 'Kualitas Tinggi',
                                     description:
-                                        'Our PCBs are built with the highest quality materials and precision.',
+                                        'PCB kami dibuat dengan material terbaik dan presisi tinggi.',
                                     image: product1,
                                 },
                                 {
-                                    title: 'Custom Designs',
+                                    title: 'Desain Kustom',
                                     description:
-                                        'We offer flexible customization options to meet your specific needs.',
+                                        'Kami menawarkan opsi kustomisasi fleksibel sesuai kebutuhan Anda.',
                                     image: product2,
                                 },
                                 {
-                                    title: 'Affordable Pricing',
+                                    title: 'Harga Terjangkau',
                                     description:
-                                        'Get the best quality PCBs at competitive prices in the wolrd.',
+                                        'Dapatkan PCB berkualitas terbaik dengan harga yang kompetitif.',
                                     image: product3,
                                 },
                             ].map((feature, index) => (

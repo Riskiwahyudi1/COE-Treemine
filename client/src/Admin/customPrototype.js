@@ -24,7 +24,7 @@ import Swal from 'sweetalert2';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: '#54cbbb',
+    backgroundColor: '#00A63F',
     color: theme.palette.common.white,
     fontWeight: 'bold',
     fontSize: 16,
@@ -50,7 +50,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-  borderRadius: '15px',
+  borderRadius: '10px',
   boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)', 
   overflow: 'hidden',
 }));
@@ -218,7 +218,7 @@ const BoardTypePage = () => {
           </Select>
         </FormControl>
       </Box>
-      <TableContainer component={Paper}>
+      <StyledTableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
@@ -293,7 +293,7 @@ const BoardTypePage = () => {
             )}
           </TableBody>
         </Table>
-      </TableContainer>
+      </StyledTableContainer>
     </div>
   );
 };
