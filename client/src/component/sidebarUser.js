@@ -261,7 +261,7 @@ export default function MiniDrawer() {
 
             <Drawer variant="permanent" open={open}>
                 <DrawerHeader>
-                    <Typography variant="h6" noWrap sx={{ color: '#ffffff' }}>
+                    <Typography variant="h6" noWrap sx={{ color: '#ffffff'}}>
                         (USERNAME)
                     </Typography>
                     <IconButton onClick={handleDrawerClose} sx={{ color: '#ffffff' }}>

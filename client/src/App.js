@@ -25,6 +25,7 @@ import Cancle from './view/cancle';
 import Check from './view/check';
 import Review from './view/review';
 import Checkout from './view/checkout';
+import LoginAdmin from './component/loginAdmin';
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function AppContent() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/loginAdmin" element={<LoginAdmin />} />        
 
         {/* Lindungi halaman admin dengan ProtectedRoute */}
         <Route >
