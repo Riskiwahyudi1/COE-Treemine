@@ -26,6 +26,7 @@ import Check from './view/check';
 import Review from './view/review';
 import Checkout from './view/checkout';
 import LoginAdmin from './component/loginAdmin';
+import ProfileSettings from './view/setingProfile';
 
 function App() {
   return (
@@ -96,6 +97,7 @@ function AppContent() {
             <Routes>
               <Route>
                 <Route path="/user" element={<UserPage />} />
+                <Route path="/user/profileSettings" element={<ProfileSettings />} />
                 <Route path="/change-password" element={<ChangePassword />} />
                 <Route path="/proses" element={<Proses />} />
                 <Route path="/finish" element={<Finish />} />
