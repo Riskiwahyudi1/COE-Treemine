@@ -4,7 +4,7 @@ const requestCustomPrototypeSchema = new mongoose.Schema(
     {
         id_user: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Users',
+            ref: 'User',
             required: true
         },
         name: { type: String, required: false  },

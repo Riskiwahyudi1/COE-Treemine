@@ -10,6 +10,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Box, Typography, Button, Modal, IconButton } from '@mui/material';
 import { getPrototypeHistory } from '../api/requestCostomPrototypeApi';
+import { formatDate } from '../utils/isoDate';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -128,8 +129,8 @@ export default function OrdersTable() {
                             <StyledTableRow key={order._id}>
                                 <StyledTableCell>{index + 1}</StyledTableCell>
                                 <StyledTableCell align="center">{order._id}</StyledTableCell>
-                                <StyledTableCell align="center">{order.name}</StyledTableCell>
-                                <StyledTableCell align="center">{order.createdAt}</StyledTableCell>
+                                <StyledTableCell align="center">{order.id_user.username}</StyledTableCell>
+                                <StyledTableCell align="center">{formatDate(order.createdAt)}</StyledTableCell>
                                 <StyledTableCell align="center">
                                     Rp. {order.total_cost.toLocaleString('id-ID')}
                                 </StyledTableCell>

@@ -3,7 +3,7 @@ const RequestCustomPrototype = require('../../models/request-costom-prototype')
 
 const showRequestPrototype = async (req, res) => {
     try {
-        const products = await RequestCustomPrototype.find({status: 'Review By Admin'})
+        const products = await RequestCustomPrototype.find({status: 'Review By Admin'}).populate('id_user', 'username')
 
         if (!products || products.length === 0) {
             return res.status(404).json({ message: "Request not found!" });
@@ -17,7 +17,7 @@ const showRequestPrototype = async (req, res) => {
 }
 const showWaitingPaymentPrototype = async (req, res) => {
     try {
-        const products = await RequestCustomPrototype.find({status: 'Waiting Payment'})
+        const products = await RequestCustomPrototype.find({status: 'Waiting Payment'}).populate('id_user', 'username')
 
         if (!products || products.length === 0) {
             return res.status(404).json({ message: "Request not found!" });
@@ -31,7 +31,7 @@ const showWaitingPaymentPrototype = async (req, res) => {
 }
 const showPrototypeByProcess = async (req, res) => {
     try {
-        const products = await RequestCustomPrototype.find({status: 'Process'})
+        const products = await RequestCustomPrototype.find({status: 'Process'}).populate('id_user', 'username')
 
         if (!products || products.length === 0) {
             return res.status(404).json({ message: "Request not found!" });
@@ -47,7 +47,7 @@ const showPrototypeHistory = async (req, res) => {
     try {
         const products = await RequestCustomPrototype.find({
             $or: [{ status: 'Finish' }, { status: 'Reject' }]
-        });
+        }).populate('id_user', 'username');
 
         if (!products || products.length === 0) {
             return res.status(404).json({ message: "Request not found!" });

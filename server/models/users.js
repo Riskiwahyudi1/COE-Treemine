@@ -18,6 +18,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+    birthday: {
+        type: Date,
+        default: null
+    },
+    gender: {
+        type: String,
+        default: null
+    },
     role: {
         type: String,
         enum: ['admin', 'buyer'], 
@@ -31,9 +39,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+    profile_picture_url: {
+        type: String,
+        default: null
+    },
    
     address: {
-        detail: {
+        detail_address: {
             type: String,
             default: null
         },

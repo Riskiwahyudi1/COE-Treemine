@@ -16,6 +16,7 @@ import { Box, Typography, Button } from '@mui/material';
 import { getRequestCostomPrototype } from '../api/requestCostomPrototypeApi'
 import axios from 'axios';
 import Toast from '../utils/Toast';
+import { formatDate } from '../utils/isoDate';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -152,8 +153,8 @@ export default function OrdersTable() {
                             <StyledTableRow key={order.id}>
                                 <StyledTableCell>{index + 1}</StyledTableCell>
                                 <StyledTableCell align="center">{order._id}</StyledTableCell>
-                                <StyledTableCell align="center">{order.name}</StyledTableCell>
-                                <StyledTableCell align="center">{order.createdAt}</StyledTableCell>
+                                <StyledTableCell align="center">{order.id_user.username}</StyledTableCell>
+                                <StyledTableCell align="center">{formatDate(order.createdAt)}</StyledTableCell>
                                 <StyledTableCell align="center">
                                     Rp. {order.total_cost.toLocaleString('id-ID')}
                                 </StyledTableCell>

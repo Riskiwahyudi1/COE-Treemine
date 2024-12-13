@@ -51,10 +51,14 @@ app.use(express.json());
 
 app.use('/product-picture', express.static(path.join(__dirname, 'storage/product-picture')));
 app.use('/category-picture', express.static(path.join(__dirname, 'storage/category-picture')));
+app.use('/profile-picture', express.static(path.join(__dirname, 'storage/profile-picture')));
+app.use('/prototype-design', express.static(path.join(__dirname, 'storage/prototype-design')));
 
 
 const productPictureStorage = path.join(__dirname, 'storage/product-picture');
 const categoryPictureStorage = path.join(__dirname, 'storage/category-picture');
+const profilePictureStorage = path.join(__dirname, 'storage/profile-picture');
+const prototypeDesignStorage = path.join(__dirname, 'storage/prototype-design');
 
 // Membuat folder untuk gambar produk 
 if (!fs.existsSync(productPictureStorage)) {
@@ -64,6 +68,14 @@ if (!fs.existsSync(productPictureStorage)) {
 // Membuat folder untuk gambar kategori 
 if (!fs.existsSync(categoryPictureStorage)) {
     fs.mkdirSync(categoryPictureStorage, { recursive: true });
+}
+// Membuat folder untuk gambar profil 
+if (!fs.existsSync(profilePictureStorage)) {
+    fs.mkdirSync(profilePictureStorage, { recursive: true });
+}
+// Membuat folder untuk prototype design 
+if (!fs.existsSync(prototypeDesignStorage)) {
+    fs.mkdirSync(prototypeDesignStorage, { recursive: true });
 }
 
 

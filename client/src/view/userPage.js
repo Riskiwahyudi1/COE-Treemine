@@ -1,36 +1,169 @@
 import React, {useEffect, useState} from "react";
-import { Box, Typography, Avatar, Button, TextField, Grid, Paper, MenuItem , Alert} from "@mui/material";
+import { Box, Typography, Avatar, Button, TextField, Grid, Paper, MenuItem , Alert, CircularProgress} from "@mui/material";
 import { getProvinces, getCities } from "../api/service/rajaOngkirApi"
 import { getDataAccount } from "../api/auth/dataAccount"
+import Toast from "../utils/Toast";
+import Dialog from "../utils/Dialog";
+import axios from "axios";
 
 
 export default function ProfileSettings() {
+  const [profilePhoto, setProfilePhoto] = useState("");
   const [provinces, setProvinces] = useState([]);
   const [cities, setCities] = useState([]);
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
-  const [dataAccount, setDataAccount] = useState("");
+  const [dataAccount, setDataAccount] = useState({ address: {} });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    province: ''
+    gender: '',
+    birthday: '',
+    province: '',
+    city: '',
+    postal_code: '',
+    detail_address: '',
+    profile_picture: null
 
   })
+  // state default
+  useEffect(() => {
+    setProfilePhoto(`http://localhost:5000${dataAccount.profile_picture_url}`);
+  }, [dataAccount]);
 
-console.log(formData)
+  useEffect(() => {
+    setSelectedProvince(`${dataAccount.address.province}`);
+  }, [dataAccount]);
+
+  useEffect(() => {
+    setSelectedCity(`${dataAccount.address.city}`);
+  }, [dataAccount]);
+
+  // handle foto profil
+  const handlePhotoChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setFormData({ ...formData, profile_picture: file }); 
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfilePhoto(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // handle update profile
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    
+    const result = await Dialog.fire({
+      title: 'Anda yakin?',
+      text: 'Update data profil?',
+    });
+
+    if (
+      !formData.name || 
+      !formData.phone || 
+      !formData.gender || 
+      !formData.birthday || 
+      !formData.detail_address || 
+      !formData.city || 
+      !formData.province || 
+      !formData.postal_code 
+  ) {
+      setError('All fields are required.');
+      setLoading(false);
+      return;
+  }
+
+  if(result.isConfirmed){
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+        const data = new FormData();
+
+        data.append('name', formData.name);
+        data.append('phone', formData.phone);
+        data.append('gender', formData.gender);
+        data.append('birthday', formData.birthday);
+        data.append(
+            'address',
+            JSON.stringify({
+                detail_address: formData.detail_address,
+                city: formData.city,
+                province: formData.province,
+                postal_code: formData.postal_code,
+            })
+        );
+        data.append('profile_picture', formData.profile_picture);
+
+        const response = await axios.put(
+          'http://localhost:5000/account/update-profile',
+          data,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+            Toast.fire({
+                icon: 'success',
+                title: 'Account settings updated successfully',
+            });
+        } else {
+            setError('Failed to update account settings. Please try again!');
+        }
+    } catch (error) {      
+      if (error.response) {
+          const { data, status } = error.response;
+          if (status >= 500) {
+              setError('Server error. Please try again later.');
+          } else {
+              setError('Failed to update account settings. Please try again.');
+          }
+      } else if (error.request) {
+          setError('Network error. Please check your internet connection.');
+      } else {
+          setError('An unexpected error occurred. Please try again.');
+      }
+  } finally {
+      setLoading(false);
+  }
+  }
+};
+
+// data akun default
   useEffect(() => {
     const fetchDataAccount = async () => {
-        try {
-            const data = await getDataAccount();
-            setDataAccount(data);
-        } catch (error) {
-
-        }
+      try {
+        const data = await getDataAccount();
+        setDataAccount(data);
+        
+        setFormData({
+          ...formData,
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          gender: data.gender,
+          birthday: data.birthday,
+          province: data.address.province,
+          city: data.address.city,
+          postal_code: data.address.postal_code,
+          detail_address: data.address.detail_address,
+          profile_picture: data.profile_picture
+        });
+      } catch (error) {
+      }
     };
     fetchDataAccount();
-}, []);
+  }, []);
 
+  // data semua provinsi
   useEffect(() => {
     const fetchProvinces = async () => {
         try {
@@ -43,6 +176,7 @@ console.log(formData)
     fetchProvinces();
 }, []);
 
+// data kota berdasarkan profinsi
   useEffect(() => {
     if (selectedProvince) {
       const fetchCities = async () => {
@@ -59,6 +193,8 @@ console.log(formData)
     }
   }, [selectedProvince]);
 
+
+  // handle change input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -67,6 +203,37 @@ console.log(formData)
     }));
 };
 
+const handleSelectProvince = (e) => {
+  const { name, value } = e.target;
+    setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+    }));
+  setSelectedProvince(e.target.value)
+}
+const handleSelectCity = (e) => {
+  const { name, value } = e.target;
+    setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+    }));
+  setSelectedCity(e.target.value)
+}
+
+const handleMultipleChanges = (e) => {
+  const { name } = e.target;
+
+    if (name === "province") {
+        handleSelectProvince(e);
+    } else if (name === "city") {
+        handleSelectCity(e);
+    } else {
+        handleChange(e);
+    } 
+  
+};
+
+ 
   return (
     <Box
       sx={{
@@ -119,21 +286,49 @@ console.log(formData)
             marginBottom: 4,
           }}
         >
-          <Avatar
+           <Avatar
             sx={{
               width: 100,
               height: 100,
               marginBottom: 2,
+              border: "1px solid #007BFF",
+              borderColor: "primary.main",
             }}
-            src="/default-avatar.png"
+            src={profilePhoto} 
           />
-          <Button variant="contained" sx={{ backgroundColor: "#00A63F", textTransform: "none" }}>
-            Ganti Foto
+            <Button
+              component="label"
+              variant="contained"
+              sx={{ bgcolor: '#00A63F', '&:hover': { bgcolor: '#00A63F' } }}
+          >
+              Ganti Foto
+              <input
+                  type="file"
+                  hidden
+                  onChange={handlePhotoChange}
+                  accept="image/*"
+              />
           </Button>
         </Box>
 
         {/* Formulir */}
         <Grid container spacing={3}>
+          {/* Username */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              name="username"
+              label="Username"
+              variant="outlined"
+              value={dataAccount.username}
+              InputProps={{
+                readOnly: true,
+              }}
+              InputLabelProps={{
+                shrink: true, 
+              }}
+            />
+          </Grid>
           {/* Nama Lengkap */}
           <Grid item xs={12} sm={6}>
             <TextField
@@ -141,8 +336,10 @@ console.log(formData)
               name="name"
               label="Nama Lengkap"
               variant="outlined"
-              defaultValue="John Doe"
-              onChange={handleChange}
+              value={formData.name}
+              onChange={handleMultipleChanges}
+              error={!dataAccount.name} 
+              helperText={!dataAccount.name ? "Lengkapi nama lengkap !" : ""} 
             />
           </Grid>
 
@@ -151,28 +348,36 @@ console.log(formData)
             <TextField
               fullWidth
               select
+              name="gender"
               label="Jenis Kelamin"
               variant="outlined"
-              defaultValue="Laki-laki"
+              value={formData.gender || ""}  
+              onChange={handleMultipleChanges}  
+              error={!dataAccount.gender} 
+              helperText={!dataAccount.gender ? "Lengkapi jenis kelamin !" : ""} 
             >
               <MenuItem value="Laki-laki">Laki-laki</MenuItem>
               <MenuItem value="Perempuan">Perempuan</MenuItem>
             </TextField>
           </Grid>
 
-          {/* Tanggal Lahir */}
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
+              name="birthday"
               label="Tanggal Lahir"
               type="date"
               variant="outlined"
-              defaultValue="2000-01-01"
+              value={formData.birthday ? new Date(formData.birthday).toISOString().split('T')[0] : ""} 
+              onChange={handleMultipleChanges}
               InputLabelProps={{
-                shrink: true,
+                shrink: true,  
               }}
+              error={!dataAccount.birthday} 
+              helperText={!dataAccount.birthday ? "Lengkapi tanggal lahir!" : ""} 
             />
           </Grid>
+
 
           {/* Nomor Telepon */}
           <Grid item xs={12} sm={6}>
@@ -181,25 +386,26 @@ console.log(formData)
               name="phone"
               label="Nomor Telepon"
               variant="outlined"
-              onChange={handleChange}
-              value={dataAccount.phone || ''}
+              value={formData.phone}
+              onChange={handleMultipleChanges}
+              error={!dataAccount.phone} 
+              helperText={!dataAccount.phone ? "Lengkapi no telepon !" : ""} 
             />
           </Grid>
 
 
 
-          {/* Email */}
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Email"
               variant="outlined"
-              value={dataAccount.email}
+              value={formData.email}
               InputProps={{
                 readOnly: true,
               }}
               InputLabelProps={{
-                shrink: true, // Menjamin label tetap berada di posisi atas
+                shrink: true, 
               }}
             />
           </Grid>
@@ -208,12 +414,14 @@ console.log(formData)
               fullWidth
               select
               name="province"
-              label="Province"
+              label="Ubah Provinsi"
               variant="outlined"
               defaultValue=""
               id="province"
               value={selectedProvince}
-              onChange={(e) => setSelectedProvince(e.target.value)}
+              onChange={handleMultipleChanges}
+              error={!dataAccount.address.postal_code} 
+              helperText={!dataAccount.address.postal_code ? "Lengkapi Provinsi !" : ""} 
             >
               {provinces?.data?.map((province) => (
                 <MenuItem key={province.province_id} value={province.province_id}>
@@ -227,14 +435,18 @@ console.log(formData)
             <TextField
               fullWidth
               select
-              label="District/City"
+              name="city"
+              label="Ubah Kab/Kota"
               variant="outlined"
-              defaultValue=""
+              id="city"
+              defaultValue={formData.province}
               value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
+              onChange={handleMultipleChanges}
+              error={!dataAccount.address.city} 
+              helperText={!dataAccount.address.city ? "Lengkapi Kab/Kota !" : ""} 
             >
               <MenuItem value="">
-                {selectedProvince ? "Select City" : "Select the province first!"}
+                {selectedProvince ? "Pilih Kab/Kota" : "Silahkan pilih provinsi dahulu!"}
               </MenuItem>
               {cities.map((city) => (
                     <MenuItem key={city.city_id} value={city.city_id}>
@@ -247,9 +459,13 @@ console.log(formData)
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Postal Code"
+              name="postal_code"
+              label="Kode Pos"
               variant="outlined"
-              defaultValue=""
+              value={formData.postal_code || ''}
+              onChange={handleMultipleChanges}
+              error={!dataAccount?.address?.postal_code } 
+              helperText={!dataAccount?.address?.postal_code ? "Lengkapi kode pos!" : ""} 
             />
           </Grid>
 
@@ -257,14 +473,23 @@ console.log(formData)
           <Grid item xs={12}>
             <TextField
               fullWidth
-              label="Detai Alamat"
+              name="detail_address"
+              label="Detail Alamat"
               variant="outlined"
-              defaultValue="Jl. Contoh Alamat No.123"
+              value={formData.detail_address || ''}
               multiline
               rows={3}
+              placeholder="Contoh : Jl. Ahmad Yani, Tlk. Tering, Kec. Batam Kota"
+              onChange={handleMultipleChanges}
+              error={!dataAccount.address.detail_address} 
+              helperText={!dataAccount.address.detail_address ? "Lengkapi detail alamat anda!" : ""} 
+              InputLabelProps={{
+                shrink: true, 
+              }}
             />
           </Grid>
         </Grid>
+        {error && <Alert severity="error">{error}</Alert>}
 
         {/* Tombol Aksi */}
         <Box
@@ -278,10 +503,12 @@ console.log(formData)
             Batal
           </Button>
           <Button
+            type="submit"
+            onClick={handleSubmit}
             variant="contained"
             sx={{ backgroundColor: "#00A63F", textTransform: "none", color: "#fff" }}
           >
-            Simpan Perubahan
+             {loading ? <CircularProgress size={24} /> : 'Simpan Perubahan'}
           </Button>
         </Box>
       </Paper>
