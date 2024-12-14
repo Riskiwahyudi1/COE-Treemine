@@ -34,6 +34,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';
 import Logoweb from '../assets/images/logo.png';
+import { jwtDecode } from 'jwt-decode';
 
 const drawerWidth = 240;
 
@@ -134,9 +135,7 @@ export default function MiniDrawer() {
         }));
     };
 
-    // const handleSetting = () => {
-    //     navigate('/SettingProfile');
-    // };
+   
 
     const menuItems = [
         {
@@ -159,11 +158,7 @@ export default function MiniDrawer() {
             text: 'Pesanan',
             icon: <ShoppingCartIcon />,
             submenu: [
-                // {
-                //     text: 'Review',
-                //     icon: <RateReviewIcon />,
-                //     path: '/review'
-                // },
+                
                 {
                     text: 'Check',
                     icon: <FactCheckIcon />,
@@ -201,10 +196,22 @@ export default function MiniDrawer() {
     
     // Styled component untuk logo image
     const LogoImage = styled('img')({
-        height: '50px', // Anda bisa menyesuaikan ukuran sesuai kebutuhan
+        height: '50px', 
         width: 'auto',
         objectFit: 'contain',
     });
+    const token = localStorage.getItem('token');
+
+    let username = ''; 
+
+    if (token) {
+        try {
+            const decoded = jwtDecode(token);
+            username = decoded.username; 
+        } catch (error) {
+            console.error("Failed to decode JWT:", error);
+        }
+    }
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -247,7 +254,7 @@ export default function MiniDrawer() {
                             fontWeight: 'bold',
                         }}
                     >
-                        A
+                        U
                     </Avatar>
                     <Menu
                         anchorEl={anchorEl}
@@ -261,8 +268,8 @@ export default function MiniDrawer() {
 
             <Drawer variant="permanent" open={open}>
                 <DrawerHeader>
-                    <Typography variant="h6" noWrap sx={{ color: '#ffffff'}}>
-                        (USERNAME)
+                    <Typography variant="h6" noWrap sx={{ color: '#ffffff', marginLeft: '25px'}}>
+                        Hi, {username}
                     </Typography>
                     <IconButton onClick={handleDrawerClose} sx={{ color: '#ffffff' }}>
                         {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}

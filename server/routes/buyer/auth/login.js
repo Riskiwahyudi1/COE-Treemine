@@ -4,7 +4,17 @@ const bcrypt = require('bcrypt');
 const User = require('../../../models/users');
 const router = express.Router();
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 
+const loginRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, 
+    max: 5, 
+    message: {
+        message: "Terlalu banyak percobaan login. Silakan coba lagi setelah 15 menit.",
+    },
+    standardHeaders: true, 
+    legacyHeaders: false,  
+});
 
 const corsOptions = {
     origin: 'http://localhost:3000', 
@@ -14,7 +24,7 @@ const corsOptions = {
 
 const JWT_SECRET = process.env.JWT_SECRET; 
 
-router.post('/', async (req, res) => {
+router.post('/', loginRateLimiter, async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -36,8 +46,22 @@ router.post('/', async (req, res) => {
         }
 
         // JWT Token create
-        const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-        res.status(200).json({ token, message: "Login Berhasil!" });
+        const token = jwt.sign(
+            { id: user._id, username: user.username },
+            JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+
+        
+        // Kirim respons sukses dengan token
+        res.status(200).json({
+            token,
+            user: {
+                id: user._id,
+                username: user.username,
+            },
+            message: "Login berhasil!",
+        });
 
     } catch (error) {
         console.error(error);

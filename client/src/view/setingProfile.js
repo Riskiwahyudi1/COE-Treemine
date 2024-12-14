@@ -122,6 +122,7 @@ export default function ProfileSettings() {
                         icon: 'success',
                         title: 'Account settings updated successfully',
                     });
+                    navigate('/user', { state: { showToast: true } });
                 } else {
                     setError('Failed to update account settings. Please try again!');
                 }

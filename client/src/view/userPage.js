@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Avatar, Button, TextField, Grid, Paper, MenuItem, Alert, CircularProgress } from "@mui/material";
+import { Box, Typography, Avatar, Button, TextField, Grid, Paper } from "@mui/material";
 import { getProvinces, getCities } from "../api/service/rajaOngkirApi"
 import { getDataAccount } from "../api/auth/dataAccount"
-import Toast from "../utils/Toast";
-import Dialog from "../utils/Dialog";
-import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
 
 export default function ProfileSettings() {
   const navigate = useNavigate();
   const [profilePhoto, setProfilePhoto] = useState("");
-  const [provinces, setProvinces] = useState([]);
-  const [cities, setCities] = useState([]);
-  const [selectedProvince, setSelectedProvince] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
+  const [provinces, setProvinces] = useState('');
+  const [cities, setCities] = useState();
   const [dataAccount, setDataAccount] = useState({ address: {} });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -34,27 +27,6 @@ export default function ProfileSettings() {
   useEffect(() => {
     setProfilePhoto(`http://localhost:5000${dataAccount.profile_picture_url}`);
   }, [dataAccount]);
-
-  useEffect(() => {
-    setSelectedProvince(`${dataAccount.address.province}`);
-  }, [dataAccount]);
-
-  useEffect(() => {
-    setSelectedCity(`${dataAccount.address.city}`);
-  }, [dataAccount]);
-
-  // handle foto profil
-  const handlePhotoChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setFormData({ ...formData, profile_picture: file });
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfilePhoto(e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   // handle update profile
   const handleEdit = () => {
@@ -87,75 +59,49 @@ export default function ProfileSettings() {
     fetchDataAccount();
   }, []);
 
-  // data semua provinsi
+//  provinsi user
   useEffect(() => {
-    const fetchProvinces = async () => {
+    const fetchProvince = async () => {
       try {
-        const data = await getProvinces();
-        setProvinces(data);
+        const dataProvinces = await getProvinces();
+        if (dataProvinces?.data) {
+          const province = dataProvinces.data.find(
+            (prov) => prov.province_id === formData.province
+          );
+          setProvinces(province?.province || "Provinsi tidak ditemukan");
+        }
       } catch (error) {
-
+        setProvinces("Gagal memuat data..");
       }
     };
-    fetchProvinces();
-  }, []);
 
-  // data kota berdasarkan profinsi
+    if (formData.province) {
+      fetchProvince();
+    }
+  }, [formData.province]);
+
+  // kota berdasarkan profinsi
   useEffect(() => {
-    if (selectedProvince) {
-      const fetchCities = async () => {
-        try {
-          const data = await getCities(selectedProvince);
-          setCities(data);
-        } catch (error) {
-          console.error("Error fetching cities", error);
+  if (formData.province) {
+    const fetchCities = async () => {
+      try {
+        const dataCity = await getCities(formData.province);
+        if (dataCity) {
+          const city = dataCity.find(
+            (cities) => cities.city_id === formData.city
+          );
+          setCities(city?.city_name || "Kota tidak ditemukan");
         }
-      };
-      fetchCities();
-    } else {
-      setCities([]);
-    }
-  }, [selectedProvince]);
-
-
-  // handle change input
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSelectProvince = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-    setSelectedProvince(e.target.value)
+      } catch (error) {
+        setCities('Gagal memuat data..'); 
+      }
+    };
+    fetchCities();
+  } else {
+    setCities([]); 
   }
-  const handleSelectCity = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-    setSelectedCity(e.target.value)
-  }
+}, [formData.province]);
 
-  const handleMultipleChanges = (e) => {
-    const { name } = e.target;
-
-    if (name === "province") {
-      handleSelectProvince(e);
-    } else if (name === "city") {
-      handleSelectCity(e);
-    } else {
-      handleChange(e);
-    }
-
-  };
 
 
   return (
@@ -329,74 +275,24 @@ export default function ProfileSettings() {
             />
           </Grid>
 
-          {/* Provinsi */}
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Provinsi"
-              variant="outlined"
-              value={selectedProvince || ""}
-              InputProps={{
-                readOnly: true,
-              }}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
-
-          {/* Kota */}
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Kab/Kota"
-              variant="outlined"
-              value={selectedCity || ""}
-              InputProps={{
-                readOnly: true,
-              }}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
-
-          {/* Kode Pos */}
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              name="postal_code"
-              label="Kode Pos"
-              variant="outlined"
-              value={formData.postal_code || ""}
-              InputProps={{
-                readOnly: true,
-              }}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
-
-          {/* Detail Alamat */}
           <Grid item xs={12}>
             <TextField
               fullWidth
-              name="detail_address"
               label="Detail Alamat"
               variant="outlined"
-              value={formData.detail_address || ""}
-              InputProps={{
-                readOnly: true,
-              }}
+              value={`${formData.detail_address || ''}, ${cities || ''}, ${provinces || ''}, ${formData.postal_code || ''}`}
+              multiline
+              rows={3}
               InputLabelProps={{
                 shrink: true,
               }}
+              InputProps={{
+                readOnly: true,
+              }}
             />
           </Grid>
-        </Grid>
+          </Grid>
 
-        {error && <Alert severity="error">{error}</Alert>}
 
         {/* Tombol Aksi */}
         <Box

@@ -26,12 +26,3 @@ export const getCities = async (provinceId) => {
         throw error;
     }
 };
-export const getSubdistricts = async (cityId) => {
-    try {
-        const response = await axios.get(`${API_URL}/subdistrict?city_id=${cityId}`);
-        return response.data.data; 
-    } catch (error) {
-        console.error("Error fetching subdistricts:", error);
-        throw error;
-    }
-};

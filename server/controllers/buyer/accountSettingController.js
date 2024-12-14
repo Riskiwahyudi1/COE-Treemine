@@ -37,7 +37,6 @@ const updateProfile = async (req, res) => {
         const user = req.user;  
         const id_user = user.id; 
         const { name, phone, gender, birthday, address } = req.body;
-        console.log(req.body)
         const profile_picture = req.file; 
         let addressData = {};
 
@@ -86,7 +85,6 @@ const updateProfile = async (req, res) => {
             data: dataProfile,
         });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Failed to update profile' });
     }
 };
