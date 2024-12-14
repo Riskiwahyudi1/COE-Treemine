@@ -128,9 +128,15 @@ export default function ProfileSettings() {
             } catch (error) {
                 if (error.response) {
                     const { data, status } = error.response;
-                    if (status >= 500) {
+            
+                    if (status === 400) {
+                        const validationErrors = data.errors.map((err) => err.msg).join(', ');
+                        setError(`${validationErrors}`);
+                    } 
+                    else if (status >= 500) {
                         setError('Server error. Please try again later.');
-                    } else {
+                    } 
+                    else {
                         setError('Failed to update account settings. Please try again.');
                     }
                 } else if (error.request) {
@@ -138,6 +144,7 @@ export default function ProfileSettings() {
                 } else {
                     setError('An unexpected error occurred. Please try again.');
                 }
+            
             } finally {
                 setLoading(false);
             }

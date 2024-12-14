@@ -37,7 +37,7 @@ const updateProfile = async (req, res) => {
         const user = req.user;  
         const id_user = user.id; 
         const { name, phone, gender, birthday, address } = req.body;
-
+        console.log(req.body)
         const profile_picture = req.file; 
         let addressData = {};
 
