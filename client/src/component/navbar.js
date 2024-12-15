@@ -131,6 +131,9 @@ const Navbar = () => {
     const handleProfileMenu = () => {
         navigate('/user');
     };
+    const handleTransaksiPage = () => {
+        navigate('/check');
+    };
 
     const renderMobileDrawer = () => (
         <Drawer
@@ -269,6 +272,7 @@ const Navbar = () => {
                                 }}
                             >
                                 <MenuItem onClick={handleProfileMenu}>Profile</MenuItem>
+                                <MenuItem onClick={handleTransaksiPage}>Transaksi</MenuItem>
                                 <MenuItem
                                     onClick={() => {
                                         logout();

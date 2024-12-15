@@ -132,7 +132,7 @@ export default function OrdersTable() {
                                 <StyledTableCell align="center">{order.id_user.username}</StyledTableCell>
                                 <StyledTableCell align="center">{formatDate(order.createdAt)}</StyledTableCell>
                                 <StyledTableCell align="center">
-                                    Rp. {order.total_cost.toLocaleString('id-ID')}
+                                    Rp.{Number(order.total_cost).toLocaleString('id-ID')}
                                 </StyledTableCell>
                                 <StyledTableCell
                                     align="center"
@@ -163,9 +163,12 @@ export default function OrdersTable() {
                 <ModalContent>
                     {selectedOrder ? (
                         <>
+                            {/* Header */}
                             <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
                                 Detail Pesanan
                             </Typography>
+
+                            {/* Informasi Pesanan */}
                             <Typography variant="body1">
                                 <strong>No Order:</strong> {selectedOrder._id}
                             </Typography>
@@ -173,24 +176,48 @@ export default function OrdersTable() {
                                 <strong>Nama:</strong> {selectedOrder.name}
                             </Typography>
                             <Typography variant="body1">
-                                <strong>Tanggal:</strong> {selectedOrder.createdAt}
+                                <strong>Tanggal:</strong> {formatDate(selectedOrder.createdAt)}
                             </Typography>
                             <Typography variant="body1">
-                                <strong>Harga:</strong> Rp. {selectedOrder.total_cost.toLocaleString('id-ID')}
+                                <strong>Harga:</strong> Rp.{Number(selectedOrder.total_cost).toLocaleString('id-ID')}
                             </Typography>
+
                             <Typography variant="body1">
                                 <strong>Status:</strong> {selectedOrder.status}
                             </Typography>
-                            <Typography variant="body1" sx={{ marginTop: 2, fontWeight: 'bold' }}>
-                                Produk yang Dipesan:
+
+                            {/* Spesifikasi */}
+                            <Typography variant="body1" sx={{ marginTop: 2, fontWeight: 'bold',marginBottom: 1 }}>
+                                Spesifikasi :
                             </Typography>
                             <Box>
-                                {selectedOrder.items?.map((item, idx) => (
+                                {[
+                                    { label: 'X Out', value: selectedOrder.x_out },
+                                    { label: 'Route Process', value: selectedOrder.route_process },
+                                    { label: 'Design in Panel', value: selectedOrder.design_in_panel },
+                                    { label: 'Size', value: `${selectedOrder.length} X ${selectedOrder.width}` },
+                                    { label: 'Quantity', value: selectedOrder.quantity },
+                                    { label: 'Layer', value: selectedOrder.layer },
+                                    { label: 'Copper Layer', value: selectedOrder.copper_layer },
+                                    { label: 'Solder Mask Position', value: selectedOrder.solder_mask_position },
+                                    { label: 'Material', value: selectedOrder.material },
+                                    { label: 'Thickness', value: selectedOrder.thickness },
+                                    { label: 'Min Track', value: selectedOrder.min_track },
+                                    { label: 'Min Hole', value: selectedOrder.min_hole },
+                                    { label: 'Solder Mask', value: selectedOrder.solder_mask },
+                                    { label: 'Silkscreen', value: selectedOrder.silkscreen },
+                                    { label: 'UV Printing', value: selectedOrder.uv_printing },
+                                    { label: 'Surface Finish', value: selectedOrder.surface_finish },
+                                    { label: 'Finish Copper', value: selectedOrder.finish_copper },
+                                    { label: 'Remove Product No', value: selectedOrder.remove_product_no },
+                                ].map((item, idx) => (
                                     <Typography key={idx} variant="body2">
-                                        - {item.name} (x{item.quantity}) - Rp. {item.price.toLocaleString('id-ID')}
+                                       <strong>{item.label}: </strong>  {item.value}
                                     </Typography>
                                 ))}
                             </Box>
+
+                            {/* Tombol Penutup */}
                             <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
                                 <Button
                                     variant="contained"
@@ -205,10 +232,12 @@ export default function OrdersTable() {
                             </Box>
                         </>
                     ) : (
+                        // Loading State
                         <Typography variant="body1">Loading...</Typography>
                     )}
                 </ModalContent>
             </StyledModal>
+
         </Box>
     );
 }

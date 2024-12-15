@@ -67,7 +67,7 @@ const CustomPrototype = (part) => {
         total_cost: 0,
 
     });
-    console.log(selectedLayer)
+  
     const [getCost, setGetCost] = useState({
         board_type: 0,
         x_out: 0,
@@ -110,7 +110,7 @@ const CustomPrototype = (part) => {
 
         setFormData((prevData) => ({
             ...prevData,
-            [name]: parsedValue,
+            [name]: parsedValue.type,
         }));
 
         setGetCost((prevCost) => {
@@ -386,7 +386,7 @@ const CustomPrototype = (part) => {
                                                             <InputLabel>Route Process</InputLabel>
                                                             <Select
                                                                 name="route_process"
-                                                                value={JSON.stringify(formData.route_process)}
+                                                                value={JSON.stringify(formData.route_process.type)}
                                                                 label="Route Process"
                                                                 onChange={handleChange}
                                                             >
@@ -462,7 +462,7 @@ const CustomPrototype = (part) => {
                                                             labelId="length-label"
                                                             defaultValue={part.data.find((obj) => obj.type === "length")?.cost || ""}
                                                             label="Length"
-                                                            value={JSON.stringify(formData.length)}
+                                                            value={JSON.stringify(formData.length.type)}
                                                             onChange={handleChange}
                                                         >
                                                             <MenuItem value="" disabled>
@@ -486,7 +486,7 @@ const CustomPrototype = (part) => {
                                                             labelId="width-label"
                                                             defaultValue={part.data.find((obj) => obj.type === "width")?.cost || ""}
                                                             label="Width"
-                                                            value={JSON.stringify(formData.width)}
+                                                            value={JSON.stringify(formData.width.type)}
                                                             onChange={handleChange}
                                                         >
                                                             <MenuItem value="" disabled>
@@ -516,7 +516,7 @@ const CustomPrototype = (part) => {
                                                 <Select
                                                     name="quantity"
                                                     defaultValue=""
-                                                    value={JSON.stringify(formData.quantity)}
+                                                    value={JSON.stringify(formData.quantity.type)}
                                                     label="Select Quantity"
                                                     onChange={handleChange}
                                                 >
@@ -566,7 +566,7 @@ const CustomPrototype = (part) => {
                                                         <Select
                                                             name="copper_layer"
                                                             defaultValue=""
-                                                            value={JSON.stringify(formData.copper_layer)}
+                                                            value={JSON.stringify(formData.copper_layer.type)}
                                                             label="Copper Layer"
                                                             onChange={handleChange}
                                                         >
@@ -594,7 +594,7 @@ const CustomPrototype = (part) => {
                                                         <Select
                                                             name="solder_mask_position"
                                                             defaultValue=""
-                                                            value={JSON.stringify(formData.solder_mask_position)}
+                                                            value={JSON.stringify(formData.solder_mask_position.type)}
                                                             label="Solder Mask Position"
                                                             onChange={handleChange}
                                                         >
@@ -622,7 +622,7 @@ const CustomPrototype = (part) => {
                                                         <Select
                                                             name="silkscreen_position"
                                                             defaultValue=""
-                                                            value={JSON.stringify(formData.solder_mask_position)}
+                                                            value={JSON.stringify(formData.solder_mask_position.type)}
                                                             label="Silkscreen Position"
                                                             onChange={handleChange}
                                                         >
@@ -673,8 +673,6 @@ const CustomPrototype = (part) => {
                                     );
 
                                     // Debugging log
-                                    console.log("Selected Material:", selectedMaterial);
-                                    console.log("Unique Subtypes:", uniqueSubtypes);
 
                                     if (uniqueSubtypes.length > 0) {
                                         return (
@@ -712,7 +710,7 @@ const CustomPrototype = (part) => {
                                                 <Select
                                                     name="thickness"
                                                     defaultValue=""
-                                                    value={JSON.stringify(formData.thickness)}
+                                                    value={JSON.stringify(formData.thickness.type)}
                                                     label="Select Thickness"
                                                     onChange={handleChange}
                                                 >
@@ -738,7 +736,7 @@ const CustomPrototype = (part) => {
                                                 <Select
                                                     name="min_track"
                                                     defaultValue=""
-                                                    value={JSON.stringify(formData.min_track)}
+                                                    value={JSON.stringify(formData.min_track.type)}
                                                     label="Select Spacing"
                                                     onChange={handleChange}
                                                 >
@@ -764,7 +762,7 @@ const CustomPrototype = (part) => {
                                                 <Select
                                                     name="min_hole"
                                                     defaultValue=""
-                                                    value={JSON.stringify(formData.min_hole)}
+                                                    value={JSON.stringify(formData.min_hole.type)}
                                                     label="Select Hole Size"
                                                     onChange={handleChange}
                                                 >
@@ -791,7 +789,7 @@ const CustomPrototype = (part) => {
                                                     name="solder_mask"
                                                     defaultValue=""
                                                     label="Select Mask"
-                                                    value={JSON.stringify(formData.solder_mask)}
+                                                    value={JSON.stringify(formData.solder_mask.type)}
                                                     onChange={handleChange}
                                                 >
                                                     {part.data.map((obj) => (
@@ -841,7 +839,7 @@ const CustomPrototype = (part) => {
                                                 <Select
                                                     name="uv_printing"
                                                     defaultValue=""
-                                                    value={JSON.stringify(formData.uv_printing)}
+                                                    value={JSON.stringify(formData.uv_printing.type)}
                                                     label="Select UV Printing Multi Color"
                                                     onChange={handleChange}
                                                 >
@@ -892,7 +890,7 @@ const CustomPrototype = (part) => {
                                                     name="surface_finish"
                                                     defaultValue=""
                                                     label="Select Surface Finish"
-                                                    value={JSON.stringify(formData.surface_finish)}
+                                                    value={JSON.stringify(formData.surface_finish.type)}
                                                     onChange={handleChange}
                                                 >
                                                     {part.data.map((obj) => (
@@ -942,7 +940,7 @@ const CustomPrototype = (part) => {
                                                     name="finish_copper"
                                                     defaultValue=""
                                                     label="Select Finished Copper"
-                                                    value={JSON.stringify(formData.finish_copper)}
+                                                    value={JSON.stringify(formData.finish_copper.type)}
                                                     onChange={handleChange}
                                                 >
                                                     {part.data.map((obj) => (
