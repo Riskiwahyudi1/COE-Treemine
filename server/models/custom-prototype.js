@@ -15,7 +15,7 @@ const customPrototypeSchema = new mongoose.Schema({
       type: Number, 
       required: true
     },
-    _id: { type: mongoose.Schema.Types.ObjectId }
+    // _id: { type: mongoose.Schema.Types.ObjectId }
   }]
 }, {
   timestamps: true 

@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const {  fetchProvinces, fetchCitiesByProvince, fetchSubdistrictsByCity } = require('../../controllers/service/rajaOngkir');
-
+const authenticateToken = require('../../middlewares/authenticateToken');
+const {  fetchProvinces, fetchCitiesByProvince, checkShippingCost, getAvailableCouriers } = require('../../controllers/service/rajaOngkir');
 
 router.get('/provinces', fetchProvinces);
 router.get('/cities', fetchCitiesByProvince);
-router.get("/subdistrict", fetchSubdistrictsByCity);
+router.post('/couriers', authenticateToken, getAvailableCouriers);
+router.get('/calculate-cost',authenticateToken, checkShippingCost);
 
 module.exports = router;

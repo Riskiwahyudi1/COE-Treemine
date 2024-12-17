@@ -22,7 +22,7 @@ const UpdateBoardTypePage = () => {
   const { typeId, itemId } = useParams();
 
   const handleBack = () => {
-    navigate('../boardType');
+    navigate(-1);
   };
 
   useEffect(() => {

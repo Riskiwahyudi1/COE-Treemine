@@ -122,7 +122,7 @@ export default function ProfileSettings() {
                         icon: 'success',
                         title: 'Account settings updated successfully',
                     });
-                    navigate('/user', { state: { showToast: true } });
+                    navigate(-1 , { state: { showToast: true } });
                 } else {
                     setError('Failed to update account settings. Please try again!');
                 }
@@ -515,7 +515,7 @@ export default function ProfileSettings() {
                     }}
                 >
                     <Button variant="outlined"  onClick={handleBack} sx={{ textTransform: "none" }}>
-                        Batal
+                        Kembali
                     </Button>
                     <Button
                         type="submit"

@@ -23,7 +23,7 @@ const UpdateBoardTypePage = () => {
   const { id } = useParams();
 
   const handleBack = () => {
-    navigate('../boardType');
+    navigate(-1);
   };
 
   const handleSubmit = async (e) => {

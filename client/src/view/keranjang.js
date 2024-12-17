@@ -137,6 +137,10 @@ const ShoppingCart = () => {
     const handleBack = () => {
         navigate('/');
     };
+
+    console.log(selectedItems)
+    console.log(productListInCart)
+
     const handleLinkCostom = () => {
         navigate('./costom-product');
     };
@@ -212,6 +216,14 @@ const ShoppingCart = () => {
             [id]: isChecked,
         }));
     };
+
+    const handleCheckout = () => {
+        navigate("/checkout", { state: {
+            productListInCart, 
+            selectedItems   
+          } });
+      };
+    
 
     const getTotalPrice = () => {
         return productListInCart
@@ -318,6 +330,7 @@ const ShoppingCart = () => {
                 <Button
                     variant="contained"
                     size="large"
+                    onClick={handleCheckout}
                     sx={{
                         backgroundColor: '#00A63F',
                         color: '#fff',

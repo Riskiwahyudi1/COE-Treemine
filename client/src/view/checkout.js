@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Typography,
@@ -9,43 +9,182 @@ import {
     TextField,
     Grid,
     Paper,
+    MenuItem,
+    Select,
+    InputLabel,
+    FormControl,
+    Divider
 } from "@mui/material";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { getCost } from "../api/service/rajaOngkirApi";
+import { getDataAccount } from "../api/auth/dataAccount";
+import { getProvinces, getCities } from "../api/service/rajaOngkirApi"
+
+
 
 const PaymentPage = () => {
-    const navigate = useNavigate(); // Menggunakan useNavigate
+    const navigate = useNavigate(); 
+    const location = useLocation();
 
-    // Data Dummy
-    const [data, setData] = useState({
-        recipient: "Chelsea Anayah",
-        phone: "+628123456789",
-        address:
-            "Jl. Ahmad Yani, Tlk. Tering, Kec. Batam Kota, Kota Batam, Kepulauan Riau 29461",
-        product: {
-            name: "Control Module Without USB Cable",
-            price: 400000,
-            quantity: 3,
-            image: "https://via.placeholder.com/150", // Replace with the actual image URL
-        },
-        shippingCost: 35000,
-    });
+    const [costList, setCost] = useState([])
+    const [costShipping, setcostShipping] = useState([])
+    const [estimasionDay, setEstimasionDay] = useState([])
+    const [selectedOption, setSelectedOption] = useState('')
+    const [selectedCourier, setSelectedCourier] = useState('')
+    const [shipingOption, setShipingOption] = useState([])
+    const [dataAccount, setDataAccount] = useState([])
+    const [province, setProvince] = useState('')
+    const [city, setCity] = useState('')
+    const [totalPriceProduct, settotalPriceProduct] = useState(0);
+    const [totalPayment, setTotalPayment] = useState(0);
 
-    const subtotal = data.product.price * data.product.quantity;
-    const total = subtotal + data.shippingCost;
+    const selectedProducts = location.state?.selectedItems || [];
+    const productListInCart = location.state?.productListInCart || [];
 
-    // Event handler untuk update state saat field diedit
-    const handleChange = (field, value) => {
-        setData((prevData) => ({
-            ...prevData,
-            [field]: value,
-        }));
+    const productsToCheckout = productListInCart.filter(product =>
+        selectedProducts[product._id] === true
+        
+      );
+
+      console.log(totalPriceProduct)
+      console.log(productsToCheckout)
+    useEffect(() => {
+        const total = productsToCheckout.reduce((total, product) => {
+            return total + ((product.id_product?.harga || 0) * (product.quantity || 1));
+          }, 0);
+
+    settotalPriceProduct(total);
+    }, [productsToCheckout]);
+
+    useEffect(() => {
+        const validTotalPrice = Number(totalPriceProduct) || 0;
+        const validCostShipping = Number(costShipping) || 0;
+      
+        setTotalPayment(validTotalPrice + validCostShipping);
+      }, [totalPriceProduct, costShipping]);
+      
+
+    useEffect(() => {
+        const fetchDataAccount = async () => {
+          try {
+            const data = await getDataAccount();
+            setDataAccount(data);
+          } catch (error) {
+          }
+        };
+        fetchDataAccount();
+      }, []);
+
+     
+      //  provinsi user
+        useEffect(() => {
+          const fetchProvince = async () => {
+            try {
+              const dataProvinces = await getProvinces();
+              if (dataProvinces?.data) {
+                const province = dataProvinces.data.find(
+                  (prov) => prov.province_id === dataAccount?.address?.province
+                );
+                setProvince(province?.province);
+              }
+            } catch (error) {
+              setProvince("Gagal memuat data..");
+            }
+          };
+      
+          if (dataAccount?.address?.province) {
+            fetchProvince();
+          }
+        }, [dataAccount]);
+      
+        // kota berdasarkan profinsi
+        useEffect(() => {
+        if (dataAccount?.address?.province) {
+          const fetchCities = async () => {
+            try {
+              const dataCity = await getCities(dataAccount?.address?.province);
+              if (dataCity) {
+                const city = dataCity.find(
+                  (cities) => cities.city_id === dataAccount?.address?.city
+                );
+                setCity(city?.city_name || "Kota tidak ditemukan");
+              }
+            } catch (error) {
+              setCity('Gagal memuat data..'); 
+            }
+          };
+          fetchCities();
+        } else {
+          setCity([]); 
+        }
+      }, [dataAccount]);
+      
+    useEffect(() => {
+        const fetchCost = async () => {
+            if (!selectedCourier) return;
+            try {
+                const data = await getCost(selectedCourier); 
+                setCost(data);  
+            } catch (error) {
+                console.error("Error fetching cost:", error);
+            }
+        };
+
+        fetchCost(); 
+    }, [selectedCourier]);
+
+
+
+    useEffect(() => {
+        if (costList && Array.isArray(costList)) {
+            const listServicesAndDescriptions = [];
+            const costValue = [];
+            const etd = [];
+    
+            costList.forEach((courier) => {
+                if (courier.costs && Array.isArray(courier.costs)) {
+                    courier.costs.forEach((service) => {
+                        listServicesAndDescriptions.push({
+                            service: service.service,
+                            description: service.description,
+                        });
+                        
+                        if (service.service === selectedOption && Array.isArray(service.cost)) {
+                            service.cost.forEach((costItem) => {
+                                costValue.push(costItem.value);
+                                etd.push(costItem.etd);
+                            });
+                        }
+                    });
+                }
+            });
+    
+            setShipingOption(listServicesAndDescriptions);
+            setcostShipping(costValue); 
+            setEstimasionDay(etd); 
+        }
+    }, [costList, selectedOption]);
+    
+    
+    const handleSelectShippingOptions = (event) => {
+        setSelectedOption(event.target.value);
     };
+    const handleSelectCouriers = (event) => {
+        setSelectedCourier(event.target.value);
+    };
+    
+    
 
-    // Event handler untuk tombol "Back"
     const handleBack = () => {
-        navigate(-1); // Navigasi kembali ke halaman sebelumnya
+        navigate(-1); 
     };
 
+    const handleEditAlamat = () => {
+        navigate('/user/profileSettings');
+    };
+
+ 
     return (
         <Box
             sx={{
@@ -79,79 +218,159 @@ const PaymentPage = () => {
                             label="Recipient Name"
                             variant="outlined"
                             fullWidth
-                            value={data.recipient}
-                            onChange={(e) => handleChange("recipient", e.target.value)}
+                            value={dataAccount.name || ""}
+                            InputProps={{
+                                readOnly: true,
+                            }}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
                             sx={{ mb: 2 }}
                         />
                         <TextField
                             label="Phone Number"
                             variant="outlined"
                             fullWidth
-                            value={data.phone}
-                            onChange={(e) => handleChange("phone", e.target.value)}
+                            value={dataAccount.phone || ""}
                             sx={{ mb: 2 }}
-                        />
+                            InputProps={{
+                                readOnly: true,
+                            }}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                                        />
                         <TextField
-                            label="Address"
-                            variant="outlined"
                             fullWidth
+                            label="Detail Alamat"
+                            variant="outlined"
+                            value={`${dataAccount?.address?.detail_address || ''}, ${city || ''}, ${province || ''}, ${dataAccount?.address?.postal_code || ''}`}
                             multiline
                             rows={3}
-                            value={data.address}
-                            onChange={(e) => handleChange("address", e.target.value)}
+                            sx={{ mb: 2 }}
+                            InputLabelProps={{
+                            shrink: true,
+                            }}
+                            InputProps={{
+                            readOnly: true,
+                            }}
                         />
+                    <Button
+                                type="submit"
+                                onClick={handleEditAlamat}
+                                variant="contained"
+                                sx={{ backgroundColor: "#00A63F", textTransform: "none", color: "#fff" }}
+                                
+                              >Edit Alamat
+                              </Button>
                     </CardContent>
                 </Card>
 
-                {/* Product and Message Section */}
-                <Grid container spacing={2} alignItems="flex-start" mb={3}>
-                    {/* Product Details */}
-                    <Grid item xs={6}>
-                        <Box display="flex" gap={2}>
+                {productsToCheckout.length > 0 ? (
+                    <Grid container spacing={2}  sx={{ mb: 2 }}>
+                        {productsToCheckout.map((product) => (
+                        <Grid item xs={12} key={product._id}>
+                            <Box display="flex" alignItems="center" gap={2} sx={{ padding: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+                            {/* Gambar produk */}
                             <CardMedia
                                 component="img"
-                                image={data.product.image}
-                                alt={data.product.name}
-                                sx={{ width: 150, height: 150, borderRadius: 2 }}
+                                image={`http://localhost:5000${product.id_product?.picture_url || ""}`}
+                                alt={product.id_product?.product_name || "Unnamed Product"}
+                                sx={{
+                                width: 100,
+                                height: 100,
+                                objectFit: "cover",
+                                borderRadius: 2,
+                                }}
                             />
+
+                            {/* Informasi produk */}
                             <Box>
                                 <Typography variant="subtitle1" fontWeight="bold">
-                                    {data.product.name}
+                                {product.id_product?.product_name || "Unnamed Product"}
                                 </Typography>
-                                <Typography variant="body2">
-                                    Rp. {data.product.price.toLocaleString()}
+                                <Typography variant="body2" color="text.secondary">
+                                Harga: Rp. {product.id_product?.harga.toLocaleString()} /Pcs
                                 </Typography>
-                                <Typography variant="body2">
-                                    Qty: {data.product.quantity}
+                                <Typography variant="body2" color="text.secondary">
+                                Qty: {product.quantity || 1}
                                 </Typography>
                             </Box>
-                        </Box>
+                            </Box>
+                        </Grid>
+                        ))}
                     </Grid>
+                    ) : (
+                    <Typography variant="body1" color="text.secondary">
+                        No products selected for checkout!
+                    </Typography>
+                    )}
 
-                    {/* Message Box */}
-                    <Grid item xs={6}>
-                        <TextField
-                            label="Message"
-                            variant="outlined"
-                            fullWidth
-                            multiline
-                            rows={5}
-                            placeholder="Enter additional notes (optional)"
-                        />
-                    </Grid>
+                <Grid container spacing={2}  sx={{ mb: 2 }}>
+                        <Grid item xs={6}> 
+                            <FormControl fullWidth variant="outlined">
+                                <InputLabel>Pilih Kurir</InputLabel>
+                                <Select
+                                    name="Pilih Kurir"
+                                    value={selectedCourier}
+                                    label="Pilih Kurir"
+                                    onChange={handleSelectCouriers}
+                                   
+                                >
+                                    
+                                        <MenuItem  value='jne'>
+                                            JNE Express
+                                        </MenuItem>
+                                        <MenuItem  value='pos'>
+                                            POS Indonesia
+                                        </MenuItem>
+                                        <MenuItem  value='tiki'>
+                                            TIKI
+                                        </MenuItem>
+                                 
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                    {shipingOption?.length > 0 &&(
+                        <Grid item xs={6}>  
+                            <FormControl fullWidth variant="outlined">
+                                <InputLabel>Opsi Layanan</InputLabel>
+                                <Select
+                                    name="Opsi Layanan"
+                                    value={selectedOption}
+                                    label="Opsi Layanan"
+                                    onChange={handleSelectShippingOptions}
+                                >
+                                    {shipingOption.map((obj) => (
+                                        <MenuItem key={obj.service} value={obj.service}>
+                                            {obj.description}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                    )}
                 </Grid>
+
 
                 {/* Summary Section */}
                 <Box mb={3}>
                     <Typography variant="body1">
-                        Subtotal ({data.product.quantity} product): Rp.{" "}
-                        {subtotal.toLocaleString()}
+                        Subtotal ( product): Rp.{" "}
+                        {totalPriceProduct.toLocaleString()}
                     </Typography>
-                    <Typography variant="body1">
-                        Shipping Cost: Rp. {data.shippingCost.toLocaleString()}
+                    <Typography variant="body1" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>
+                            Shipping Cost: Rp.{costShipping.toLocaleString() || '-'}
+                        </span>
+                        <span style={{ color: 'red', marginLeft: '8px' }}>
+                            Estimation: {estimasionDay || '-'}
+                        </span>
                     </Typography>
-                    <Typography variant="h5" fontWeight="bold" mt={1}>
-                        Total Payment: Rp. {total.toLocaleString()}
+
+
+                    <Typography variant="h6" fontWeight="bold" mt={1}>
+                        Total Payment: Rp.{totalPayment.toLocaleString()}
                     </Typography>
                 </Box>
 

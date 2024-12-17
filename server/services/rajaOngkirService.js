@@ -29,17 +29,28 @@ const getCities = async (province_id) => {
     }
 };
 
-const getSubdistricts = async (cityId) => {
+
+const calculateShippingCost = async (origin, destination, weight, courier) => {
     try {
-        const url = `${config.baseUrl}/subdistrict?city=${cityId}`;
+        const url = `${config.baseUrl}/cost`;
         const headers = { key: config.apiKey };
-    
-        const response = await axios.get(url, { headers });
+        const data = {
+            origin,
+            destination,
+            weight,
+            courier,
+        };
+        const response = await axios.post(url, data, { headers });
         return response.data.rajaongkir.results;
     } catch (error) {
-        throw new Error(`Error fetching Subdistrict: ${error.response?.data?.rajaongkir?.status?.description || error.message}`);
+        throw new Error(
+            `Error calculating shipping cost: ${
+                error.response?.data?.rajaongkir?.status?.description || error.message
+            }`
+        );
     }
 };
 
 
-module.exports = { getProvinces, getCities, getSubdistricts };
+
+module.exports = { getProvinces, getCities, calculateShippingCost };
