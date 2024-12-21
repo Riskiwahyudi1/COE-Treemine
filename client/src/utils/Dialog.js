@@ -5,8 +5,8 @@ const Dialog = Swal.mixin({
   showCancelButton: true,
   confirmButtonColor: '#d33',
   cancelButtonColor: '#3085d6',
-  confirmButtonText: 'Yes, proceed!',
-  cancelButtonText: 'Cancel',
+  confirmButtonText: 'Ya',
+  cancelButtonText: 'Batal',
 });
 
 export default Dialog;

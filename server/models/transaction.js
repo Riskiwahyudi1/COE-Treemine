@@ -1,32 +1,80 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const Transaction = mongoose.model('transaction', {
+const TransactionSchema = new mongoose.Schema({
     id_user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User' 
+        ref: 'User',
+        required: true, 
     },
-    item: {
-        id_Product: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Product' 
+    product: [
+        {
+            standart :[{
+                id_product: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'Product',
+                    required: false,
+                },
+                quantity: {
+                    type: Number,
+                    required: true,
+                },
+            }],
+            costom_prototype: [{
+                id_request_prototype: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'RequestCustomPrototype',
+                    required: false,
+                },
+                quantity: {
+                    type: Number,
+                    required: true,
+                },
+            }],
+            
         },
-        quantity: Number,
-        isCostom: Boolean,
-        request_costom_product_Id: null
+    ],
+    status: {
+        type: String,
+        required: true,
     },
-    status: String,
-    quantity: Number,
-    shiping_cost: Number,
-    transaction_cost: Number,
-    create_at: {
-        type: Date, 
-        default: Date.now
-   },
-   update_at: {
-        type: Date, 
-        default: Date.now
-   }
-   
-})
+    expedition: [
+        {
+            courier: {
+                type: String,
+                required: true,
+            },
+            shipping_option: {
+                type: String,
+                required: true,
+            },
+            shipping_cost: {
+                type: Number,
+                required: true,
+            },
+        },
+    ],
+    total_payment: {
+        type: Number,
+        required: true,
+    },
+    user_notes: {
+        type: String,
+        required: false, 
+    },
+    estimated_delivery: {
+        type: String,
+        required: false, 
+    },
+    created_at: {
+        type: Date,
+        default: Date.now,
+    },
+    updated_at: {
+        type: Date,
+        default: Date.now,
+    },
+});
 
-module.exports = Transaction
+const Transaction = mongoose.model('Transaction', TransactionSchema);
+
+module.exports = Transaction;

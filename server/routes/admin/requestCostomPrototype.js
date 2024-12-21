@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const { showRequestPrototype, approvedPrototype, rejectPrototype, showWaitingPaymentPrototype, showPrototypeByProcess, showPrototypeHistory } = require('../../controllers/admin/requestPrototypeController')
+const { showRequestPrototype, approvedPrototype, rejectPrototype, showWaitingPaymentPrototype, showPrototypeByProcess, showPrototypeHistory,showRequestPrototypeByParams } = require('../../controllers/admin/requestPrototypeController')
 
 router.get('/review', showRequestPrototype );
+router.get('/', showRequestPrototypeByParams );
 router.get('/waiting-payment', showWaitingPaymentPrototype );
 router.get('/process', showPrototypeByProcess );
 router.get('/history', showPrototypeHistory );

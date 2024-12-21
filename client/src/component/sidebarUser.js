@@ -32,6 +32,7 @@ import EngineeringIcon from '@mui/icons-material/Engineering';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import { Link } from 'react-router-dom';
 import Logoweb from '../assets/images/logo.png';
 import { jwtDecode } from 'jwt-decode';
@@ -160,24 +161,29 @@ export default function MiniDrawer() {
             submenu: [
                 
                 {
-                    text: 'Check',
+                    text: 'Pembayaran',
                     icon: <FactCheckIcon />,
-                    path: '/check'
+                    path: '/transaksi?status=menunggu-pembayaran'
                 },
                 {
-                    text: 'Proses',
+                    text: 'Diproses',
                     icon: <EngineeringIcon />,
-                    path: '/proses'
+                    path: '/transaksi?status=diproses'
                 },
                 {
-                    text: 'Finish',
+                    text: 'Dikirim',
+                    icon: <LocalShippingIcon />,
+                    path: '/transaksi?status=dikirim'
+                },
+                {
+                    text: 'Selesai',
                     icon: <CheckCircleIcon />,
-                    path: '/finish'
+                    path: '/transaksi?status=selesai'
                 },
                 {
-                    text: 'Cancle',
+                    text: 'Dibatalkan',
                     icon: <CancelIcon />,
-                    path: '/cancle'
+                    path: '/transaksi?status=dibatalkan'
                 }
             ]
         },

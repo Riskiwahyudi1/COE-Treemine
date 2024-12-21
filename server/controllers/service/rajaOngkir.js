@@ -46,10 +46,10 @@ const checkShippingCost = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Mengambil parameter couriers dari query string
-        const courier = req.query.couriers;  // Mengambil parameter dari query string
+       
+        const courier = req.query.couriers;  
 
-        console.log('Courier received in checkShippingCost:', courier);  // Debugging
+        console.log('Courier received in checkShippingCost:', courier);  
 
         if (!courier) {
             return res.status(400).json({ message: 'Courier is required' });
@@ -58,10 +58,9 @@ const checkShippingCost = async (req, res) => {
         const origin = 48; // ID kota Batam
         const destination = userData.address.city;
 
-        // Kalkulasi ongkos kirim
         const shippingCost = await calculateShippingCost(origin, destination, 1200, courier);
 
-        res.json(shippingCost);  // Mengirim hasil ongkos kirim ke frontend
+        res.json(shippingCost);  
 
     } catch (error) {
         console.error(error);

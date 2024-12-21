@@ -35,7 +35,7 @@ const showToast = (message, icon) => {
   });
 };
 
-const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, handleCancel }) => {
+const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, handleCancel, handleCheckout }) => {
   const [file, setFile] = useState(null);  // Store the file
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
@@ -180,7 +180,7 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
             <Button
               variant="contained"
               size="small"
-              // onClick={() => handleCheckout(id)}
+              onClick={() => handleCheckout(id)}
               sx={{
                 height: 32,
                 backgroundColor: '#00A63F',
@@ -237,11 +237,36 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
 const ShoppingCart = () => {
   const navigate = useNavigate();
   const [requestPrototype, setRequestPrototype] = useState([]);
+  const [selectedId, setSelectedId] = useState('')
+  const [checkoutPrototype, setCheckoutPrototype] = useState([]);
+  const [shouldNavigate, setShouldNavigate] = useState(false); 
+  
+  const singleProductPrototype = requestPrototype.filter(
+    (product) => product._id === selectedId
+  );
+
+  useEffect(() => {
+    if (selectedId && requestPrototype.length > 0) {
+      setCheckoutPrototype(singleProductPrototype);
+
+      if (shouldNavigate) {
+        navigate("/checkout", {
+          state: { singleProductPrototype },
+        });
+
+        setShouldNavigate(false);
+      }
+    }
+  }, [selectedId, requestPrototype, shouldNavigate, navigate, singleProductPrototype]);
+
+  const handleCheckout = (id) => {
+    setSelectedId(id);
+    setShouldNavigate(true);
+  };
 
   const handleBack = () => {
     navigate(-1);
   };
-
   useEffect(() => {
     const fetchRequestPrototype = async () => {
       try {
@@ -385,6 +410,7 @@ const ShoppingCart = () => {
               onDelete={handleDelete}
               handleRequest={handleRequest}
               handleCancel={handleCancel}
+              handleCheckout={handleCheckout}
             />
           ))
         ) : (

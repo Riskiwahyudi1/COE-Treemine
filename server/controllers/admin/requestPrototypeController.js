@@ -96,6 +96,24 @@ const rejectPrototype = async (req, res) => {
     }
 };
 
+const showRequestPrototypeByParams = async (req, res) => {
+
+    try {
+        const status = req.query.status;
+
+        const products = await RequestCustomPrototype.find({status: status}).populate('id_user', 'username')
+
+        if (!products || products.length === 0) {
+            return res.status(404).json({ message: "Request not found!" });
+        }
+        res.json(products);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Terjadi kesalahan server!" });
+    }
+};
+
 
 module.exports ={
     showRequestPrototype, 
@@ -103,5 +121,6 @@ module.exports ={
     showPrototypeByProcess,
     approvedPrototype,
     showPrototypeHistory,
-    rejectPrototype
+    rejectPrototype,
+    showRequestPrototypeByParams
 }

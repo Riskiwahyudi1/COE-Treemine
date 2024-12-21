@@ -22,7 +22,7 @@ import UserPage from './view/userPage';
 import Proses from './view/proses';
 import Finish from './view/finish';
 import Cancle from './view/cancle';
-import Check from './view/check';
+import Transaksi from './view/transaksi';
 import Review from './view/review';
 import Checkout from './view/checkout';
 import LoginAdmin from './component/loginAdmin';
@@ -47,7 +47,7 @@ function AppContent() {
     location.pathname === '/proses' ||
     location.pathname === '/finish' ||
     location.pathname === '/cancle' ||
-    location.pathname === '/check'  ||
+    location.pathname === '/transaksi'  ||
     location.pathname === '/review'; 
 
   return (
@@ -102,7 +102,7 @@ function AppContent() {
                 <Route path="/proses" element={<Proses />} />
                 <Route path="/finish" element={<Finish />} />
                 <Route path="/cancle" element={<Cancle />} />
-                <Route path="/check" element={<Check />} />
+                <Route path="/transaksi" element={<Transaksi />} />
                 <Route path="/review" element={<Review />} />
               </Route>
             </Routes>

@@ -138,9 +138,6 @@ const ShoppingCart = () => {
         navigate('/');
     };
 
-    console.log(selectedItems)
-    console.log(productListInCart)
-
     const handleLinkCostom = () => {
         navigate('./costom-product');
     };

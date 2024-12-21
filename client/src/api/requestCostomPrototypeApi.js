@@ -2,6 +2,7 @@ import axios from "axios";
 
 const API_URL = 'http://localhost:5000/admin/request-costom-prototype';
 const API_URL_BUYER = 'http://localhost:5000/costom-prototype';
+
 const token = localStorage.getItem('token');
 
 export const getCostomPrototypeData = async () => {
@@ -50,6 +51,21 @@ export const getPrototypeHistory = async () => {
         return respon.data;
     } catch (error) {
         console.error('Error fetching request:', error);
+        throw error;
+    }
+};
+
+export const getRequestPrototypeByParams = async (status) => {
+    try {
+        const response = await axios.get(`${API_URL}`, {
+            params: { status }, 
+            headers: {
+                'Authorization': `Bearer ${token}`, 
+            }
+        });
+        return response.data; 
+    } catch (error) {
+        console.error("Error fetching cost:", error);
         throw error;
     }
 };

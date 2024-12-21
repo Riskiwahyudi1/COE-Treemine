@@ -21,7 +21,7 @@ const admReqCostomPrptptype = require('./routes/admin/requestCostomPrototype');
 const account = require('./routes/buyer/auth/accountSetting')
 const cart = require('./routes/buyer/cart');
 const costomPrototypeBuyer = require('./routes/buyer/costomPrototype');
-
+const Transactions = require('./routes/buyer/transactions');
 
 // service
 const rajaOngkirService = require('./routes/services/rajaOngkir')
@@ -95,6 +95,11 @@ app.use('/register/buyer', registerRoutes);
 app.use('/verify', verifyRoutes);
 app.use('/login/buyer', loginRoute);
 app.use('/dashbord', dashbord);
+
+
+// allUser
+app.use('/transaction', Transactions);
+
 
 // admin
 app.use('/admin/product/categories', productCategories);
