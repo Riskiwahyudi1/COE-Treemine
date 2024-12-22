@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = 'http://localhost:5000/admin/request-costom-prototype';
+const API_URL = 'http://localhost:5000/admin/request-custom';
 const API_URL_BUYER = 'http://localhost:5000/costom-prototype';
 
 const token = localStorage.getItem('token');

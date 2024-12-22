@@ -62,7 +62,7 @@ const CustomPrototype = (part) => {
         finish_copper: '',
         remove_product_no: '',
         design_file: '',
-        status: 'Waiting Request',
+        status: 'Menunggu Pengajuan',
         shiping_cost: '35000',
         total_cost: 0,
 

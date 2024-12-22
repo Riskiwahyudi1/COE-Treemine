@@ -3,7 +3,7 @@ const RequestCustomPrototype = require('../../models/request-costom-prototype')
 
 const showRequestPrototype = async (req, res) => {
     try {
-        const products = await RequestCustomPrototype.find({status: 'Review By Admin'}).populate('id_user', 'username')
+        const products = await RequestCustomPrototype.find({status: 'Admin Review'}).populate('id_user', 'username')
 
         if (!products || products.length === 0) {
             return res.status(404).json({ message: "Request not found!" });
@@ -17,7 +17,7 @@ const showRequestPrototype = async (req, res) => {
 }
 const showWaitingPaymentPrototype = async (req, res) => {
     try {
-        const products = await RequestCustomPrototype.find({status: 'Waiting Payment'}).populate('id_user', 'username')
+        const products = await RequestCustomPrototype.find({status: 'Disetujui'}).populate('id_user', 'username')
 
         if (!products || products.length === 0) {
             return res.status(404).json({ message: "Request not found!" });
@@ -63,10 +63,8 @@ const showPrototypeHistory = async (req, res) => {
 const approvedPrototype = async (req, res) => {
     try {
         const { id } = req.params;
-        const { status } = req.body;
-
         const updateProduct = await RequestCustomPrototype.findByIdAndUpdate(id, {
-            status            
+            status : 'disetujui'           
         }, { new: true });
 
         if (!updateProduct) {
@@ -81,10 +79,8 @@ const approvedPrototype = async (req, res) => {
 const rejectPrototype = async (req, res) => {
     try {
         const { id } = req.params;
-        const { status } = req.body;
-
         const updateProduct = await RequestCustomPrototype.findByIdAndUpdate(id, {
-            status            
+            status : "ditolak-admin"           
         }, { new: true });
 
         if (!updateProduct) {
@@ -100,13 +96,12 @@ const showRequestPrototypeByParams = async (req, res) => {
 
     try {
         const status = req.query.status;
+        const requestCustom = await RequestCustomPrototype.find({status: status}).populate('id_user', 'username')
 
-        const products = await RequestCustomPrototype.find({status: status}).populate('id_user', 'username')
-
-        if (!products || products.length === 0) {
-            return res.status(404).json({ message: "Request not found!" });
+        if (!requestCustom || requestCustom.length === 0) {
+            return res.status(200).json({ requestCustom: [], message: "No requestCustom found" });
         }
-        res.json(products);
+        res.json(requestCustom);
 
     } catch (error) {
         console.error(error);

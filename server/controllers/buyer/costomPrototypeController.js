@@ -128,8 +128,6 @@ const upload = multer({ storage: storage });
 const requestPrototypeToAdmin = async (req, res) => {
     try {
         const { id } = req.params;
-        const { status } = req.body;
-
         if (!req.file) {
             return res.status(400).json({ message: 'Design file is required.' });
         }
@@ -138,7 +136,7 @@ const requestPrototypeToAdmin = async (req, res) => {
 
         const updateProduct = await RequestCustomPrototype.findByIdAndUpdate(
             id,
-            { status, design_file },
+            { status : 'Admin Review', design_file },
             { new: true }
         );
 
@@ -175,10 +173,10 @@ const deleteRequestPrototype = async (req, res) => {
 const cancelRequestPrototype = async (req, res) => {
     try {
         const { id } = req.params;
-        const { status } = req.body;
+        
 
         const cancelRequest = await RequestCustomPrototype.findByIdAndUpdate(id, {
-            status            
+            status : 'Dibatalkan Pembeli'            
         }, { new: true });
 
         if (!cancelRequest) {

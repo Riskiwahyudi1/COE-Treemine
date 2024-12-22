@@ -14,26 +14,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import { getCostomPrototypeData } from '../api/requestCostomPrototypeApi';
 import CostomPrototypeImg from '../assets/images/1.png';
 import Toast from '../utils/Toast';
-
-const showToast = (message, icon) => {
-  Swal.fire({
-    toast: true,
-    position: 'bottom-end',
-    icon,
-    title: message,
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer);
-      toast.addEventListener('mouseleave', Swal.resumeTimer);
-    },
-  });
-};
+import Dialog from '../utils/Dialog';
 
 const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, handleCancel, handleCheckout }) => {
   const [file, setFile] = useState(null);  // Store the file
@@ -89,10 +73,13 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
         </Box>
       </CardContent>
       <CardActions sx={{ gap: 2 }}>
-        <Typography variant="text">{status}</Typography>
+        <Typography variant="text">{status
+                                    .split('-')
+                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                    .join(' ')}</Typography>
 
         {/* Kondisi: Waiting Request */}
-        {status === 'Waiting Request' ? (
+        {status === 'Menunggu Pengajuan' ? (
           <>
             <Button
               variant="contained"
@@ -108,7 +95,7 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
                 },
               }}
             >
-              Request Sekarang
+              Ajukan Sekarang
             </Button>
 
             <Button
@@ -153,7 +140,7 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
         ) : null}
 
         {/* Kondisi: Review By Admin */}
-        {status === 'Review By Admin' ? (
+        {status === 'admin-review' ? (
           <>
             <Button
               variant="contained"
@@ -174,8 +161,8 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
           </>
         ) : null}
 
-        {/* Kondisi: Waiting Payment */}
-        {status === 'Waiting Payment' ? (
+        {/* Kondisi: Disetujui */}
+        {status === 'disetujui' ? (
           <>
             <Button
               variant="contained"
@@ -289,7 +276,6 @@ const ShoppingCart = () => {
     }
 
     const formData = new FormData();
-    formData.append('status', 'Review By Admin');
     formData.append('design_file', file);
 
     try {
@@ -298,7 +284,7 @@ const ShoppingCart = () => {
       if (response.status === 200) {
         setRequestPrototype((prevList) =>
           prevList.map((request) =>
-            request._id === id ? { ...request, status: 'Review By Admin' } : request
+            request._id === id ? { ...request, status: 'Admin Review' } : request
           )
         );
         Toast.fire({
@@ -317,16 +303,10 @@ const ShoppingCart = () => {
   };
 
   const handleDelete = async (id) => {
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel',
-    });
+    const result = await Dialog.fire({
+      title: 'Anda yakin?',
+      text: 'Ingin Menghapus Pesanan?',
+  });
 
     if (result.isConfirmed) {
       // const token = localStorage.getItem('token');
@@ -336,45 +316,46 @@ const ShoppingCart = () => {
         setRequestPrototype((prevList) =>
           prevList.filter((product) => product._id !== id)
         );
-        showToast('Product has been deleted', 'success');
+        Toast.fire({
+          icon: 'success',
+          title: 'Data berhasil dihapus',
+        });
       } catch (error) {
-        showToast('Failed to delete product', 'error');
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi kesalahan',
+        });
       }
     }
   };
 
   const handleCancel = async (orderId) => {
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel',
-    });
+    const result = await Dialog.fire({
+      title: 'Anda yakin?',
+      text: 'Ingin Membatalkan Pesanan?',
+  });
     if (result.isConfirmed) {
 
       try {
-        const response = await axios.put(`http://localhost:5000/costom-prototype/${orderId}/cancel`, {
-          status: 'Cancel by Buyer',
-        });
+        const response = await axios.put(`http://localhost:5000/costom-prototype/${orderId}/cancel`);
 
         if (response.status === 200) {
           setRequestPrototype((prevList) =>
             prevList.map((request) =>
-              request._id === orderId ? { ...request, status: 'Cancel by Buyer' } : request
+              request._id === orderId ? { ...request, status: 'Dibatalkan Pembeli' } : request
             )
           );
 
           Toast.fire({
             icon: 'success',
-            title: 'Item approved successfully',
+            title: 'Request Dibatalkan',
           });
         }
       } catch (error) {
-        console.error('Error approving order:', error.response?.data || error.message);
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan',
+        });
       }
     }
   };

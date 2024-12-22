@@ -13,7 +13,7 @@ import AddAssembly from './addAssembly';
 import KategoriPortofolio from './kategoriPortofolio';
 import AddCategory from './addCategory';
 import EditCategory from './editCategory';
-import ReviewFile from './reviewfile';
+import RequestCustom from './requestCustom';
 import ReviewPayment from './reviewpayment';
 import OnProgress from './onprogress';
 import History from './history';
@@ -53,7 +53,7 @@ export function AdminHome() {
           <Route path="kategoriPortofolio/addCategory" element={<AddCategory />} />
           <Route path="kategoriPortofolio/edit-category/:id" element={<EditCategory />} />
 
-          <Route path="/reviewFile" element={<ReviewFile />} />
+          <Route path="/request-custom" element={<RequestCustom />} />
           <Route path="/reviewpayment" element={<ReviewPayment />} />
           <Route path="/onprogress" element={<OnProgress />} />
           <Route path="/history" element={<History />} />

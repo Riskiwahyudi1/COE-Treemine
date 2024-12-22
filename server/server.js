@@ -105,7 +105,7 @@ app.use('/transaction', Transactions);
 app.use('/admin/product/categories', productCategories);
 app.use('/admin/product', products);
 app.use('/admin/costom-prototype', costomPrototype);
-app.use('/admin/request-costom-prototype', admReqCostomPrptptype);
+app.use('/admin/request-custom', admReqCostomPrptptype);
 
 // buyer
 app.use('/account', account)

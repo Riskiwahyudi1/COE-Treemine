@@ -32,6 +32,9 @@ import HistoryIcon from '@mui/icons-material/History';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import EngineeringIcon from '@mui/icons-material/Engineering';
 import PaymentIcon from '@mui/icons-material/Payment';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { Link } from 'react-router-dom';
 import Logoweb from '../assets/images/logo.png';
 
@@ -166,14 +169,31 @@ export default function MiniDrawer() {
       ]
     },
     {
-      text: 'Pesanan',
-      icon: <ShoppingCartIcon />,
+      text: 'Request Custom',
+      icon: <AssignmentTurnedInIcon />,
       submenu: [
         {
           text: 'Review File',
           icon: <RateReviewIcon />,
-          path: 'reviewFile'
+          path: 'request-custom?status=admin-review'
         },
+        {
+          text: 'Disetujui',
+          icon: <CheckCircleIcon />,
+          path: 'request-custom?status=disetujui'
+        },
+        {
+          text: 'Ditolak',
+          icon: <CancelIcon />,
+          path: 'request-custom?status=ditolak-admin'
+        },
+      ]
+    },
+    {
+      text: 'Pesanan',
+      icon: <ShoppingCartIcon />,
+      submenu: [
+        
         {
           text: 'Review Pembayaran',
           icon: <PaymentIcon />,

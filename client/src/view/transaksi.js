@@ -165,7 +165,7 @@ export default function OrdersTable() {
                         <TableRow>
                             <StyledTableCell>No</StyledTableCell>
                             <StyledTableCell align="center">No Order</StyledTableCell>
-                            <StyledTableCell align="center">Nama Produk</StyledTableCell>
+                            <StyledTableCell align="center">Tipe Produk</StyledTableCell>
                             <StyledTableCell align="center">Tanggal</StyledTableCell>
                             <StyledTableCell align="center">Total Bayar</StyledTableCell>
                             <StyledTableCell align="center">Status</StyledTableCell>
@@ -184,19 +184,27 @@ export default function OrdersTable() {
                             <StyledTableRow key={order._id}>
                                 <StyledTableCell>{idx + 1}</StyledTableCell>
                                 <StyledTableCell align="center">{order._id}</StyledTableCell>
-                                {order.product.map((product) =>
-                                    product.costom_prototype.length > 0 ? (
-                                        product.costom_prototype.map((proto, index) => (
+                                {order.product.map((product) => {
+                                    if (product.costom_prototype.length > 0) {
+                                        return product.costom_prototype.map((proto, index) => (
                                             <StyledTableCell align="center" key={index}>
-                                                {proto.id_request_prototype?.name || 'N/A'}
+                                                Custom Prototype
                                             </StyledTableCell>
-                                        ))
-                                    ) : (
-                                        <StyledTableCell align="center" key={`empty-${product._id}`}>
-                                            No Custom Prototype
-                                        </StyledTableCell>
-                                    )
-                                )}
+                                        ));
+                                    } else if (product.standart.length > 0) {
+                                        return product.standart.map((std, index) => (
+                                            <StyledTableCell align="center" key={index}>
+                                                Standard Product
+                                            </StyledTableCell>
+                                        ));
+                                    } else {
+                                        return (
+                                            <StyledTableCell align="center" key={`empty-${product._id}`}>
+                                                No Product Data
+                                            </StyledTableCell>
+                                        );
+                                    }
+                                })}
                                 <StyledTableCell align="center">{formatDate(order.created_at)}</StyledTableCell>
                                 <StyledTableCell align="center">
                                     Rp. {order.total_payment.toLocaleString('id-ID')}
