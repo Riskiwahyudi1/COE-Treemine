@@ -54,7 +54,7 @@ export function AdminHome() {
           <Route path="kategoriPortofolio/edit-category/:id" element={<EditCategory />} />
 
           <Route path="/request-custom" element={<RequestCustom />} />
-          <Route path="/reviewpayment" element={<ReviewPayment />} />
+          <Route path="/transaksi" element={<ReviewPayment />} />
           <Route path="/onprogress" element={<OnProgress />} />
           <Route path="/history" element={<History />} />
           <Route path="/kirim" element={<Kirim />} />

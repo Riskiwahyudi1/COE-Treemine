@@ -75,8 +75,6 @@ export default function OrdersTable() {
     const [openModal, setOpenModal] = useState(false);
     const [selectedIdPrototype, setselectedIdPrototype] = useState(null);
 
-
-    console.log(requestPrototype)
     useEffect(() => {
         const fetchRequestPrototype = async () => {
             try {

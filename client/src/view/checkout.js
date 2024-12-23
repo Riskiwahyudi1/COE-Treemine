@@ -41,6 +41,7 @@ const PaymentPage = () => {
     const [idProductStandart, setIdProductStandart] = useState([])
     const [idProdukPrototype, setIdProductProrotype] = useState([])
 
+    console.log(idProdukPrototype)
     // get standar produk dari keranjang
     const selectedProducts = location.state?.selectedItems || [];
     const productListInCart = location.state?.productListInCart || [];
@@ -68,7 +69,7 @@ const PaymentPage = () => {
       useEffect(() => {
         if (Array.isArray(costomPrototypeItem)) {
             const idProdukPrototype = costomPrototypeItem.map((product) => ({
-                id_product: product?._id, 
+                id_request_prototype: product?._id, 
                 quantity: 1,
             }));
     
@@ -257,7 +258,7 @@ const PaymentPage = () => {
                     icon: 'success',
                     title: 'Transaction is created!',
                 });
-                navigate('/transaksi?status=waiting-payment', { state: { showToast: true } });
+                navigate('/transaksi?status=menunggu-pembayaran', { state: { showToast: true } });
             }
         } catch (error) {
             alert('Failed to fetch data. Please try again.');

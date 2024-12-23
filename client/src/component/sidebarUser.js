@@ -183,7 +183,7 @@ export default function MiniDrawer() {
                 {
                     text: 'Dibatalkan',
                     icon: <CancelIcon />,
-                    path: '/transaksi?status=dibatalkan'
+                    path: '/transaksi?status=dibatalkan-pembeli'
                 }
             ]
         },

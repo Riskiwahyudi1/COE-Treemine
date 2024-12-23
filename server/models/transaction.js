@@ -11,7 +11,7 @@ const TransactionSchema = new mongoose.Schema({
             standart :[{
                 id_product: {
                     type: mongoose.Schema.Types.ObjectId,
-                    ref: 'Product',
+                    ref: 'Products',
                     required: false,
                 },
                 quantity: {

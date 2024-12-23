@@ -195,24 +195,24 @@ export default function MiniDrawer() {
       submenu: [
         
         {
-          text: 'Review Pembayaran',
+          text: 'Pembayaran',
           icon: <PaymentIcon />,
-          path: 'reviewPayment'
+          path: 'transaksi?status=menunggu-pembayaran'
         },
         {
-          text: 'Proses',
+          text: 'Diproses',
           icon: <EngineeringIcon />,
-          path: 'onprogress'
+          path: 'transaksi?status=diproses'
         },
         {
           text: 'Dikirim',
           icon: <LocalShippingIcon />,
-          path: 'kirim'
+          path: 'transaksi?status=dikirim'
         },
         {
           text: 'Riwayat',
           icon: <HistoryIcon />,
-          path: 'history'
+          path: 'transaksi?status=selesai'
         }
       ]
     },

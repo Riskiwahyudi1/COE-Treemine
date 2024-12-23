@@ -4,6 +4,7 @@ const API_URL = 'http://localhost:5000/raja-ongkir';
 
 const token = localStorage.getItem('token');
 
+// semua provinsi
 export const getProvinces = async () => {
     try {
         const respon = await axios.get(`${API_URL}/provinces`, {
@@ -17,6 +18,10 @@ export const getProvinces = async () => {
         throw error;
     }
 };
+
+// detail provinsi user
+
+// semua kota berdasarkan profinsi
 export const getCities = async (provinceId) => {
     try {
         const response = await axios.get(`${API_URL}/cities?province_id=${provinceId}`);
@@ -27,18 +32,22 @@ export const getCities = async (provinceId) => {
     }
 };
 
+// biaya pengiriman
 export const getCost = async (couriers) => {
     try {
-        // Pastikan untuk mengirimkan parameter couriers
+       
         const response = await axios.get(`${API_URL}/calculate-cost`, {
-            params: { couriers }, // Mengirimkan couriers sebagai parameter
+            params: { couriers }, 
             headers: {
-                'Authorization': `Bearer ${token}`, // Pastikan token valid
+                'Authorization': `Bearer ${token}`, 
             }
         });
-        return response.data;  // Pastikan data yang diterima sesuai
+        return response.data;  
     } catch (error) {
         console.error("Error fetching cost:", error);
         throw error;
     }
 };
+
+// provinsi spesifik user
+

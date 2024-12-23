@@ -136,7 +136,7 @@ const requestPrototypeToAdmin = async (req, res) => {
 
         const updateProduct = await RequestCustomPrototype.findByIdAndUpdate(
             id,
-            { status : 'Admin Review', design_file },
+            { status : 'admin-review', design_file },
             { new: true }
         );
 
@@ -176,7 +176,7 @@ const cancelRequestPrototype = async (req, res) => {
         
 
         const cancelRequest = await RequestCustomPrototype.findByIdAndUpdate(id, {
-            status : 'Dibatalkan Pembeli'            
+            status : 'dibatalkan-pembeli'            
         }, { new: true });
 
         if (!cancelRequest) {

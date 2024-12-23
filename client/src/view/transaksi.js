@@ -106,7 +106,7 @@ export default function OrdersTable() {
     const handleDoneTransaction = async (id) => {
         const result = await Dialog.fire({
             title: 'Anda yakin?',
-            text: 'Ingin Membatalkan Pesanan?',
+            text: 'Pastikan pesanan sudah anda terima !',
         });
         const data = {
             id: id,

@@ -16,6 +16,7 @@ const productCategories = require('./routes/admin/categories');
 const products = require('./routes/admin/product');
 const costomPrototype = require('./routes/admin/costomPrototype');
 const admReqCostomPrptptype = require('./routes/admin/requestCostomPrototype');
+const transactionAdmin = require('./routes/admin/transactions');
 
 // memanggil routes buyer
 const account = require('./routes/buyer/auth/accountSetting')
@@ -106,6 +107,7 @@ app.use('/admin/product/categories', productCategories);
 app.use('/admin/product', products);
 app.use('/admin/costom-prototype', costomPrototype);
 app.use('/admin/request-custom', admReqCostomPrptptype);
+app.use('/admin/transaction', transactionAdmin);
 
 // buyer
 app.use('/account', account)
