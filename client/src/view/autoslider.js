@@ -14,12 +14,12 @@ import {
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 
-// Impor gambar produk
+// Import product images
 import product1 from '../assets/images/foto5.png';
 import product2 from '../assets/images/3.png';
 import product3 from '../assets/images/2.png';
 
-// Impor gaya Swiper
+// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
 
@@ -76,21 +76,21 @@ const PCBLandingPage = () => {
         {
             ikon: "07",
             judul: "Konfirmasi Diterima",
-            deskripsi: "Penyelesaian pesanan diverifikasi"
+            deskripsi: "Penyelesaian pesanan"
         }
     ];
 
     return (
         <Box>
-            {/* Bagian Hero dengan Latar Hijau */}
+            {/* Hero Section with Green Background */}
             <Box sx={{
                 background: '#00A63F',
-                px: { xs: 2, sm: 4, md: 8 }, // Padding responsif
+                px: { xs: 2, sm: 4, md: 8 },
                 color: 'white'
             }}>
-                <Container maxWidth="xl" sx={{ 
-                    pt: { xs: 2, sm: 3, md: 1 }, 
-                    pb: { xs: 2, sm: 3, md: 1 } 
+                <Container maxWidth="xl" sx={{
+                    pt: { xs: 2, sm: 3, md: 1 },
+                    pb: { xs: 2, sm: 3, md: 1 }
                 }}>
                     <Grid container spacing={4} alignItems="center">
                         <Grid item xs={12} md={8}>
@@ -99,16 +99,16 @@ const PCBLandingPage = () => {
                                     fontWeight: 'bold',
                                     mb: 2,
                                     color: 'white',
-                                    fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } // Ukuran font responsif
+                                    fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' }
                                 }}>
                                     Pengalaman Terbaik Membeli PCB
                                 </Typography>
-                                <Typography variant="body1" sx={{ 
-                                    color: 'white', 
-                                    mb: 1, 
+                                <Typography variant="body1" sx={{
+                                    color: 'white',
+                                    mb: 1,
                                     pt: { xs: 2, sm: 3, md: 4 },
                                     opacity: 0.9,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' } // Ukuran font responsif
+                                    fontSize: { xs: '0.875rem', sm: '1rem' }
                                 }}>
                                     Dapatkan layanan PCB berkualitas tinggi dengan proses yang mudah dan cepat. Kami menyediakan solusi lengkap untuk kebutuhan elektronika Anda.
                                 </Typography>
@@ -116,7 +116,7 @@ const PCBLandingPage = () => {
                         </Grid>
 
                         <Grid item xs={12} md={4}>
-                            <Box sx={{ 
+                            <Box sx={{
                                 width: '100%',
                                 maxWidth: { xs: '100%', sm: '400px' },
                                 margin: '0 auto'
@@ -127,7 +127,7 @@ const PCBLandingPage = () => {
                                     slidesPerView={1}
                                     centeredSlides={true}
                                     loop={true}
-                                    pagination={{ 
+                                    pagination={{
                                         clickable: true,
                                         bulletActiveClass: 'swiper-pagination-bullet-active',
                                         bulletClass: 'swiper-pagination-bullet',
@@ -145,8 +145,8 @@ const PCBLandingPage = () => {
                                 >
                                     {galeriProduk.map((galeri, index) => (
                                         <SwiperSlide key={index}>
-                                            <Box sx={{ 
-                                                position: 'relative', 
+                                            <Box sx={{
+                                                position: 'relative',
                                                 mb: 6,
                                                 display: 'flex',
                                                 justifyContent: 'center'
@@ -207,40 +207,41 @@ const PCBLandingPage = () => {
                 </Container>
             </Box>
 
-            {/* Bagian Cara Menggunakan dengan Latar Putih */}
-            <Box sx={{ 
+            {/* How to Use Section with White Background */}
+            <Box sx={{
                 bgcolor: 'white',
                 px: { xs: 3, sm: 5, md: 8 },
                 pt: 1
             }}>
                 <Container maxWidth="xl">
-                    <Typography variant="h4" sx={{ 
+                    <Typography variant="h4" sx={{
                         color: '#00A63F',
-                        mb: 1, 
+                        mb: 1,
                         fontWeight: 'bold',
                         fontSize: { xs: '1.5rem', sm: '2rem' }
                     }}>
                         Cara Menggunakan?
                     </Typography>
-                    
+
                     <Box sx={{
                         display: 'flex',
-                        gap: { xs: 1, sm: 2 },
-                        minWidth: 'min-content',
-                        position: 'relative',
+                        flexDirection: { xs: 'row', md: 'row' },
+                        gap: 2,
                         overflowX: 'auto',
-                        pb: 4,
+                        scrollSnapType: 'x mandatory',
+                        '-webkit-overflow-scrolling': 'touch',
+                        pb: 8,
                         px: 2,
                         '&::-webkit-scrollbar': {
-                            height: '8px',
+                            height: '8px'
                         },
                         '&::-webkit-scrollbar-track': {
                             backgroundColor: '#f1f1f1',
-                            borderRadius: '4px',
+                            borderRadius: '4px'
                         },
                         '&::-webkit-scrollbar-thumb': {
                             backgroundColor: '#00A63F',
-                            borderRadius: '4px',
+                            borderRadius: '4px'
                         },
                         '&::after': {
                             content: '""',
@@ -259,13 +260,9 @@ const PCBLandingPage = () => {
                                 key={index}
                                 elevation={0}
                                 sx={{
+                                    flex: { xs: '0 0 auto', md: '1 1 0' },
+                                    width: { xs: '200px', sm: '220px', md: 'auto' },
                                     p: { xs: 1.5, sm: 2 },
-                                    minWidth: {
-                                        xs: '140px',
-                                        sm: '160px',
-                                        md: '140px',
-                                        lg: '120px'
-                                    },
                                     textAlign: 'center',
                                     display: 'flex',
                                     flexDirection: 'column',
@@ -276,6 +273,7 @@ const PCBLandingPage = () => {
                                     transition: 'all 0.3s ease',
                                     position: 'relative',
                                     zIndex: 1,
+                                    scrollSnapAlign: 'start',
                                     '&:hover': {
                                         transform: 'translateY(-4px)',
                                         boxShadow: '0 4px 20px rgba(0, 166, 63, 0.2)'
@@ -316,6 +314,7 @@ const PCBLandingPage = () => {
                     </Box>
                 </Container>
             </Box>
+
         </Box>
     );
 };

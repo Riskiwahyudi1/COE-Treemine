@@ -62,6 +62,7 @@ const ShoppingCartItem = ({
             elevation={3}
             sx={{
                 display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
                 alignItems: 'center',
                 p: 2,
                 mb: 2,
@@ -72,22 +73,28 @@ const ShoppingCartItem = ({
             <Checkbox
                 checked={isChecked}
                 onChange={(e) => onSelect(id, e.target.checked)}
-                sx={{ marginRight: 2 }}
+                sx={{ marginRight: { sm: 2, xs: 0 }, mb: { xs: 1, sm: 0 } }}
             />
             <CardMedia
                 component="img"
                 image={`http://localhost:5000${image}`}
                 alt={name}
-                sx={{ width: 120, height: 120, borderRadius: 2, cursor: 'pointer' }}
+                sx={{
+                    width: { xs: '100%', sm: 120 },
+                    height: { xs: 'auto', sm: 120 },
+                    borderRadius: 2,
+                    cursor: 'pointer',
+                    mb: { xs: 2, sm: 0 },
+                }}
                 onClick={() => onView(id)}
             />
-            <CardContent sx={{ flex: 1, ml: 2 }}>
+            <CardContent sx={{ flex: 1, ml: { sm: 2, xs: 0 }, textAlign: { xs: 'center', sm: 'left' } }}>
                 <Typography variant="h6">{name}</Typography>
                 <Typography color="text.secondary">{`Rp. ${price.toLocaleString()} x ${quantity}`}</Typography>
                 <Typography fontWeight="bold" color="primary">
                     {`Rp. ${(price * quantity).toLocaleString()}`}
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'flex-start' }, mt: 1 }}>
                     <Button
                         size="small"
                         variant="outlined"
@@ -117,15 +124,13 @@ const ShoppingCartItem = ({
                     </Button>
                 </Box>
             </CardContent>
-            <CardActions>
-                {/* <Button size="small" variant="text" color="primary" onClick={() => onView(id)}>
-                    View Product
-                </Button> */}
+            <CardActions sx={{ justifyContent: { xs: 'center', sm: 'flex-start' } }}>
                 <IconButton color="error" onClick={() => onDelete(id)}>
                     <DeleteIcon />
                 </IconButton>
             </CardActions>
         </Card>
+
     );
 };
 
@@ -215,12 +220,14 @@ const ShoppingCart = () => {
     };
 
     const handleCheckout = () => {
-        navigate("/checkout", { state: {
-            productListInCart, 
-            selectedItems   
-          } });
-      };
-    
+        navigate("/checkout", {
+            state: {
+                productListInCart,
+                selectedItems
+            }
+        });
+    };
+
 
     const getTotalPrice = () => {
         return productListInCart
@@ -238,38 +245,38 @@ const ShoppingCart = () => {
                 backgroundColor: '#f3f4f6',
             }}
         >
-             <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                mb: 4,
-                px: 2,
-                backgroundColor: '#f5f5f5',
-                borderRadius: '8px',
-                padding: '10px',
-            }}
-        >
-            {/* Bagian Kiri - Tombol Back */}
-            <Box onClick={handleBack} sx={{ display: 'flex', alignItems: 'center' }}>
-                <IconButton>
-                    <ArrowBackIcon />
-                </IconButton>
-                <Typography variant="h5" sx={{ ml: 1, fontWeight: 'bold' }}>
-                    Keranjang Produk
-                </Typography>
-            </Box>
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 4,
+                    px: 2,
+                    backgroundColor: '#f5f5f5',
+                    borderRadius: '8px',
+                    padding: '10px',
+                }}
+            >
+                {/* Bagian Kiri - Tombol Back */}
+                <Box onClick={handleBack} sx={{ display: 'flex', alignItems: 'center' }}>
+                    <IconButton>
+                        <ArrowBackIcon />
+                    </IconButton>
+                    <Typography variant="h5" sx={{ ml: 1, fontWeight: 'bold' }}>
+                        Keranjang Produk
+                    </Typography>
+                </Box>
 
-            {/* Bagian Kanan - Custom Card dengan panah */}
-            <Box onClick={handleCostomCart} sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', mr: 1 }}>
-                Keranjang Custom
-                </Typography>
-                <IconButton>
-                    <ArrowForwardIcon />
-                </IconButton>
+                {/* Bagian Kanan - Custom Card dengan panah */}
+                <Box onClick={handleCostomCart} sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 'bold', mr: 1 }}>
+                        Keranjang Custom
+                    </Typography>
+                    <IconButton>
+                        <ArrowForwardIcon />
+                    </IconButton>
+                </Box>
             </Box>
-        </Box>
 
             <Box sx={{ flex: 1 }}>
                 {productListInCart.length > 0 ? (
