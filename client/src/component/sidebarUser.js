@@ -36,6 +36,7 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import { Link } from 'react-router-dom';
 import Logoweb from '../assets/images/logo.png';
 import { jwtDecode } from 'jwt-decode';
+import { useAuth } from '../contexts/AuthContext';
 
 const drawerWidth = 240;
 
@@ -112,6 +113,7 @@ export default function MiniDrawer() {
     const [open, setOpen] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [menuStates, setMenuStates] = React.useState({});
+    const { isAuthenticated, logout } = useAuth();
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -136,7 +138,7 @@ export default function MiniDrawer() {
         }));
     };
 
-   
+
 
     const menuItems = [
         {
@@ -159,7 +161,7 @@ export default function MiniDrawer() {
             text: 'Pesanan',
             icon: <ShoppingCartIcon />,
             submenu: [
-                
+
                 {
                     text: 'Pembayaran',
                     icon: <FactCheckIcon />,
@@ -199,21 +201,21 @@ export default function MiniDrawer() {
         alignItems: 'center',
         gap: '10px',
     });
-    
+
     // Styled component untuk logo image
     const LogoImage = styled('img')({
-        height: '50px', 
+        height: '50px',
         width: 'auto',
         objectFit: 'contain',
     });
     const token = localStorage.getItem('token');
 
-    let username = ''; 
+    let username = '';
 
     if (token) {
         try {
             const decoded = jwtDecode(token);
-            username = decoded.username; 
+            username = decoded.username;
         } catch (error) {
             console.error("Failed to decode JWT:", error);
         }
@@ -267,14 +269,17 @@ export default function MiniDrawer() {
                         open={Boolean(anchorEl)}
                         onClose={handleCloseMenu}
                     >
-                        <MenuItem onClick={handleCloseMenu}>Logout</MenuItem>
+                        <MenuItem onClick={() => {
+                            logout();
+                            handleCloseMenu();
+                        }}>Logout</MenuItem>
                     </Menu>
                 </Toolbar>
             </AppBar>
 
             <Drawer variant="permanent" open={open}>
                 <DrawerHeader>
-                    <Typography variant="h6" noWrap sx={{ color: '#ffffff', marginLeft: '25px'}}>
+                    <Typography variant="h6" noWrap sx={{ color: '#ffffff', marginLeft: '25px' }}>
                         Hi, {username}
                     </Typography>
                     <IconButton onClick={handleDrawerClose} sx={{ color: '#ffffff' }}>

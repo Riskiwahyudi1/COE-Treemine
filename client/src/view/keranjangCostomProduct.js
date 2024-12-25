@@ -74,9 +74,9 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
       </CardContent>
       <CardActions sx={{ gap: 2 }}>
         <Typography variant="text">{status
-                                    .split('-')
-                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                                    .join(' ')}</Typography>
+          .split('-')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ')}</Typography>
 
         {/* Kondisi: Waiting Request */}
         {status === 'Menunggu Pengajuan' ? (
@@ -226,8 +226,8 @@ const ShoppingCart = () => {
   const [requestPrototype, setRequestPrototype] = useState([]);
   const [selectedId, setSelectedId] = useState('')
   const [checkoutPrototype, setCheckoutPrototype] = useState([]);
-  const [shouldNavigate, setShouldNavigate] = useState(false); 
-  
+  const [shouldNavigate, setShouldNavigate] = useState(false);
+
   const singleProductPrototype = requestPrototype.filter(
     (product) => product._id === selectedId
   );
@@ -246,9 +246,15 @@ const ShoppingCart = () => {
     }
   }, [selectedId, requestPrototype, shouldNavigate, navigate, singleProductPrototype]);
 
-  const handleCheckout = (id) => {
-    setSelectedId(id);
-    setShouldNavigate(true);
+  const handleCheckout = async (id) => {
+    const result = await Dialog.fire({
+      title: 'Anda yakin?',
+      text: 'Ingin checkout pesanan Ini?',
+    });
+    if (result.isConfirmed) {
+      setSelectedId(id);
+      setShouldNavigate(true);
+    }
   };
 
   const handleBack = () => {
@@ -267,38 +273,47 @@ const ShoppingCart = () => {
   }, []);
 
   const handleRequest = async (id, file) => {
-    if (!file) {
-      Toast.fire({
-        icon: 'error',
-        title: 'Please upload a file before submitting your request.',
-      });
-      return;
-    }
+    
 
-    const formData = new FormData();
-    formData.append('design_file', file);
-
-    try {
-      const response = await axios.put(`http://localhost:5000/costom-prototype/${id}/send-review`, formData);
-
-      if (response.status === 200) {
-        setRequestPrototype((prevList) =>
-          prevList.map((request) =>
-            request._id === id ? { ...request, status: 'Admin Review' } : request
-          )
-        );
+      if (!file) {
         Toast.fire({
-          icon: 'success',
-          title: 'Item approved successfully',
+          icon: 'error',
+          title: 'Mohon sertakan file desain anda !',
         });
-
+        return;
       }
-    } catch (error) {
-      Toast.fire({
-        icon: 'error',
-        title: error.response?.data?.message || 'Error processing request.',
+
+      const result = await Dialog.fire({
+        title: 'Anda yakin?',
+        text: 'Ingin request pesanan ini?',
       });
-      console.error('Error approving order:', error.response?.data || error.message);
+      if (result.isConfirmed) {
+
+      const formData = new FormData();
+      formData.append('design_file', file);
+
+      try {
+        const response = await axios.put(`http://localhost:5000/costom-prototype/${id}/send-review`, formData);
+
+        if (response.status === 200) {
+          setRequestPrototype((prevList) =>
+            prevList.map((request) =>
+              request._id === id ? { ...request, status: 'Admin Review' } : request
+            )
+          );
+          Toast.fire({
+            icon: 'success',
+            title: 'Request berhasil dikirimkan ke admin',
+          });
+
+        }
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: 'Terjadi Kesalahan',
+        });
+        
+      }
     }
   };
 
@@ -306,7 +321,7 @@ const ShoppingCart = () => {
     const result = await Dialog.fire({
       title: 'Anda yakin?',
       text: 'Ingin Menghapus Pesanan?',
-  });
+    });
 
     if (result.isConfirmed) {
       // const token = localStorage.getItem('token');
@@ -332,8 +347,8 @@ const ShoppingCart = () => {
   const handleCancel = async (orderId) => {
     const result = await Dialog.fire({
       title: 'Anda yakin?',
-      text: 'Ingin Membatalkan Pesanan?',
-  });
+      text: 'Ingin membatalkan pesanan?',
+    });
     if (result.isConfirmed) {
 
       try {

@@ -132,7 +132,7 @@ const Navbar = () => {
         navigate('/user');
     };
     const handleTransaksiPage = () => {
-        navigate('/check');
+        navigate('/transaksi?status=menunggu-pembayaran');
     };
 
     const renderMobileDrawer = () => (

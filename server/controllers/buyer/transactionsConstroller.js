@@ -49,8 +49,12 @@ const showTransactionBuyer = async (req, res) => {
         const status = req.query.status;
 
         const products = await Transaction.find({status: status, id_user: user.id})
-        .populate('id_user', 'username')
-        .populate('product.costom_prototype.id_request_prototype', 'name');
+        .populate('id_user', 'username address')
+        .populate(
+            'product.costom_prototype.id_request_prototype',
+             'name x_out notes route_process design_in_panel width length quantity layer copper_layer solder_mask_position silkscreen_position material thickness min_track min_hole solder_mask silkscreen uv_printing surface_finish finish_copper remove_product_no design_file status shiping_cost total_cost'
+            )
+        .populate('product.standart.id_product', 'product_name harga picture_url');
 
         if (!products || products.length === 0) {
             return res.status(404).json({ message: "Request not found!" });
