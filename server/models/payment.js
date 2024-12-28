@@ -1,29 +1,50 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const Payment = mongoose.model('Payment', {
-    id_user: {
+const PaymentSchema = new mongoose.Schema({
+    order_id: {
+        type: String,
+        required: true,
+        unique: true, // Agar tidak ada duplikasi order_id
+    },
+    transaction_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User' 
+        ref: 'Transaction', // Menghubungkan ke transaksi jika diperlukan
+        required: true,
     },
-    id_transaction: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Transaction' 
+    payment_method: {
+        type: String,
+        required: false,
     },
-    payment_method: String,
-    payment_amount: Number,
-    payment_status: String,
-    payment_Date:{
-        type: Date, 
-        default: Date.now
+    status: {
+        type: String,
+        required: true, // Contoh: "pending", "success", "failed"
     },
-    create_at: {
-        type: Date, 
-        default: Date.now
-   },
-   update_at: {
-        type: Date, 
-        default: Date.now
-   }
-})
+    amount: {
+        type: Number,
+        required: true,
+    },
+    transaction_time: {
+        type: Date,
+        required: true,
+    },
+    payment_url: {
+        type: String, // URL untuk redirect ke halaman pembayaran
+        required: false,
+    },
+    snap_token: {
+        type: String, 
+        required: false,
+    },
+    created_at: {
+        type: Date,
+        default: Date.now,
+    },
+    updated_at: {
+        type: Date,
+        default: Date.now,
+    },
+});
 
-module.exports = Payment
+const Payment = mongoose.model('Payment', PaymentSchema);
+
+module.exports = Payment;

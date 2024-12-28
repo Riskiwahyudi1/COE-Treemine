@@ -42,13 +42,12 @@ const createTransactions = async (req, res) => {
     }
 };
 
-
 const showTransactionBuyer = async (req, res) => {
     const user = req.user;
     try {
-        const status = req.query.status;
+        const status = req.query.status
 
-        const products = await Transaction.find({status: status, id_user: user.id})
+        const products = await Transaction.find({status: { $in: status }, id_user: user.id})
         .populate('id_user', 'username address')
         .populate(
             'product.costom_prototype.id_request_prototype',
@@ -91,6 +90,7 @@ const cancelTransactionBuyer = async (req, res) => {
         return res.status(500).json({ message: 'Failed to cancel the transaction' });
     }
 };
+
 const doneTransactionBuyer = async (req, res) => {
     const user = req.user;
     const { id } = req.body;
@@ -114,9 +114,12 @@ const doneTransactionBuyer = async (req, res) => {
 
 
 
+
+
 module.exports = {
     createTransactions,
     showTransactionBuyer,
     cancelTransactionBuyer,
-    doneTransactionBuyer
+    doneTransactionBuyer,
+    
 }

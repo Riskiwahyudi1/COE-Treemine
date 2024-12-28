@@ -26,6 +26,7 @@ const Transactions = require('./routes/buyer/transactions');
 
 // service
 const rajaOngkirService = require('./routes/services/rajaOngkir')
+const paymentService = require('./routes/services/payment')
 
 
 const app = express();
@@ -116,6 +117,7 @@ app.use('/costom-prototype', costomPrototypeBuyer);
 
 // service
 app.use('/raja-ongkir', rajaOngkirService);
+app.use('/payments', paymentService);
 
 
 app.listen(port, () => {
