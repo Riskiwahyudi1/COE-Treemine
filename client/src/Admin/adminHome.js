@@ -8,6 +8,7 @@ import Dashboard from './dashboard';
 import CustomPrototype from './customPrototype';
 import AddPrototype from './addPrototype';
 import EditPrototype from './editItemPrototype';
+import EditAssembly from './editItemAssembly';
 import CustomAssembly from './customAssembly';
 import AddAssembly from './addAssembly';
 import KategoriPortofolio from './kategoriPortofolio';
@@ -47,7 +48,8 @@ export function AdminHome() {
           <Route path="custom-prototype/editItemPrototype/:typeId/item/:itemId" element={<EditPrototype />} />
 
           <Route path="/custom-assembly" element={<CustomAssembly />} />
-          <Route path="custom-assembly/addAssembly" element={<AddAssembly />} />
+          <Route path="custom-assembly/addAssembly/:id" element={<AddAssembly />} />
+          <Route path="custom-assembly/editItemAssembly/:typeId/item/:itemId" element={<EditAssembly />} />
 
           <Route path="/kategoriPortofolio" element={<KategoriPortofolio />} />
           <Route path="kategoriPortofolio/addCategory" element={<AddCategory />} />

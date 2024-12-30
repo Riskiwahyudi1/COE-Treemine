@@ -258,7 +258,7 @@ const PaymentPage = () => {
                     icon: 'success',
                     title: 'Transaction is created!',
                 });
-                navigate('/transaksi?status=menunggu-pembayaran&status=pembayaran-tertunda&status=gagal&status=pembayaran-kadarluarsa&status=dibatalkan-admin', { state: { showToast: true } });
+                navigate('/transaksi?status=menunggu-pembayaran&status=pembayaran-tertunda&status=gagal&status=pembayaran-kadarluarsa&status=dibatalkan-admin&status=sudah-bayar', { state: { showToast: true } });
             }
         } catch (error) {
             alert('Failed to fetch data. Please try again.');

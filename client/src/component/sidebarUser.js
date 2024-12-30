@@ -165,7 +165,7 @@ export default function MiniDrawer() {
                 {
                     text: 'Pembayaran',
                     icon: <FactCheckIcon />,
-                    path: '/transaksi?status=menunggu-pembayaran&status=pembayaran-tertunda&status=gagal&status=pembayaran-kadarluarsa&status=dibatalkan-admin'
+                    path: '/transaksi?status=menunggu-pembayaran&status=pembayaran-tertunda&status=gagal&status=pembayaran-kadarluarsa&status=dibatalkan-admin&status=sudah-bayar'
                 },
                 {
                     text: 'Diproses',

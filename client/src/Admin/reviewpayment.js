@@ -331,7 +331,7 @@ export default function OrdersTable() {
                         <StyledTableCell align="center">Pembeli</StyledTableCell>
                         <StyledTableCell align="center">Harga</StyledTableCell>
                         <StyledTableCell align="center">Status</StyledTableCell>
-                        {searchParams.get("status") === 'menunggu-pembayaran' && (
+                        {searchParams.get("status") === 'menunggu-pembayaran' || searchParams.get("status") === 'sudah-bayar' && (
                             <StyledTableCell align="center">Detail Payment</StyledTableCell>
                         )}
                         <StyledTableCell align="center">Action</StyledTableCell>
@@ -374,7 +374,7 @@ export default function OrdersTable() {
                                 </StyledTableCell>
 
                                 {/* Tombol Aksi */}
-                                {order.status === 'menunggu-pembayaran' && (
+                                {order.status === 'menunggu-pembayaran' || searchParams.get("status") === 'sudah-bayar' && (
                                 <StyledTableCell align="center" sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
                                         
                                     <IconButton

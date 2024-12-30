@@ -60,7 +60,15 @@ const userSchema = new mongoose.Schema({
         postal_code: {
             type: String,
             default: null
-        }
+        },
+        city_name: {
+            type: String,
+            default: null
+        },
+        province_name: {
+            type: String,
+            default: null
+        },
     },
     isVerified: { 
         type: Boolean,

@@ -25,7 +25,42 @@ const createPayment = async (req, res) => {
 
         const totalPayment = transaction.total_payment;
 
-        // Periksa apakah pembayaran sudah ada untuk transaksi ini
+        let itemDetails = [];
+        const productData = transaction.product?.[0] || {}; // Hindari undefined access
+
+        if (productData.standart?.length > 0) {
+            itemDetails = productData.standart.map((product) => ({
+                id: product.id_product._id.toString(),
+                name: product.id_product.product_name || 'Produk Standar',
+                price: Number(product.id_product.harga) || 0,
+                quantity: Number(product.quantity),
+                url: product.id_product.picture_url || 'https://default.url/product',
+            }));
+        } else if (productData.costom_prototype?.length > 0) {
+            itemDetails = productData.costom_prototype.map((product) => ({
+                id: product.id_request_prototype._id.toString(),
+                name: product.id_request_prototype.name || 'Produk Custom',
+                price: Number(product.id_request_prototype.total_cost ) || 0,
+                quantity: Number(product.quantity),
+                url: product.id_request_prototype.design_file || 'https://default.url/custom-product',
+            }));
+        } else {
+            throw new Error('Produk tidak ditemukan dalam transaksi');
+        }
+
+        // menambah ongkir
+        if (transaction.expedition?.[0]?.shipping_cost) {
+            itemDetails.push({
+                id: "SHIPPING_COST", 
+                name: "Ongkos Kirim",
+                price: Number(transaction.expedition[0].shipping_cost) || 0,
+                quantity: 1, 
+            });
+        }
+
+
+        
+        // Periksa pembayaran untuk transaksi ini
         const existingPayment = await Payment.findOne({ transaction_id: transactionId });
         if (existingPayment) {
             return res.status(200).json({
@@ -41,25 +76,37 @@ const createPayment = async (req, res) => {
                 gross_amount: totalPayment,
             },
             customer_details: {
-                first_name: transaction.id_user.username.split(' ')[0], 
-                last_name: transaction.id_user.username.split(' ')[1], 
+                first_name: transaction.id_user.username.split(' ')[0],
+                last_name: transaction.id_user.username.split(' ')[1],
                 email: transaction.id_user.email,
                 phone: transaction.id_user.phone,
                 billing_address: {
-                  address: transaction.id_user.address.detail_address,
+                    first_name: transaction.id_user.username.split(' ')[0],
+                    last_name: transaction.id_user.username.split(' ')[1] || '',
+                    email: transaction.id_user.email,
+                    phone: transaction.id_user.phone,
+                    address: `${transaction.id_user.address.detail_address}, ${transaction.id_user.address.city_name}, ${transaction.id_user.address.province_name}, ${transaction.id_user.address.postal_code}`,
+                    city: transaction.id_user.address.city,
+                    postal_code: transaction.id_user.address.postal_code,
+                    country_code: 'IDN',
                 },
-              },
-              
+                shipping_address: {
+                    first_name: transaction.id_user.username.split(' ')[0],
+                    last_name: transaction.id_user.username.split(' ')[1] || '',
+                    email: transaction.id_user.email,
+                    phone: transaction.id_user.phone,
+                    address: `${transaction.id_user.address.detail_address}, ${transaction.id_user.address.city_name}, ${transaction.id_user.address.province_name}, ${transaction.id_user.address.postal_code}`,
+                    country_code: 'IDN',
+                }
+            },
+            item_details: itemDetails,
+
         };
 
-        // Debugging: cek isi payload sebelum dikirim
-        console.log('Payload sent to Midtrans:', paymentPayload);
         // Buat transaksi di Midtrans
         const midtransResponse = await createTransaction(paymentPayload);
 
-        console.log('Midtrans Response:', midtransResponse);
-
-        // Simpan detail pembayaran baru di database
+        //Buat data pembayaran
         const payment = new Payment({
             order_id: midtransResponse.order_id,
             transaction_id: transaction._id,
@@ -73,11 +120,21 @@ const createPayment = async (req, res) => {
 
         await payment.save();
 
+        // update status transaksi
+        const updatedTransaction = await Transaction.findByIdAndUpdate(
+            payment.transaction_id,
+            { status: 'pembayaran-tertunda' },
+            { new: true }
+        );
+
         // Kirim respons ke client
         res.status(201).json({
             message: 'Payment created successfully',
             token: midtransResponse.token,
+            status: updatedTransaction.status
         });
+
+
     } catch (error) {
         console.error('Error creating payment:', error);
         res.status(500).json({ error: 'Failed to create payment' });
@@ -91,7 +148,7 @@ const handleMidtransNotification = async (req, res) => {
     try {
         const notification = req.body;
 
-        // Cari data pembayaran berdasarkan order_id
+        // Cari data pembayaran 
         const payment = await Payment.findOne({ order_id: notification.order_id });
 
         if (!payment) {
@@ -105,42 +162,35 @@ const handleMidtransNotification = async (req, res) => {
 
         await payment.save();
 
-
+        // cek notif dari midtrans
         if (notification.transaction_status === 'success' || notification.transaction_status === 'capture' || notification.transaction_status === 'settlement') {
-            // Untuk kartu kredit, pastikan fraud_status diterima
             if (notification.transaction_status === 'capture' && notification.fraud_status !== 'accept') {
                 return res.status(200).json({ message: 'Pembayaran memerlukan verifikasi lebih lanjut' });
             }
-
-            // Transaksi sukses
             await Transaction.findByIdAndUpdate(
                 payment.transaction_id,
                 { status: 'sudah-bayar' },
                 { new: true }
             );
         } else if (notification.transaction_status === 'pending') {
-            // Transaksi menunggu pembayaran
             await Transaction.findByIdAndUpdate(
                 payment.transaction_id,
                 { status: 'pembayaran-tertunda' },
                 { new: true }
             );
         } else if (notification.transaction_status === 'deny') {
-            // Transaksi gagal
             await Transaction.findByIdAndUpdate(
                 payment.transaction_id,
                 { status: 'gagal' },
                 { new: true }
             );
         } else if (notification.transaction_status === 'cancel') {
-            // Transaksi  dibatalkan
             await Transaction.findByIdAndUpdate(
                 payment.transaction_id,
                 { status: 'dibatalkan-admin' },
                 { new: true }
             );
         } else if (notification.transaction_status === 'expire') {
-            // Transaksi  kadaluwarsa
             await Transaction.findByIdAndUpdate(
                 payment.transaction_id,
                 { status: 'pembayaran-kadarluarsa' },
@@ -148,7 +198,6 @@ const handleMidtransNotification = async (req, res) => {
             );
         }
         else {
-            // Jika status tidak dikenali, log sebagai warning
             console.warn('Terjadi kesalahan saat pembayaran');
         }
 
@@ -159,6 +208,7 @@ const handleMidtransNotification = async (req, res) => {
     }
 }
 
+// fungsi lanjut bayar
 const continuePayment = async (req, res) => {
     try {
         const { transactionId } = req.body;
@@ -166,9 +216,8 @@ const continuePayment = async (req, res) => {
         // Cari Snap token dari database
         const payment = await Payment.findOne({ transaction_id: transactionId });
         if (!payment) {
-            return res.status(404).json({ error: 'Payment not found' });
+            return res.status(404).json({ error: 'Data pembayaran tidak ditemukan' });
         }
-
         // Kembalikan Snap token ke client
         res.status(200).json({
             message: 'Continue payment',

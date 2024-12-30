@@ -76,6 +76,7 @@ export default function OrdersTable() {
     const [provinces, setProvinces] = useState('');
     const [cities, setCities] = useState();
     const [isLoading, setIsLoading] = useState(false);
+    const [loadingButtonId, setLoadingButtonId] = useState(null);
     const [error, setError] = useState(null);
     // transaksi berdasarkan quesry status
     useEffect(() => {
@@ -212,7 +213,7 @@ export default function OrdersTable() {
     const handlePayment = async (transactionId) => {
         try {
 
-            setIsLoading(true);
+            setLoadingButtonId(transactionId);
             setError(null);
             const config = {
                 headers: {
@@ -227,7 +228,7 @@ export default function OrdersTable() {
                 config
             );
 
-            const { token, hasPaymentUrl } = response.data;
+            const { token, hasPaymentUrl, status } = response.data;
 
             if (hasPaymentUrl) {
                 // Jika sudah ada URL pembayaran, redirect langsung ke sana
@@ -240,31 +241,71 @@ export default function OrdersTable() {
                             icon: 'success',
                             title: 'Pembayaran Berhasil',
                         });
+                        setTransaction((prevList) =>
+                            prevList.map((transaction) =>
+                                transaction._id === transactionId
+                                    ? { ...transaction, status: 'sudah-bayar' }
+                                    : transaction
+                            )
+                        );
                     },
                     onPending: function (result) {
                         Toast.fire({
                             icon: 'info',
                             title: 'Pembayaran Dalam Proses',
                         });
+                        setTransaction((prevList) =>
+                            prevList.map((transaction) =>
+                                transaction._id === transactionId
+                                    ? { ...transaction, status: 'pembayaran-tertunda' }
+                                    : transaction
+                            )
+                        );
                     },
                     onError: function (result) {
                         Toast.fire({
                             icon: 'error',
                             title: 'Pembayaran Gagal',
                         });
+                        setTransaction((prevList) =>
+                            prevList.map((transaction) =>
+                                transaction._id === transactionId
+                                    ? { ...transaction, status: 'pembayaran-gagal' }
+                                    : transaction
+                            )
+                        );
+                    },
+                    onClose: async () => {
+                        Toast.fire({
+                            icon: 'warning',
+                            title: 'Pembayaran Tertunda',
+                        });
+
+                        setTransaction((prevList) =>
+                            prevList.map((transaction) =>
+                                transaction._id === transactionId
+                                    ? { ...transaction, status: status }
+                                    : transaction
+                            )
+                        );
+
+
                     },
                 });
+
+
             }
 
         } catch (error) {
             console.error('Error initiating payment:', error);
             alert('Gagal memulai pembayaran');
         } finally {
-            setIsLoading(false);
+            setLoadingButtonId(false);
         }
     };
 
     const continuePayment = async (transactionId) => {
+        setLoadingButtonId(transactionId);
         try {
             const response = await axios.post('http://localhost:5000/payments/continue-payment', { transactionId });
 
@@ -290,9 +331,19 @@ export default function OrdersTable() {
                         title: 'Pembayaran Gagal',
                     });
                 },
+                onClose: async () => {
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'Pembayaran Tertunda',
+                    });
+
+
+                },
             });
         } catch (error) {
             console.error('Error continuing payment:', error);
+        }finally {
+            setLoadingButtonId(false);
         }
     };
 
@@ -403,8 +454,8 @@ export default function OrdersTable() {
                                                     <Button
                                                         variant="contained"
                                                         onClick={() => handlePayment(order._id)}
-                                                        disabled={isLoading}
-                                                        startIcon={isLoading ? <CircularProgress size={24} /> : null}
+                                                        disabled={loadingButtonId === order._id} // Disable hanya tombol yang loading
+                                                        startIcon={loadingButtonId === order._id ? <CircularProgress size={24} /> : null}
                                                         sx={{
                                                             backgroundColor: '#00A63F', // Hijau
                                                             color: '#ffffff',
@@ -414,7 +465,7 @@ export default function OrdersTable() {
                                                             },
                                                         }}
                                                     >
-                                                        {isLoading ? 'Memulai Pembayaran...' : 'Bayar Sekarang'}
+                                                         {loadingButtonId === order._id ? 'Memulai Pembayaran...' : 'Bayar Sekarang'}
                                                     </Button>
 
                                                     <Button
@@ -439,8 +490,8 @@ export default function OrdersTable() {
                                                 <Button
                                                     variant="contained"
                                                     onClick={() => continuePayment(order._id)}
-                                                    disabled={isLoading}
-                                                    startIcon={isLoading ? <CircularProgress size={24} /> : null}
+                                                    disabled={loadingButtonId === order._id} // Disable hanya tombol yang loading
+                            startIcon={loadingButtonId === order._id ? <CircularProgress size={24} /> : null}
                                                     sx={{
                                                         backgroundColor: '#00A63F', // Hijau
                                                         color: '#ffffff',
@@ -450,7 +501,7 @@ export default function OrdersTable() {
                                                         },
                                                     }}
                                                 >
-                                                    {isLoading ? 'Memulai Pembayaran...' : 'Lanjut Bayar'}
+                                                     {loadingButtonId === order._id ? 'Memulai Pembayaran...' : 'Bayar Sekarang'}
                                                 </Button>
                                             )}
                                             {/* Kondisi jika status adalah "dikirim" */}

@@ -14,6 +14,7 @@ const dashbord = require('./routes/buyer/dashbord');
 // memanggil routes admin 
 const productCategories = require('./routes/admin/categories');
 const products = require('./routes/admin/product');
+const costomAssembly = require('./routes/admin/costomAssembly');
 const costomPrototype = require('./routes/admin/costomPrototype');
 const admReqCostomPrptptype = require('./routes/admin/requestCostomPrototype');
 const transactionAdmin = require('./routes/admin/transactions');
@@ -107,6 +108,7 @@ app.use('/transaction', Transactions);
 app.use('/admin/product/categories', productCategories);
 app.use('/admin/product', products);
 app.use('/admin/costom-prototype', costomPrototype);
+app.use('/admin/costom-assembly', costomAssembly);
 app.use('/admin/request-custom', admReqCostomPrptptype);
 app.use('/admin/transaction', transactionAdmin);
 

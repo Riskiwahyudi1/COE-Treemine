@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -16,6 +16,10 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
+import axios from 'axios';
+import Toast from '../utils/Toast';
+import Dialog from "../utils/Dialog";
+import { getAssemblyItem, getAssemblyById } from './api/costomAssemblyApi';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -46,35 +50,119 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   borderRadius: '10px',
-  boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)', 
+  boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
   overflow: 'hidden',
 }));
 
 const CustomAssemblyPage = () => {
   const navigate = useNavigate();
-  const [selectedAssembly, setSelectedAssembly] = useState('');
-  
+  const [selectedBoard, setSelectedBoard] = useState('');
+  const [assemblyItem, setAssemblyItem] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [productData, setProductData] = useState(null);
+
   const assemblyData = [
     { id: 1, name: 'Turnkey', price: 'Rp. 50.000' },
     { id: 2, name: 'Kitted or Consigned', price: 'Rp. 100.000' },
     { id: 3, name: 'Combo', price: 'Rp. 150.000' },
   ];
 
-  const handleAddAssembly = () => {
-    navigate('./addAssembly');
-  };
 
-  const handleEditAssembly = (id) => {
-
-  };
-
-  const handleDeleteAssembly = (id) => {
-
+  const handleEditBoard = (itemId) => {
+    navigate(`./editItemAssembly/${selectedBoard}/item/${itemId}`);
   };
 
   const handleSelectChange = (event) => {
-    setSelectedAssembly(event.target.value);
+    const selectedValue = event.target.value;
+    setSelectedBoard(selectedValue);
   };
+
+  useEffect(() => {
+    const fetchAssemblyItem = async () => {
+      try {
+        const data = await getAssemblyItem();
+        setAssemblyItem(data);
+      } catch (error) {
+        setError('Failed to load item');
+      }
+    };
+    fetchAssemblyItem();
+  }, []);
+
+  useEffect(() => {
+      const fetchProductById = async () => {
+        try {
+          if (selectedBoard) {
+            const data = await getAssemblyById(selectedBoard);
+            setProductData(data);
+          }
+        } catch (error) {
+          setError('Failed to load categories');
+        }
+      };
+      fetchProductById();
+    }, [selectedBoard]);
+
+    const handleAddBoard = () => {
+      navigate(`./addAssembly/${selectedBoard}`);
+    };
+
+    const handleDeleteData = async (typeId, itemId) => {
+    
+      console.log(typeId)
+      console.log(itemId)
+      if (!typeId || !itemId) {
+        setError("Invalid typeId or itemId. Please try again.");
+        return;
+      }
+    
+      try {
+        setLoading(true);
+        const isValidTypeId = /^[a-fA-F0-9]{24}$/.test(itemId);
+        const isValidItemId = /^[a-fA-F0-9]{24}$/.test(itemId);
+    
+        if (!isValidTypeId || !isValidItemId) {
+          setError("Invalid typeId or itemId format.");
+          return;
+        }
+    
+        const result = await Dialog.fire({
+          title: 'Anda Yakin?',
+          text: "Hapus item ini?",
+         
+        });
+    
+        if (result.isConfirmed) {
+          try {
+            const response = await axios.delete(
+              `http://localhost:5000/admin/costom-assembly/${typeId}/item/${itemId}`
+            );
+    
+            if (response.status === 200) {
+              Toast.fire({
+                icon: 'success',
+                title: 'Item deleted successfully',
+              });
+  
+              setLoading(false)
+    
+              const updatedData = productData.data.filter((item) => item._id !== itemId);
+              setProductData({ ...productData, data: updatedData });
+            } else {
+              setError("Failed to delete data. Please try again.");
+            }
+          } catch (error) {
+            console.error("Failed to delete data:", error);
+            setError("Failed to delete data. Please try again later.");
+          }
+        }
+      } catch (error) {
+        console.error("Validation failed:", error);
+        setError("An error occurred while processing your request.");
+      }
+  
+    };
 
   return (
     <div>
@@ -86,36 +174,40 @@ const CustomAssemblyPage = () => {
           gap: 2,
         }}
       >
+        {selectedBoard && (
         <Button
           variant="contained"
-          onClick={handleAddAssembly}
+          onClick={handleAddBoard}
           startIcon={<AddIcon />}
           sx={{
-            backgroundColor: '#00A63F',
+            backgroundColor: '#54cbbb',
             color: '#ffffff',
             textTransform: 'none',
             '&:hover': {
               backgroundColor: '#7fd685',
             },
-            height:'54px',
+            height: '54px',
           }}
         >
           Add
         </Button>
+      )}
 
         <FormControl sx={{ width: '250px' }}>
           <Select
-            value={selectedAssembly}
+            value={selectedBoard}
             onChange={handleSelectChange}
             displayEmpty
             inputProps={{ 'aria-label': 'Select Assembly Type' }}
           >
-            <MenuItem value="">
-              <em>Assembly Type</em>
+           <MenuItem value="" disabled>
+              Select an item
             </MenuItem>
-            <MenuItem value="SMD">SMD Assembly</MenuItem>
-            <MenuItem value="Through Hole">Through Hole Assembly</MenuItem>
-            <MenuItem value="Mixed">Mixed Technology Assembly</MenuItem>
+            {assemblyItem.map((item) => (
+              <MenuItem key={item.id} value={item._id}>
+                {item.type}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </Box>
@@ -130,49 +222,69 @@ const CustomAssemblyPage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {assemblyData.map((row) => (
-              <StyledTableRow key={row.id}>
-                <StyledTableCell>{row.name}</StyledTableCell>
-                <StyledTableCell align="center">
-                  Rp. {row.price.toLocaleString('id-ID')}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <Button
-                    variant="contained"
-                    sx={{
-                      backgroundColor: '#54cbbb',
-                      color: '#ffffff',
-                      textTransform: 'none',
-                      marginRight: 1,
-                      '&:hover': {
-                        backgroundColor: '#7fd685',
-                      },
-                    }}
-                    startIcon={<EditIcon />}
-                    onClick={() => handleEditAssembly(row.id)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    sx={{
-                      textTransform: 'none',
-                      borderColor: '#f44336',
-                      color: '#f44336',
-                      '&:hover': {
-                        backgroundColor: '#e0f4fc',
-                        borderColor: '#f44336',
-                        color: '#f44336',
-                      },
-                    }}
-                    startIcon={<DeleteIcon />}
-                    onClick={() => handleDeleteAssembly(row.id)}
-                  >
-                    Delete
-                  </Button>
+            {loading ? (
+              <StyledTableRow>
+                <StyledTableCell colSpan={3} align="center">
+                  Loading...
                 </StyledTableCell>
               </StyledTableRow>
-            ))}
+            ) : error ? (
+              <StyledTableRow>
+                <StyledTableCell colSpan={3} align="center" sx={{ color: 'red' }}>
+                  {error}
+                </StyledTableCell>
+              </StyledTableRow>
+            ) : productData && productData.data && productData.data.length > 0 ? (
+              productData.data.map((row) => (
+                <StyledTableRow key={row._id}>
+                  <StyledTableCell>{row.type}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    Rp. {row.cost.toLocaleString('id-ID')}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: '#54cbbb',
+                        color: '#ffffff',
+                        textTransform: 'none',
+                        marginRight: 1,
+                        '&:hover': {
+                          backgroundColor: '#7fd685',
+                        },
+                      }}
+                      startIcon={<EditIcon />}
+                      onClick={() => handleEditBoard(row._id)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        textTransform: 'none',
+                        borderColor: '#f44336',
+                        color: '#f44336',
+                        '&:hover': {
+                          backgroundColor: '#e0f4fc',
+                          borderColor: '#f44336',
+                          color: '#f44336',
+                        },
+                      }}
+                      startIcon={<DeleteIcon />}
+                      onClick={() => handleDeleteData(selectedBoard, row._id)} 
+                    >
+                      Delete
+                    </Button>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))
+            ) : (
+              <StyledTableRow>
+                <StyledTableCell colSpan={3} align="center">
+                  Select prototype item to load data!
+                </StyledTableCell>
+              </StyledTableRow>
+            )}
           </TableBody>
         </Table>
       </StyledTableContainer>

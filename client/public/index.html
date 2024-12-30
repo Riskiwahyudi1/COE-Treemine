@@ -29,4 +29,14 @@
     
   </body>
   <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key=""></script>
+  <script>
+    const clientKey = process.env.MIDTRANS_CLIENT_KEY;
+    if (clientKey) {
+      document
+        .querySelector('script[data-client-key]')
+        .setAttribute('data-client-key', clientKey);
+    } else {
+      console.error("Client Key tidak ditemukan.");
+    }
+  </script>
 </html>
