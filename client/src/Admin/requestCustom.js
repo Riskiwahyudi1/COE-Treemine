@@ -14,6 +14,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import Paper from '@mui/material/Paper';
 import { Box, Typography, Button } from '@mui/material';
 import { getRequestPrototypeByParams } from '../api/requestCostomPrototypeApi'
+import { getRequestAssemblyByParams } from '../api/requestCostomAssemblyApi'
 import axios from 'axios';
 import Toast from '../utils/Toast';
 import Dialog from '../utils/Dialog';
@@ -70,49 +71,96 @@ const ModalContent = styled(Box)(({ theme }) => ({
 
 export default function OrdersTable() {
     const navigate = useNavigate();
-    const [requestPrototype, setRequestPrototype] = useState('');
+    const [requestPrototype, setRequestPrototype] = useState([]);
+    const [requestAssembly, setRequestAssembly] = useState([]);
+    const [requestCostom, setRequestCustom] = useState([])
     const [searchParams] = useSearchParams();
     const [openModal, setOpenModal] = useState(false);
     const [selectedIdPrototype, setselectedIdPrototype] = useState(null);
+    const [selectedIdAssembly, setselectedIdAssembly] = useState(null);
 
     useEffect(() => {
-        const fetchRequestPrototype = async () => {
+        const fetchData = async () => {
             try {
-                const currentStatus = searchParams.get("status");
+                const currentStatus = searchParams.getAll("status");
+    
+                // Reset state
                 setRequestPrototype([]);
-                
-                if (currentStatus) {
-                    const data = await getRequestPrototypeByParams(currentStatus);
-                    setRequestPrototype(data);
-                }
+                setRequestAssembly([]);
+                setRequestCustom([]);
+    
+                if (currentStatus.length > 0) {
+                    const [prototypeData, assemblyData] = await Promise.allSettled([
+                        getRequestPrototypeByParams(currentStatus),
+                        getRequestAssemblyByParams(currentStatus),
+                    ]);
+    
+                    // Validasi data hasil API
+                    const resolvedPrototypeData =
+                        prototypeData.status === "fulfilled" && Array.isArray(prototypeData.value)
+                            ? prototypeData.value
+                            : [];
+                    const resolvedAssemblyData =
+                        assemblyData.status === "fulfilled" && Array.isArray(assemblyData.value)
+                            ? assemblyData.value
+                            : [];
+    
+                    // Gabungkan data
+                    let combinedData = [...resolvedPrototypeData, ...resolvedAssemblyData];
+    
+                    combinedData = combinedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+                    // Update state
+                    setRequestPrototype(resolvedPrototypeData);
+                    setRequestAssembly(resolvedAssemblyData);
+                    setRequestCustom(combinedData);
+                } 
             } catch (error) {
-                console.error('Failed to load products', error);
+                console.error("Failed to load products", error);
             }
         };
-        fetchRequestPrototype();
+    
+        fetchData();
     }, [searchParams]);
+    
+    
+    
 
-    const handleApprove = async (orderId) => {
+    const handleApprove = async (orderId, orderType) => {
         const result = await Dialog.fire({
             title: 'Anda yakin?',
             text: 'Ingin Menyetujui Pesanan?',
         });
-        if(result.isConfirmed){
-
+    
+        if (result.isConfirmed) {
             try {
-                const response = await axios.put(`http://localhost:5000/admin/request-custom/${orderId}/approve`);
+                const url =
+                    orderType === 'Costom Prototype'
+                        ? `http://localhost:5000/admin/request-custom-prototype/${orderId}/approve`
+                        : `http://localhost:5000/admin/request-custom-assembly/${orderId}/approve`;
+    
+                const response = await axios.put(url);
+    
                 if (response.status === 200) {
+                    
+                    if (orderType === 'Costom Prototype') {
+                        setRequestCustom((prev) =>
+                            prev.filter((order) => order._id !== orderId)
+                        );
+                    } else if (orderType === 'Costom Assembly') {
+                        setRequestCustom((prev) =>
+                            prev.filter((order) => order._id !== orderId)
+                        );
+                    }
     
-                    setRequestPrototype((prev) =>
-                        prev.filter((order) => order._id !== orderId)
-                    );
-    
+                    // Tampilkan pesan sukses
                     Toast.fire({
                         icon: 'success',
                         title: 'Request Disetujui',
                     });
                 }
             } catch (error) {
+                // Tangani kesalahan
                 Toast.fire({
                     icon: 'error',
                     title: 'Terjadi Kesalahan',
@@ -120,26 +168,53 @@ export default function OrdersTable() {
             }
         }
     };
-    const handleReject = async (orderId) => {
-        const result = await Dialog.fire({
+    
+    const handleReject = async (orderId, orderType) => {
+        const { value: reason } = await Dialog.fire({
             title: 'Anda yakin?',
-            text: 'Ingin Menolak Pesanan?',
+            text: 'Ingin Menolak Request? Silahkan berikan alasan.',
+            input: 'textarea',
+            inputPlaceholder: 'Tulis alasan penolakan di sini...',
+            showCancelButton: true,
+            confirmButtonText: 'Tolak',
+            cancelButtonText: 'Batal',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Alasan tidak boleh kosong!';
+                }
+            },
         });
-        if(result.isConfirmed){
+    
+        if (reason) {
             try {
-                const response = await axios.put(`http://localhost:5000/admin/request-custom/${orderId}/reject`);
+                // Tentukan URL berdasarkan tipe order
+                const url =
+                    orderType === 'Costom Prototype'
+                        ? `http://localhost:5000/admin/request-custom-prototype/${orderId}/reject`
+                        : `http://localhost:5000/admin/request-custom-assembly/${orderId}/reject`;
+    
+                const response = await axios.put(url, { reason });
     
                 if (response.status === 200) {
-                    setRequestPrototype((prev) =>
-                        prev.filter((order) => order._id !== orderId)
-                    );
+                    // Perbarui data sesuai dengan tipe order
+                    if (orderType === 'Costom Prototype') {
+                        setRequestCustom((prev) =>
+                            prev.filter((order) => order._id !== orderId)
+                        );
+                    } else if (orderType === 'Costom Assembly') {
+                        setRequestCustom((prev) =>
+                            prev.filter((order) => order._id !== orderId)
+                        );
+                    }
     
+                    // Tampilkan pesan sukses
                     Toast.fire({
                         icon: 'success',
-                        title: 'request Berhasil Ditolak',
+                        title: 'Request Berhasil Ditolak',
                     });
                 }
             } catch (error) {
+                // Tangani kesalahan
                 Toast.fire({
                     icon: 'error',
                     title: 'Terjadi Kesalahan',
@@ -147,9 +222,11 @@ export default function OrdersTable() {
             }
         }
     };
+    
 
     const handleOpenModal = (order) => {
         setselectedIdPrototype(order);
+        setselectedIdAssembly(order);
         setOpenModal(true);
     };
 
@@ -157,7 +234,7 @@ export default function OrdersTable() {
         setOpenModal(false);
         setselectedIdPrototype(null);
     };
-    
+
     return (
         <Box
             sx={{
@@ -197,83 +274,84 @@ export default function OrdersTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                    {(Array.isArray(requestPrototype) && requestPrototype.length > 0) ? (
-                    requestPrototype.map((order, index) => (
-                        <StyledTableRow key={order.id}>
-                            <StyledTableCell>{index + 1}</StyledTableCell>
-                            <StyledTableCell align="center">{order._id}</StyledTableCell>
-                            <StyledTableCell align="center">{order.id_user.username}</StyledTableCell>
-                            <StyledTableCell align="center">{formatDate(order.createdAt)}</StyledTableCell>
-                            <StyledTableCell align="center">
-                                Rp {Number(order.total_cost).toLocaleString('id-ID')}
-                            </StyledTableCell>
-                            <StyledTableCell
-                                align="center"
-                                sx={{
-                                    color: '#FF9800',
-                                    fontWeight: 'bold',
-                                }}
-                            >
-                                {order.status
-                                    .split('-')
-                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                                    .join(' ')}
-                            </StyledTableCell>
-                                
-                            <StyledTableCell align="center">
-                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                                    <IconButton 
-                                        sx={{ color: '#00A63F' }}
-                                        onClick={() => handleOpenModal(order._id)}>
-                                    <VisibilityIcon />
-                                    </IconButton>
-                                    {order.status === 'admin-review' && (
-                                        <>
-                                            <IconButton
-                                                sx={{
-                                                    color: '#00A63F',
-                                                }}
-                                                onClick={() => handleApprove(order._id)}
-                                            >
-                                                <CheckCircleIcon />
-                                            </IconButton>
-                                            <IconButton
-                                                sx={{
-                                                    color: '#f44336',
-                                                }}
-                                                onClick={() => handleReject(order._id)}
-                                            >
-                                                <CancelIcon />
-                                            </IconButton>
-                                        </>
-                                    )}
-                                </Box>
-                            </StyledTableCell>
+                        {(Array.isArray(requestCostom) && requestCostom.length > 0) ? (
+                            requestCostom.map((order, index) => (
+                                <StyledTableRow key={order.id}>
+                                    <StyledTableCell>{index + 1}</StyledTableCell>
+                                    <StyledTableCell align="center">{order._id}</StyledTableCell>
+                                    <StyledTableCell align="center">{order.id_user.username}</StyledTableCell>
+                                    <StyledTableCell align="center">{formatDate(order.createdAt)}</StyledTableCell>
+                                    <StyledTableCell align="center">
+                                        Rp {Number(order.total_cost).toLocaleString('id-ID')}
+                                    </StyledTableCell>
+                                    <StyledTableCell
+                                        align="center"
+                                        sx={{
+                                            color: '#FF9800',
+                                            fontWeight: 'bold',
+                                        }}
+                                    >
+                                        {order.status
+                                            .split('-')
+                                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                            .join(' ')}
+                                    </StyledTableCell>
 
-                        </StyledTableRow>
-                    ))
-                    
-                ) : (
-                    <StyledTableRow>
-                        <StyledTableCell colSpan={8} align="center">
-                            Belum ada data request
-                        </StyledTableCell>
-                    </StyledTableRow>
-                )} 
+                                    <StyledTableCell align="center">
+                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                                            <IconButton
+                                                sx={{ color: '#00A63F' }}
+                                                onClick={() => handleOpenModal(order._id)}>
+                                                <VisibilityIcon />
+                                            </IconButton>
+                                            {order.status === 'admin-review' && (
+                                                <>
+                                                    <IconButton
+                                                        sx={{
+                                                            color: '#00A63F',
+                                                        }}
+                                                        onClick={() => handleApprove(order._id, order.name)}
+                                                    >
+                                                        <CheckCircleIcon />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        sx={{
+                                                            color: '#f44336',
+                                                        }}
+                                                        onClick={() => handleReject(order._id, order.name)}
+                                                    >
+                                                        <CancelIcon />
+                                                    </IconButton>
+                                                </>
+                                            )}
+                                        </Box>
+                                    </StyledTableCell>
+
+                                </StyledTableRow>
+                            ))
+
+                        ) : (
+                            <StyledTableRow>
+                                <StyledTableCell colSpan={8} align="center">
+                                    Belum ada data request
+                                </StyledTableCell>
+                            </StyledTableRow>
+                        )}
 
                     </TableBody>
                 </Table>
             </StyledTableContainer>
             <StyledModal open={openModal} onClose={handleCloseModal}>
                 <ModalContent>
+                    {/* Detail untuk Prototype */}
                     {requestPrototype && requestPrototype.length > 0 ? (
                         requestPrototype
-                            .filter(data => data._id === selectedIdPrototype) 
+                            .filter(data => data._id === selectedIdPrototype)
                             .map((data, idx) => (
                                 <div key={idx}>
                                     {/* Header */}
                                     <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-                                        Detail Pesanan
+                                        Detail Pesanan - Prototype
                                     </Typography>
 
                                     {/* Informasi Pesanan */}
@@ -292,9 +370,9 @@ export default function OrdersTable() {
 
                                     <Typography variant="body1">
                                         <strong>Status:</strong> {data.status
-                                                                        .split('-')
-                                                                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                                                                        .join(' ')}
+                                            .split('-')
+                                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                            .join(' ')}
                                     </Typography>
 
                                     {/* Spesifikasi */}
@@ -302,53 +380,118 @@ export default function OrdersTable() {
                                         Spesifikasi :
                                     </Typography>
                                     <Box>
-                                        {[
-                                            { label: 'X Out', value: data.x_out },
-                                            { label: 'Route Process', value: data.route_process },
-                                            { label: 'Design in Panel', value: data.design_in_panel },
-                                            { label: 'Size', value: `${data.length} X ${data.width}` },
-                                            { label: 'Quantity', value: data.quantity },
-                                            { label: 'Layer', value: data.layer },
-                                            { label: 'Copper Layer', value: data.copper_layer },
-                                            { label: 'Solder Mask Position', value: data.solder_mask_position },
-                                            { label: 'Material', value: data.material },
-                                            { label: 'Thickness', value: data.thickness },
-                                            { label: 'Min Track', value: data.min_track },
-                                            { label: 'Min Hole', value: data.min_hole },
-                                            { label: 'Solder Mask', value: data.solder_mask },
-                                            { label: 'Silkscreen', value: data.silkscreen },
-                                            { label: 'UV Printing', value: data.uv_printing },
-                                            { label: 'Surface Finish', value: data.surface_finish },
-                                            { label: 'Finish Copper', value: data.finish_copper },
-                                            { label: 'Remove Product No', value: data.remove_product_no },
-                                        ].map((item, idx) => (
-                                            <Typography key={idx} variant="body2">
-                                                <strong>{item.label}: </strong> {item.value}
-                                            </Typography>
-                                        ))}
-                                    </Box>
-
-                                    {/* Tombol Penutup */}
-                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
-                                        <Button
-                                            variant="contained"
-                                            sx={{
-                                                backgroundColor: '#54cbbb',
-                                                '&:hover': { backgroundColor: '#46b2a6' },
-                                            }}
-                                            onClick={handleCloseModal}
-                                        >
-                                            Close
-                                        </Button>
+                                        {[{ label: 'X Out', value: data.x_out },
+                                        { label: 'Route Process', value: data.route_process },
+                                        { label: 'Design in Panel', value: data.design_in_panel },
+                                        { label: 'Size', value: `${data.length} X ${data.width}` },
+                                        { label: 'Quantity', value: data.quantity },
+                                        { label: 'Layer', value: data.layer },
+                                        { label: 'Copper Layer', value: data.copper_layer },
+                                        { label: 'Solder Mask Position', value: data.solder_mask_position },
+                                        { label: 'Material', value: data.material },
+                                        { label: 'Thickness', value: data.thickness },
+                                        { label: 'Min Track', value: data.min_track },
+                                        { label: 'Min Hole', value: data.min_hole },
+                                        { label: 'Solder Mask', value: data.solder_mask },
+                                        { label: 'Silkscreen', value: data.silkscreen },
+                                        { label: 'UV Printing', value: data.uv_printing },
+                                        { label: 'Surface Finish', value: data.surface_finish },
+                                        { label: 'Finish Copper', value: data.finish_copper },
+                                        { label: 'Remove Product No', value: data.remove_product_no }]
+                                            .map((item, idx) => (
+                                                <Typography key={idx} variant="body2">
+                                                    <strong>{item.label}: </strong> {item.value}
+                                                </Typography>
+                                            ))}
                                     </Box>
                                 </div>
                             ))
                     ) : (
                         // Loading State
-                        <Typography variant="body1">Loading...</Typography>
+                        <Typography variant="body1">Loading Prototype Data...</Typography>
                     )}
+
+                    {/* Detail untuk Assembly */}
+                    {requestAssembly && requestAssembly.length > 0 ? (
+                        requestAssembly
+                            .filter(data => data._id === selectedIdAssembly)
+                            .map((data, idx) => (
+                                <div key={idx}>
+                                    {/* Header */}
+                                    <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
+                                        Detail Pesanan - Assembly
+                                    </Typography>
+
+                                    {/* Informasi Pesanan */}
+                                    <Typography variant="body1">
+                                        <strong>No Order:</strong> {data._id}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        <strong>Nama:</strong> {data.name}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        <strong>Tanggal:</strong> {formatDate(data.createdAt)}
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        <strong>Harga:</strong> Rp.{Number(data.total_cost).toLocaleString('id-ID')}
+                                    </Typography>
+
+                                    <Typography variant="body1">
+                                        <strong>Status:</strong> {data.status
+                                            .split('-')
+                                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                            .join(' ')}
+                                    </Typography>
+
+                                    {/* Spesifikasi untuk Assembly */}
+                                    <Typography variant="body1" sx={{ marginTop: 2, fontWeight: 'bold', marginBottom: 1 }}>
+                                        Spesifikasi :
+                                    </Typography>
+                                    <Box>
+                                        {[{ label: 'Flexible Option', value: data.flexible_option },
+                                        { label: 'Board Type', value: data.board_type },
+                                        { label: 'Assembly Side', value: data.assembly_side },
+                                        { label: 'Quantity', value: data.quantity },
+                                        { label: 'Pay Attention', value: data.pay_attention },
+                                        { label: 'Notes', value: data.notes },
+                                        { label: 'Unique Part Number', value: data.number_unik_part },
+                                        { label: 'SMD Part Number', value: data.number_SMD_part },
+                                        { label: 'BGA/QFP Part Number', value: data.number_BGA_QFP },
+                                        { label: 'Through Hole', value: data.throught_hole },
+                                        { label: 'Board to Delivery', value: data.board_to_delivery },
+                                        { label: 'Function Test', value: data.function_test },
+                                        { label: 'Cable/Wire Harness Assembly', value: data.cable_wire_harness_assembly },
+                                        { label: 'Detail Information', value: data.detail_information },
+                                        { label: 'Design File', value: data.design_file }]
+                                            .map((item, idx) => (
+                                                <Typography key={idx} variant="body2">
+                                                    <strong>{item.label}: </strong> {item.value ? item.value : 'N/A'}
+                                                </Typography>
+                                            ))}
+                                    </Box>
+                                </div>
+                            ))
+                    ) : (
+                        // Loading State
+                        <Typography variant="body1">Loading Assembly Data...</Typography>
+                    )}
+
+                    {/* Tombol Penutup */}
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                backgroundColor: '#54cbbb',
+                                '&:hover': { backgroundColor: '#46b2a6' },
+                            }}
+                            onClick={handleCloseModal}
+                        >
+                            Close
+                        </Button>
+                    </Box>
                 </ModalContent>
             </StyledModal>
+
 
         </Box>
     );

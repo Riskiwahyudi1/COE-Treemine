@@ -17,12 +17,14 @@ const products = require('./routes/admin/product');
 const costomAssembly = require('./routes/admin/costomAssembly');
 const costomPrototype = require('./routes/admin/costomPrototype');
 const admReqCostomPrptptype = require('./routes/admin/requestCostomPrototype');
+const admReqCostomAssembly = require('./routes/admin/requestCostomAssembly');
 const transactionAdmin = require('./routes/admin/transactions');
 
 // memanggil routes buyer
 const account = require('./routes/buyer/auth/accountSetting')
 const cart = require('./routes/buyer/cart');
 const costomPrototypeBuyer = require('./routes/buyer/costomPrototype');
+const costomAssemblyBuyer = require('./routes/buyer/costomAssembly');
 const Transactions = require('./routes/buyer/transactions');
 
 // service
@@ -56,12 +58,14 @@ app.use('/product-picture', express.static(path.join(__dirname, 'storage/product
 app.use('/category-picture', express.static(path.join(__dirname, 'storage/category-picture')));
 app.use('/profile-picture', express.static(path.join(__dirname, 'storage/profile-picture')));
 app.use('/prototype-design', express.static(path.join(__dirname, 'storage/prototype-design')));
+app.use('/assembly-design', express.static(path.join(__dirname, 'storage/assembly-design')));
 
 
 const productPictureStorage = path.join(__dirname, 'storage/product-picture');
 const categoryPictureStorage = path.join(__dirname, 'storage/category-picture');
 const profilePictureStorage = path.join(__dirname, 'storage/profile-picture');
 const prototypeDesignStorage = path.join(__dirname, 'storage/prototype-design');
+const assemblyDesignStorage = path.join(__dirname, 'storage/assembly-design');
 
 // Membuat folder untuk gambar produk 
 if (!fs.existsSync(productPictureStorage)) {
@@ -79,6 +83,10 @@ if (!fs.existsSync(profilePictureStorage)) {
 // Membuat folder untuk prototype design 
 if (!fs.existsSync(prototypeDesignStorage)) {
     fs.mkdirSync(prototypeDesignStorage, { recursive: true });
+}
+// Membuat folder untuk prototype design 
+if (!fs.existsSync(assemblyDesignStorage)) {
+    fs.mkdirSync(assemblyDesignStorage, { recursive: true });
 }
 
 
@@ -109,13 +117,15 @@ app.use('/admin/product/categories', productCategories);
 app.use('/admin/product', products);
 app.use('/admin/costom-prototype', costomPrototype);
 app.use('/admin/costom-assembly', costomAssembly);
-app.use('/admin/request-custom', admReqCostomPrptptype);
+app.use('/admin/request-custom-prototype', admReqCostomPrptptype);
+app.use('/admin/request-custom-assembly', admReqCostomAssembly);
 app.use('/admin/transaction', transactionAdmin);
 
 // buyer
 app.use('/account', account)
 app.use('/cart', cart);
 app.use('/costom-prototype', costomPrototypeBuyer);
+app.use('/costom-assembly', costomAssemblyBuyer);
 
 // service
 app.use('/raja-ongkir', rajaOngkirService);

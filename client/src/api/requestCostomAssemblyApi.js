@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const API_URL = 'http://localhost:5000/admin/request-custom-prototype';
-const API_URL_BUYER = 'http://localhost:5000/costom-prototype';
+const API_URL = 'http://localhost:5000/admin/request-custom-assembly';
+const API_URL_BUYER = 'http://localhost:5000/costom-assembly';
 
 const token = localStorage.getItem('token');
 
-export const getCostomPrototypeData = async () => {
+export const getCostomAssemblyData = async () => {
     try {
         const respon = await axios.get(`${API_URL_BUYER}/api/transaksi`,{
             headers: {
@@ -18,7 +18,7 @@ export const getCostomPrototypeData = async () => {
         throw error;
     }
 };
-export const getRequestCostomPrototype = async () => {
+export const getRequestCostomAssembly = async () => {
     try {
         const respon = await axios.get(`${API_URL}/review`);
         return respon.data;
@@ -27,7 +27,7 @@ export const getRequestCostomPrototype = async () => {
         throw error;
     }
 };
-export const getWaitingPaymentPrototype = async () => {
+export const getWaitingPaymentAssembly = async () => {
     try {
         const respon = await axios.get(`${API_URL}/waiting-payment`);
         return respon.data;
@@ -36,7 +36,7 @@ export const getWaitingPaymentPrototype = async () => {
         throw error;
     }
 };
-export const getPrototypeByProcess = async () => {
+export const getAssemblyByProcess = async () => {
     try {
         const respon = await axios.get(`${API_URL}/process`);
         return respon.data;
@@ -45,7 +45,7 @@ export const getPrototypeByProcess = async () => {
         throw error;
     }
 };
-export const getPrototypeHistory = async () => {
+export const getAssemblyHistory = async () => {
     try {
         const respon = await axios.get(`${API_URL}/history`);
         return respon.data;
@@ -55,7 +55,7 @@ export const getPrototypeHistory = async () => {
     }
 };
 
-export const getRequestPrototypeByParams = async (status) => {
+export const getRequestAssemblyByParams = async (status) => {
     try {
         const response = await axios.get(`${API_URL}`, {
             params: { status }, 

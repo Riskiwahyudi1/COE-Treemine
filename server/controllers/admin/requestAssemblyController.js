@@ -1,9 +1,10 @@
-const RequestCustomPrototype = require('../../models/request-costom-prototype')
+const RequestCustomAssembly = require('../../models/request-costom-assembly')
 
-const approvedPrototype = async (req, res) => {
+const approvedAssembly = async (req, res) => {
     try {
         const { id } = req.params;
-        const updateProduct = await RequestCustomPrototype.findByIdAndUpdate(id, {
+
+        const updateProduct = await RequestCustomAssembly.findByIdAndUpdate(id, {
             status : 'disetujui'           
         }, { new: true });
 
@@ -16,13 +17,13 @@ const approvedPrototype = async (req, res) => {
     }
 };
 
-const rejectPrototype = async (req, res) => {
+const rejectAssembly = async (req, res) => {
     try {
         const { id } = req.params;
         const { reason } = req.body
-        const updateProduct = await RequestCustomPrototype.findByIdAndUpdate(id, {
+        const updateProduct = await RequestCustomAssembly.findByIdAndUpdate(id, {
             status : "ditolak-admin",
-            reject_reason: reason             
+            reject_reason: reason           
         }, { new: true });
 
         if (!updateProduct) {
@@ -34,11 +35,11 @@ const rejectPrototype = async (req, res) => {
     }
 };
 
-const showRequestPrototypeByParams = async (req, res) => {
+const showRequestAssemblyByParams = async (req, res) => {
 
     try {
         const status = req.query.status;
-        const requestCustom = await RequestCustomPrototype.find({status: { $in: status }}).populate('id_user', 'username')
+        const requestCustom = await RequestCustomAssembly.find({status: { $in: status }}).populate('id_user', 'username')
 
         if (!requestCustom || requestCustom.length === 0) {
             return res.status(200).json({ requestCustom: [], message: "No requestCustom found" });
@@ -53,7 +54,8 @@ const showRequestPrototypeByParams = async (req, res) => {
 
 
 module.exports ={
-    approvedPrototype,
-    rejectPrototype,
-    showRequestPrototypeByParams
+  
+    approvedAssembly,
+    rejectAssembly,
+    showRequestAssemblyByParams
 }

@@ -29,7 +29,7 @@ const UpdateBoardTypePage = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/admin/costom-prototype/${typeId}/item/${itemId}`
+          `http://localhost:5000/admin/costom-assembly/${typeId}/item/${itemId}`
         );
         setFormData(response.data); 
       } catch (error) {

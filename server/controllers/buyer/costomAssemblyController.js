@@ -1,26 +1,26 @@
 const CustomPrototype = require('../../models/custom-prototype'); 
-const RequestCustomPrototype = require('../../models/request-costom-prototype')
+const RequestCustomAssembly = require('../../models/request-costom-assembly')
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const showCustomPrototypeData = async (req, res) => {
-    try {
-        const customPrototypeData = await CustomPrototype.find(); 
-        if (!customPrototypeData || customPrototypeData.length === 0) {
-            return res.status(404).json({ message: 'Data tidak ditemukan!' });
-        }
-        res.json(customPrototypeData);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Terjadi kesalahan server!" });
-    }
-};
+// const showCustomPrototypeData = async (req, res) => {
+//     try {
+//         const customPrototypeData = await CustomPrototype.find(); 
+//         if (!customPrototypeData || customPrototypeData.length === 0) {
+//             return res.status(404).json({ message: 'Data tidak ditemukan!' });
+//         }
+//         res.json(customPrototypeData);
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: "Terjadi kesalahan server!" });
+//     }
+// };
 
-const showCustomPrototypeByUser = async (req, res) => {
+const showCustomAssemblyByUser = async (req, res) => {
     const user = req.user;
     try {
-        const customPrototypeData = await RequestCustomPrototype.find({id_user: user.id}); 
+        const customPrototypeData = await RequestCustomAssembly.find({id_user: user.id}); 
         if (!customPrototypeData || customPrototypeData.length === 0) {
             return res.status(404).json({ message: 'Data tidak ditemukan!' });
         }
@@ -31,7 +31,7 @@ const showCustomPrototypeByUser = async (req, res) => {
     }
 };
 
-const requestCostomPrototype = async (req, res) => {
+const requestCostomAssembly = async (req, res) => {
     const user = req.user;
     
     if (!user) {
@@ -41,69 +41,46 @@ const requestCostomPrototype = async (req, res) => {
     console.log('user',user)
     try {
         const { 
-
             name,
-            x_out,
-            panel_Requirement,
-            notes,
-            route_process,
-            design_in_panel,
-            width,
-            length,
+            flexible_option,
+            board_type,
+            assembly_side,
             quantity,
-            layer,
-            copper_layer,
-            solder_mask_position,
-            silkscreen_position,
-            material,
-            thickness,
-            min_track,
-            min_hole,
-            solder_mask,
-            silkscreen,
-            uv_printing,
-            edge_conector,
-            surface_finish,
-            finish_copper,
-            remove_product_no,
-            design_file,
-            shiping_cost,
-            total_cost,
+            pay_attention,
+            notes,
+            number_unik_part,
+            number_SMD_part,
+            number_BGA_QFP,
+            throught_hole,
+            board_to_delivery,
+            function_test,
+            cable_wire_harness_assembly,
+            detail_information,
+            total_cost
          } = req.body;
 
         const newProduct = {
             id_user,
             name,
-            x_out,
-            panel_Requirement,
-            notes,
-            route_process,
-            design_in_panel,
-            width,
-            length,
+            flexible_option,
+            board_type,
+            assembly_side,
             quantity,
-            layer,
-            copper_layer,
-            solder_mask_position,
-            silkscreen_position,
-            material,
-            thickness,
-            min_track,
-            min_hole,
-            solder_mask,
-            silkscreen,
-            uv_printing,
-            edge_conector,
-            surface_finish,
-            finish_copper,
-            remove_product_no,
-            design_file,
+            pay_attention,
+            notes,
+            number_unik_part,
+            number_SMD_part,
+            number_BGA_QFP,
+            throught_hole,
+            board_to_delivery,
+            function_test,
+            cable_wire_harness_assembly,
+            detail_information,
             status: 'menunggu-pengajuan',
-            shiping_cost,
-            total_cost,
+            total_cost
         };
 
-        const savedProduct = await RequestCustomPrototype.create(newProduct);
+        const savedProduct = await RequestCustomAssembly.create(newProduct);
 
         res.status(201).json({
             message: 'Product added successfully',
@@ -114,9 +91,10 @@ const requestCostomPrototype = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'storage/prototype-design'); 
+        cb(null, 'storage/assembly-design'); 
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -125,7 +103,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-const requestPrototypeToAdmin = async (req, res) => {
+const requestAssemblyToAdmin = async (req, res) => {
     try {
         const { id } = req.params;
         if (!req.file) {
@@ -134,7 +112,7 @@ const requestPrototypeToAdmin = async (req, res) => {
 
         const design_file = `/prototype-design/${req.file.filename}`;
 
-        const updateProduct = await RequestCustomPrototype.findByIdAndUpdate(
+        const updateProduct = await RequestCustomAssembly.findByIdAndUpdate(
             id,
             { status : 'admin-review', design_file },
             { new: true }
@@ -155,10 +133,10 @@ const requestPrototypeToAdmin = async (req, res) => {
 };
 
 // delete request
-const deleteRequestPrototype = async (req, res) => {
+const deleteRequestAssembly = async (req, res) => {
     try {
         const { id } = req.params;
-        const deleteRequest = await RequestCustomPrototype.findByIdAndDelete(id);
+        const deleteRequest = await RequestCustomAssembly.findByIdAndDelete(id);
         
         if(!deleteRequest){
             return res.status(404).json({message : 'Request id not found!'})
@@ -170,12 +148,11 @@ const deleteRequestPrototype = async (req, res) => {
     };
 };
 
-const cancelRequestPrototype = async (req, res) => {
+const cancelRequestAssembly = async (req, res) => {
     try {
         const { id } = req.params;
-        
 
-        const cancelRequest = await RequestCustomPrototype.findByIdAndUpdate(id, {
+        const cancelRequest = await RequestCustomAssembly.findByIdAndUpdate(id, {
             status : 'dibatalkan-pembeli'            
         }, { new: true });
 
@@ -190,11 +167,11 @@ const cancelRequestPrototype = async (req, res) => {
 
 
 module.exports = {
-    showCustomPrototypeData,
-    requestCostomPrototype,
-    showCustomPrototypeByUser,
-    requestPrototypeToAdmin,
-    deleteRequestPrototype,
-    cancelRequestPrototype,
+    // showCustomPrototypeData,
+    requestCostomAssembly,
+    showCustomAssemblyByUser,
+    requestAssemblyToAdmin,
+    deleteRequestAssembly,
+    cancelRequestAssembly,
     upload
 };

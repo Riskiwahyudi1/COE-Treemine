@@ -19,7 +19,7 @@ import Box from '@mui/material/Box';
 import axios from 'axios';
 import Toast from '../utils/Toast';
 import Dialog from "../utils/Dialog";
-import { getAssemblyItem, getAssemblyById } from './api/costomAssemblyApi';
+import { getAssemblyItem, getAssemblyById } from '../api/costomAssemblyApi';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -61,13 +61,6 @@ const CustomAssemblyPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [productData, setProductData] = useState(null);
-
-  const assemblyData = [
-    { id: 1, name: 'Turnkey', price: 'Rp. 50.000' },
-    { id: 2, name: 'Kitted or Consigned', price: 'Rp. 100.000' },
-    { id: 3, name: 'Combo', price: 'Rp. 150.000' },
-  ];
-
 
   const handleEditBoard = (itemId) => {
     navigate(`./editItemAssembly/${selectedBoard}/item/${itemId}`);

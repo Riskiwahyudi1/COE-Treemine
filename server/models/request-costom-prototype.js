@@ -36,6 +36,7 @@ const requestCustomPrototypeSchema = new mongoose.Schema(
         status: { type: String, required: false  }, 
         shiping_cost: { type: String, required: false  }, 
         total_cost: { type: String, required: false  }, 
+        reject_reason: { type: String, required: false },
     },
     { timestamps: true }
 );

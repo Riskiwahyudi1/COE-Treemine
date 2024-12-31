@@ -15,6 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { getCostomPrototypeData } from '../api/requestCostomPrototypeApi';
+import { getCostomAssemblyData } from '../api/requestCostomAssemblyApi';
 import CostomPrototypeImg from '../assets/images/1.png';
 import Toast from '../utils/Toast';
 import Dialog from '../utils/Dialog';
@@ -79,12 +80,12 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
           .join(' ')}</Typography>
 
         {/* Kondisi: Waiting Request */}
-        {status === 'Menunggu Pengajuan' ? (
+        {status === 'menunggu-pengajuan' ? (
           <>
             <Button
               variant="contained"
               size="small"
-              onClick={() => handleRequest(id, file)}
+              onClick={() => handleRequest(id, file, name)}
               sx={{
                 backgroundColor: '#00A63F',
                 color: '#fff',
@@ -124,7 +125,7 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
               variant="contained"
               color="error"
               size="small"
-              onClick={() => onDelete(id)}
+              onClick={() => onDelete(id, name)}
               sx={{
                 height: 32,
                 '&:hover': {
@@ -146,7 +147,7 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
               variant="contained"
               size="small"
               color="error"
-              onClick={() => handleCancel(id)}
+              onClick={() => handleCancel(id, name)}
               sx={{
                 height: 32,
                 '&:hover': {
@@ -224,6 +225,8 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
 const ShoppingCart = () => {
   const navigate = useNavigate();
   const [requestPrototype, setRequestPrototype] = useState([]);
+  const [requestAssembly, setRequestAssembly] = useState([]);
+  const [requestCustom, setRequestCustom] = useState([]);
   const [selectedId, setSelectedId] = useState('')
   const [checkoutPrototype, setCheckoutPrototype] = useState([]);
   const [shouldNavigate, setShouldNavigate] = useState(false);
@@ -232,6 +235,8 @@ const ShoppingCart = () => {
     (product) => product._id === selectedId
   );
 
+  console.log(requestCustom)
+  console.log(requestAssembly)
   useEffect(() => {
     if (selectedId && requestPrototype.length > 0) {
       setCheckoutPrototype(singleProductPrototype);
@@ -260,77 +265,125 @@ const ShoppingCart = () => {
   const handleBack = () => {
     navigate(-1);
   };
+
+  // Data request custom
   useEffect(() => {
-    const fetchRequestPrototype = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getCostomPrototypeData();
-        setRequestPrototype(data);
+        const [prototypeData, assemblyData] = await Promise.allSettled([
+          getCostomPrototypeData(),
+          getCostomAssemblyData()
+        ]);
+  
+        // Handle resolved or rejected promises
+        const resolvedPrototypeData = prototypeData.status === 'fulfilled' ? prototypeData.value : [];
+        const resolvedAssemblyData = assemblyData.status === 'fulfilled' ? assemblyData.value : [];
+  
+        // Combine and sort data
+        let combinedData = [...resolvedPrototypeData, ...resolvedAssemblyData];
+        combinedData = combinedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  
+        // Update state
+        setRequestPrototype(resolvedPrototypeData);
+        setRequestAssembly(resolvedAssemblyData);
+        setRequestCustom(combinedData);
       } catch (error) {
         console.error('Failed to load products', error);
       }
     };
-    fetchRequestPrototype();
+  
+    fetchData();
   }, []);
+  
 
-  const handleRequest = async (id, file) => {
-    
 
-      if (!file) {
-        Toast.fire({
-          icon: 'error',
-          title: 'Mohon sertakan file desain anda !',
-        });
-        return;
-      }
-
-      const result = await Dialog.fire({
-        title: 'Anda yakin?',
-        text: 'Ingin request pesanan ini?',
+  const handleRequest = async (id, file, type) => {
+    if (!file) {
+      Toast.fire({
+        icon: 'error',
+        title: 'Mohon sertakan file desain anda!',
       });
-      if (result.isConfirmed) {
+      return;
+    }
 
+    const result = await Dialog.fire({
+      title: 'Anda yakin?',
+      text: 'Ingin request pesanan ini?',
+    });
+
+    if (result.isConfirmed) {
       const formData = new FormData();
       formData.append('design_file', file);
 
       try {
-        const response = await axios.put(`http://localhost:5000/costom-prototype/${id}/send-review`, formData);
-
-        if (response.status === 200) {
-          setRequestPrototype((prevList) =>
-            prevList.map((request) =>
-              request._id === id ? { ...request, status: 'Admin Review' } : request
-            )
+        let response;
+        if (type === 'Costom Prototype') {
+          response = await axios.put(
+            `http://localhost:5000/costom-prototype/${id}/send-review`,
+            formData
           );
+          if (response.status === 200) {
+            setRequestCustom((prevList) =>
+              prevList.map((request) =>
+                request._id === id ? { ...request, status: 'admin-review' } : request
+              )
+            );
+          }
+        } else if (type === 'Costom Assembly') {
+          response = await axios.put(
+            `http://localhost:5000/costom-assembly/${id}/send-review`,
+            formData
+          );
+          if (response.status === 200) {
+            setRequestCustom((prevList) =>
+              prevList.map((request) =>
+                request._id === id ? { ...request, status: 'admin-review' } : request
+              )
+            );
+          }
+        }
+
+        if (response && response.status === 200) {
           Toast.fire({
             icon: 'success',
             title: 'Request berhasil dikirimkan ke admin',
           });
-
         }
       } catch (error) {
+        console.error('Error updating request:', error);
         Toast.fire({
           icon: 'error',
           title: 'Terjadi Kesalahan',
         });
-        
       }
     }
   };
 
-  const handleDelete = async (id) => {
+
+  const handleDelete = async (id, type) => {
     const result = await Dialog.fire({
       title: 'Anda yakin?',
-      text: 'Ingin Menghapus Pesanan?',
+      text: `Ingin menghapus pesanan ${type === 'prototype' ? 'Custom Prototype' : 'Custom Assembly'} ini?`,
     });
 
     if (result.isConfirmed) {
-      // const token = localStorage.getItem('token');
       try {
-        await axios.delete(`http://localhost:5000/costom-prototype/${id}/delete`);
+        const apiUrl = type === 'Costom Prototype'
+          ? `http://localhost:5000/costom-prototype/${id}/delete`
+          : `http://localhost:5000/costom-assembly/${id}/delete`;
 
-        setRequestPrototype((prevList) =>
-          prevList.filter((product) => product._id !== id)
-        );
+        await axios.delete(apiUrl);
+
+        if (type === 'Costom Prototype') {
+          setRequestCustom((prevList) =>
+            prevList.filter((product) => product._id !== id)
+          );
+        } else if (type === 'Costom Assembly') {
+          setRequestCustom((prevList) =>
+            prevList.filter((product) => product._id !== id)
+          );
+        }
+
         Toast.fire({
           icon: 'success',
           title: 'Data berhasil dihapus',
@@ -344,22 +397,37 @@ const ShoppingCart = () => {
     }
   };
 
-  const handleCancel = async (orderId) => {
+
+  const handleCancel = async (id, type) => {
     const result = await Dialog.fire({
       title: 'Anda yakin?',
       text: 'Ingin membatalkan pesanan?',
     });
     if (result.isConfirmed) {
-
       try {
-        const response = await axios.put(`http://localhost:5000/costom-prototype/${orderId}/cancel`);
+
+        const endpoint =
+          type === 'Costom Prototype'
+            ? `http://localhost:5000/costom-prototype/${id}/cancel`
+            : `http://localhost:5000/costom-assembly/${id}/cancel`;
+
+        const response = await axios.put(endpoint);
 
         if (response.status === 200) {
-          setRequestPrototype((prevList) =>
-            prevList.map((request) =>
-              request._id === orderId ? { ...request, status: 'Dibatalkan Pembeli' } : request
-            )
-          );
+
+          if (type === 'Costom Prototype') {
+            setRequestCustom((prevList) =>
+              prevList.map((request) =>
+                request._id === id ? { ...request, status: 'dibatalkan-pembeli' } : request
+              )
+            );
+          } else if (type === 'Costom Assembly') {
+            setRequestCustom((prevList) =>
+              prevList.map((request) =>
+                request._id === id ? { ...request, status: 'dibatalkan-pembeli' } : request
+              )
+            );
+          }
 
           Toast.fire({
             icon: 'success',
@@ -395,8 +463,8 @@ const ShoppingCart = () => {
       </Box>
 
       <Box sx={{ flex: 1 }}>
-        {Array.isArray(requestPrototype) && requestPrototype.length > 0 ? (
-          requestPrototype.map((order) => (
+        {Array.isArray(requestCustom) && requestCustom.length > 0 ? (
+          requestCustom.map((order) => (
             <ShoppingCartItem
               key={order._id}
               id={order._id}

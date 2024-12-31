@@ -185,7 +185,7 @@ export default function MiniDrawer() {
         {
           text: 'Ditolak',
           icon: <CancelIcon />,
-          path: 'request-custom?status=ditolak-admin'
+          path: 'request-custom?status=ditolak-admin&status=dibatalkan-pembeli'
         },
       ]
     },
