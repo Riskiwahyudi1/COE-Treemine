@@ -90,7 +90,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const Navbar = () => {
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const navigate = useNavigate();
-    const { isAuthenticated, logout } = useAuth();
+    const { isUserAuthenticated, logoutUser } = useAuth();
     const [value, setValue] = useState(0);
     const [anchorEl, setAnchorEl] = useState(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -220,7 +220,7 @@ const Navbar = () => {
 
                     <Box sx={{ flexGrow: 1 }} />
 
-                    {!isAuthenticated ? (
+                    {!isUserAuthenticated ? (
                         <Button
                             variant="contained"
                             sx={{
@@ -275,7 +275,7 @@ const Navbar = () => {
                                 <MenuItem onClick={handleTransaksiPage}>Transaksi</MenuItem>
                                 <MenuItem
                                     onClick={() => {
-                                        logout();
+                                        logoutUser();
                                         handleCloseMenu();
                                     }}
                                 >

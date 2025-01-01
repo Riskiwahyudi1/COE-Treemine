@@ -17,6 +17,7 @@ import axios from 'axios';
 import { getCostomPrototypeData } from '../api/requestCostomPrototypeApi';
 import { getCostomAssemblyData } from '../api/requestCostomAssemblyApi';
 import CostomPrototypeImg from '../assets/images/1.png';
+import CostomAssemblyImg from '../assets/images/3.png';
 import Toast from '../utils/Toast';
 import Dialog from '../utils/Dialog';
 
@@ -66,7 +67,32 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
     >
       <CardContent sx={{ display: 'flex', flex: 1, alignItems: 'center', gap: 2 }}>
         {/* Foto Produk */}
-        <img src={CostomPrototypeImg} alt="Custom Prototype" width={64} height={64} style={{ borderRadius: 8 }} />
+        {name === 'Costom Prototype' ? (
+          <img
+            src={CostomPrototypeImg}
+            alt="Custom Prototype"
+            width={64}
+            height={64}
+            style={{
+              borderRadius: 8,
+              border: "1px solid #00A63F",
+              borderColor: "primary.main",
+            }}
+          />
+        ) : (
+          <img
+            src={CostomAssemblyImg}
+            alt="Costom Assembly"
+            width={64}
+            height={64}
+            style={{
+              borderRadius: 8,
+              border: "1px solid #00A63F",
+              borderColor: "primary.main",
+            }}
+          />
+        )}
+
         {/* Nama dan Harga */}
         <Box>
           <Typography variant="h6">{name}</Typography>
@@ -231,25 +257,24 @@ const ShoppingCart = () => {
   const [checkoutPrototype, setCheckoutPrototype] = useState([]);
   const [shouldNavigate, setShouldNavigate] = useState(false);
 
-  const singleProductPrototype = requestPrototype.filter(
+  const singleProductCostom = requestCustom.filter(
     (product) => product._id === selectedId
   );
 
-  console.log(requestCustom)
-  console.log(requestAssembly)
+
   useEffect(() => {
     if (selectedId && requestPrototype.length > 0) {
-      setCheckoutPrototype(singleProductPrototype);
+      setCheckoutPrototype(singleProductCostom);
 
       if (shouldNavigate) {
         navigate("/checkout", {
-          state: { singleProductPrototype },
+          state: { singleProductCostom },
         });
 
         setShouldNavigate(false);
       }
     }
-  }, [selectedId, requestPrototype, shouldNavigate, navigate, singleProductPrototype]);
+  }, [selectedId, requestPrototype, shouldNavigate, navigate, singleProductCostom]);
 
   const handleCheckout = async (id) => {
     const result = await Dialog.fire({
@@ -274,15 +299,15 @@ const ShoppingCart = () => {
           getCostomPrototypeData(),
           getCostomAssemblyData()
         ]);
-  
+
         // Handle resolved or rejected promises
         const resolvedPrototypeData = prototypeData.status === 'fulfilled' ? prototypeData.value : [];
         const resolvedAssemblyData = assemblyData.status === 'fulfilled' ? assemblyData.value : [];
-  
+
         // Combine and sort data
         let combinedData = [...resolvedPrototypeData, ...resolvedAssemblyData];
         combinedData = combinedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  
+
         // Update state
         setRequestPrototype(resolvedPrototypeData);
         setRequestAssembly(resolvedAssemblyData);
@@ -291,10 +316,10 @@ const ShoppingCart = () => {
         console.error('Failed to load products', error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
+
 
 
   const handleRequest = async (id, file, type) => {

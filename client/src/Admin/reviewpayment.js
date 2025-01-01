@@ -16,6 +16,7 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import PaymentIcon from '@mui/icons-material/Payment';
 import CostomPrototypeImg from '../assets/images/1.png';
+import CostomAssemblyImg from '../assets/images/3.png';
 import { getTransactionAdmin, approveTransaction, rejectTransaction, sendTransaction } from '../api/transaksiApi'
 import { getProvinces, getCities } from '../api/service/rajaOngkirApi'
 import Toast from '../utils/Toast';
@@ -79,25 +80,25 @@ export default function OrdersTable() {
     const [cities, setCities] = useState();
     const [isLoading, setIsLoading] = useState(false);
 
-   // transaksi berdasarkan quesry status
-       useEffect(() => {
-           const fetchTransaction = async () => {
-               try {
-                   const currentStatus = searchParams.get("status");
-       
-                   setTransaction([]);
-       
-                   if (currentStatus) {
-                       const data = await getTransactionAdmin(currentStatus);
-                       setTransaction(data);
-                   }
-               } catch (error) {
-                   console.error('Failed to load transactions', error);
-               }
-           };
-       
-           fetchTransaction();
-       }, [searchParams]);
+    // transaksi berdasarkan quesry status
+    useEffect(() => {
+        const fetchTransaction = async () => {
+            try {
+                const currentStatus = searchParams.getAll("status");
+
+                setTransaction([]);
+
+                if (currentStatus) {
+                    const data = await getTransactionAdmin(currentStatus);
+                    setTransaction(data);
+                }
+            } catch (error) {
+                console.error('Failed to load transactions', error);
+            }
+        };
+
+        fetchTransaction();
+    }, [searchParams]);
 
     const handleApprove = async (orderId) => {
         const result = await Dialog.fire({
@@ -108,15 +109,15 @@ export default function OrdersTable() {
         const data = {
             id: orderId,
         }
-        if(result.isConfirmed){
+        if (result.isConfirmed) {
             try {
                 const response = await approveTransaction(data)
-    
+
                 if (response.status === 200) {
                     setTransaction((prev) =>
                         prev.filter((order) => order._id !== orderId)
                     );
-    
+
                     Toast.fire({
                         icon: 'success',
                         title: 'Status transaksi berhasil di update',
@@ -140,15 +141,15 @@ export default function OrdersTable() {
         const data = {
             id: orderId,
         }
-        if(result.isConfirmed){
+        if (result.isConfirmed) {
             try {
                 const response = await rejectTransaction(data)
-    
+
                 if (response.status === 200) {
                     setTransaction((prev) =>
                         prev.filter((order) => order._id !== orderId)
                     );
-    
+
                     Toast.fire({
                         icon: 'success',
                         title: 'Transaksi Berhasil Ditolak',
@@ -163,23 +164,36 @@ export default function OrdersTable() {
         }
     };
     const handleSendTransaction = async (orderId) => {
-        const result = await Dialog.fire({
+
+        const { value: resi } = await Dialog.fire({
             title: 'Anda yakin?',
-            text: 'Kirim pesanan sekarang ?',
+            text: 'Ingin Mengirim Transaksi? Silahkan masukan resi pengiriman !',
+            input: 'textarea',
+            inputPlaceholder: 'No resi...',
+            showCancelButton: true,
+            confirmButtonText: 'Kirim',
+            cancelButtonText: 'Batal',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Alasan tidak boleh kosong!';
+                }
+            },
         });
 
         const data = {
             id: orderId,
+            resi: resi
         }
-        if(result.isConfirmed){
+
+        if (resi) {
             try {
                 const response = await sendTransaction(data)
-    
+
                 if (response.status === 200) {
                     setTransaction((prev) =>
                         prev.filter((order) => order._id !== orderId)
                     );
-    
+
                     Toast.fire({
                         icon: 'success',
                         title: 'Transaksi Siap Dikirim',
@@ -216,9 +230,9 @@ export default function OrdersTable() {
                 } catch (error) {
                     setProvinces("Gagal memuat data..");
                 } finally {
-                    setIsLoading(false); 
+                    setIsLoading(false);
                 }
-            }else {
+            } else {
                 setIsLoading(false);
             }
         };
@@ -226,23 +240,23 @@ export default function OrdersTable() {
         fetchProvince();
     }, [buyerData]);
 
-      useEffect(() => {
-      if (buyerData && buyerData.length > 0) {
-        const fetchCities = async () => {
-          try {
-            const dataCity = await getCities(buyerData[0].id_user.address.province);
-            if (dataCity) {
-              const city = dataCity.find(
-                (cities) => cities.city_id === buyerData[0].id_user.address.city
-              );
-              setCities(city?.city_name || "error");
-            }
-          } catch (error) {
-            setCities('Gagal memuat data..'); 
-          }
-        };
-        fetchCities();
-      } 
+    useEffect(() => {
+        if (buyerData && buyerData.length > 0) {
+            const fetchCities = async () => {
+                try {
+                    const dataCity = await getCities(buyerData[0].id_user.address.province);
+                    if (dataCity) {
+                        const city = dataCity.find(
+                            (cities) => cities.city_id === buyerData[0].id_user.address.city
+                        );
+                        setCities(city?.city_name || "error");
+                    }
+                } catch (error) {
+                    setCities('Gagal memuat data..');
+                }
+            };
+            fetchCities();
+        }
     }, [buyerData]);
 
     const handleCloseModal = () => {
@@ -252,177 +266,95 @@ export default function OrdersTable() {
 
     return (
         <Box
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            minHeight: '100vh',
-            backgroundColor: '#ffffff',
-            padding: 4,
-        }}
-    >
-        <Box
             sx={{
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%', 
-                marginBottom: 3,
+                justifyContent: 'flex-start',
+                minHeight: '100vh',
+                backgroundColor: '#ffffff',
+                padding: 4,
             }}
         >
-            {/* Select di kiri */}
-            {(searchParams.get("status") === 'selesai' || 
-            searchParams.get("status") === 'ditolak-admin' || 
-            searchParams.get("status") === 'dibatalkan-pembeli') && (
-                <Select
-                    defaultValue=""
-                    displayEmpty
-                    inputProps={{
-                        'aria-label': 'Pilih Status',
-                    }}
-                    onChange={(event) => {
-                        const selectedValue = event.target.value;
-                        if (selectedValue) {
-                            navigate(`?status=${selectedValue}`);
-                        }
-                    }}
-                    sx={{
-                        width: '250px',
-                        '& .MuiSelect-outlined': {
-                            padding: '10px',
-                        },
-                    }}
-                >
-                    {/* Placeholder */}
-                    <MenuItem value="" disabled>
-                        Pilih Status
-                    </MenuItem>
+           <Box
+    sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: '10px',
+        backgroundColor: '#F5F5F5', // Warna latar opsional
+    }}
+>
+    {/* Judul di tengah */}
+    <Typography
+        variant="h3"
+        sx={{
+            color: '#1B2D3F',
+            fontWeight: 'bold',
+            textAlign: 'center',
+        }}
+    >
+        Data Transaksi
+    </Typography>
+</Box>
 
-                    {/* Opsi Status */}
-                    <MenuItem value="selesai">Selesai</MenuItem>
-                    <MenuItem value="ditolak-admin">Ditolak Admin</MenuItem>
-                    <MenuItem value="dibatalkan-pembeli">Dibatalkan Pembeli</MenuItem>
-                </Select>
-            )}
 
-    
-            {/* Judul di tengah */}
-            <Typography
-                variant="h3"
-                sx={{
-                    color: '#1B2D3F',
-                    fontWeight: 'bold',
-                    textAlign: 'center',
-                    flexGrow: 1, 
-                    marginRight: '250px', 
-                }}
-            >
-                Data Transaksi
-            </Typography>
-        </Box>
-    
-        <StyledTableContainer component={Paper}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <StyledTableCell>No</StyledTableCell>
-                        <StyledTableCell align="center">No Order</StyledTableCell>
-                        <StyledTableCell align="center">Pembeli</StyledTableCell>
-                        <StyledTableCell align="center">Harga</StyledTableCell>
-                        <StyledTableCell align="center">Status</StyledTableCell>
-                        {searchParams.get("status") === 'menunggu-pembayaran' || searchParams.get("status") === 'sudah-bayar' && (
-                            <StyledTableCell align="center">Detail Payment</StyledTableCell>
-                        )}
-                        <StyledTableCell align="center">Action</StyledTableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {Array.isArray(transaction) && transaction.length > 0 ? (
-                        transaction.map((order, index) => (
-                            <StyledTableRow key={order.id || index}>
-                                {/* Nomor */}
-                                <StyledTableCell>{index + 1}</StyledTableCell>
+            <StyledTableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <StyledTableCell>No</StyledTableCell>
+                            <StyledTableCell align="center">No Order</StyledTableCell>
+                            <StyledTableCell align="center">Pembeli</StyledTableCell>
+                            <StyledTableCell align="center">Harga</StyledTableCell>
+                            <StyledTableCell align="center">Status</StyledTableCell>
+                            {searchParams.get("status") === 'menunggu-pembayaran' || searchParams.get("status") === 'sudah-bayar' && (
+                                <StyledTableCell align="center">Detail Payment</StyledTableCell>
+                            )}
+                            <StyledTableCell align="center">Action</StyledTableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {Array.isArray(transaction) && transaction.length > 0 ? (
+                            transaction.map((order, index) => (
+                                <StyledTableRow key={order.id || index}>
+                                    {/* Nomor */}
+                                    <StyledTableCell>{index + 1}</StyledTableCell>
 
-                                {/* ID Order */}
-                                <StyledTableCell align="center">{order._id || 'N/A'}</StyledTableCell>
+                                    {/* ID Order */}
+                                    <StyledTableCell align="center">{order._id || 'N/A'}</StyledTableCell>
 
-                                {/* Username */}
-                                <StyledTableCell align="center">{order.id_user?.username || 'Unknown'}</StyledTableCell>
+                                    {/* Username */}
+                                    <StyledTableCell align="center">{order.id_user?.username || 'Unknown'}</StyledTableCell>
 
-                                {/* Total Payment */}
-                                <StyledTableCell align="center">
-                                    {order.total_payment !== undefined
-                                        ? `Rp. ${Number(order.total_payment).toLocaleString('id-ID')}`
-                                        : 'N/A'}
-                                </StyledTableCell>
+                                    {/* Total Payment */}
+                                    <StyledTableCell align="center">
+                                        {order.total_payment !== undefined
+                                            ? `Rp. ${Number(order.total_payment).toLocaleString('id-ID')}`
+                                            : 'N/A'}
+                                    </StyledTableCell>
 
-                                {/* Status */}
-                                <StyledTableCell
-                                    align="center"
-                                    sx={{
-                                        color: '#FF9800',
-                                        fontWeight: 'bold',
-                                    }}
-                                >
-                                    {order.status
-                                        ? order.status
-                                            .split('-')
-                                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                                            .join(' ')
-                                        : 'N/A'}
-                                </StyledTableCell>
-
-                                {/* Tombol Aksi */}
-                                {order.status === 'menunggu-pembayaran' || searchParams.get("status") === 'sudah-bayar' && (
-                                <StyledTableCell align="center" sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                                        
-                                    <IconButton
+                                    {/* Status */}
+                                    <StyledTableCell
+                                        align="center"
                                         sx={{
-                                            color: '#00A63F',
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
+                                            color: '#FF9800',
+                                            fontWeight: 'bold',
                                         }}
-                                        onClick={() => navigate(`/payment-detail/${order.id}`)}
                                     >
-                                        <PaymentIcon />
-                                    </IconButton>
-                                </StyledTableCell>
-                                      
-                                    )}
+                                        {order.status
+                                            ? order.status
+                                                .split('-')
+                                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                                .join(' ')
+                                            : 'N/A'}
+                                    </StyledTableCell>
 
-                                {/* Tombol Lain */}
-                                <StyledTableCell align="center">
-                                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                                        {order.status === 'menunggu-pembayaran' && (
-                                            <>
-                                                <IconButton
-                                                    sx={{
-                                                        color: '#00A63F',
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                    }}
-                                                    onClick={() => handleApprove(order._id)}
-                                                >
-                                                    <CheckCircleIcon />
-                                                </IconButton>
-                                                <IconButton
-                                                    sx={{
-                                                        color: '#f44336',
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                    }}
-                                                    onClick={() => handleReject(order._id)}
-                                                >
-                                                    <CancelIcon />
-                                                </IconButton>
-                                            </>
-                                        )}
+                                    {/* Tombol Aksi */}
+                                    {order.status === 'menunggu-pembayaran' || searchParams.get("status") === 'sudah-bayar' && (
+                                        <StyledTableCell align="center" sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
 
-                                        {order.status === 'diproses' && (
                                             <IconButton
                                                 sx={{
                                                     color: '#00A63F',
@@ -430,248 +362,299 @@ export default function OrdersTable() {
                                                     justifyContent: 'center',
                                                     alignItems: 'center',
                                                 }}
-                                                onClick={() => handleSendTransaction(order._id)}
+                                                onClick={() => navigate(`/payment-detail/${order.id}`)}
                                             >
-                                                <LocalShippingIcon /> {/* Ikon truk pengiriman */}
+                                                <PaymentIcon />
                                             </IconButton>
-                                        )}
+                                        </StyledTableCell>
 
-                                        {/* Tombol mata untuk melihat detail transaksi */}
-                                        <IconButton
-                                            sx={{
-                                                color: '#00A63F',
-                                                display: 'flex',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                            }}
-                                            onClick={() => handleOpenModal(order._id)}
-                                        >
-                                            <VisibilityIcon /> {/* Ikon mata untuk detail */}
-                                        </IconButton>
-                                    </Box>
+                                    )}
+
+                                    {/* Tombol Lain */}
+                                    <StyledTableCell align="center">
+                                        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                                            {order.status === 'menunggu-pembayaran' || order.status === 'sudah-bayar' && (
+                                                <>
+                                                    <IconButton
+                                                        sx={{
+                                                            color: '#00A63F',
+                                                            display: 'flex',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center',
+                                                        }}
+                                                        onClick={() => handleApprove(order._id)}
+                                                    >
+                                                        <CheckCircleIcon />
+                                                    </IconButton>
+                                                    {console.log(order._id)}
+                                                    <IconButton
+                                                        sx={{
+                                                            color: '#f44336',
+                                                            display: 'flex',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center',
+                                                        }}
+                                                        onClick={() => handleReject(order._id)}
+                                                    >
+                                                        <CancelIcon />
+                                                    </IconButton>
+                                                </>
+                                            )}
+
+                                            {order.status === 'diproses' && (
+                                                <IconButton
+                                                    sx={{
+                                                        color: '#00A63F',
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                    }}
+                                                    onClick={() => handleSendTransaction(order._id)}
+                                                >
+                                                    <LocalShippingIcon /> {/* Ikon truk pengiriman */}
+                                                </IconButton>
+                                            )}
+
+                                            {/* Tombol mata untuk melihat detail transaksi */}
+                                            <IconButton
+                                                sx={{
+                                                    color: '#00A63F',
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                }}
+                                                onClick={() => handleOpenModal(order._id)}
+                                            >
+                                                <VisibilityIcon /> {/* Ikon mata untuk detail */}
+                                            </IconButton>
+                                        </Box>
+                                    </StyledTableCell>
+                                </StyledTableRow>
+                            ))
+                        ) : (
+                            // Fallback State
+                            <StyledTableRow>
+                                <StyledTableCell colSpan={8} align="center">
+                                    Belum ada data transaksi
                                 </StyledTableCell>
                             </StyledTableRow>
-                        ))
-                    ) : (
-                        // Fallback State
-                        <StyledTableRow>
-                            <StyledTableCell colSpan={8} align="center">
-                                Belum ada data transaksi
-                            </StyledTableCell>
-                        </StyledTableRow>
-                    )}
-                </TableBody>
+                        )}
+                    </TableBody>
 
-            </Table>
-        </StyledTableContainer>
-        <StyledModal open={openModal} onClose={handleCloseModal}>
-            <ModalContent
-                sx={{
-                    padding: 3,
-                    borderRadius: 2,
-                    boxShadow: 24,
-                    maxWidth: 700,
-                    maxHeight: '90vh',
-                    margin: 'auto',
-                    backgroundColor: '#ffffff',
-                    overflowY: 'auto',
-                }}
-            >
-                {transaction && transaction.length > 0 ? (
-                    transaction
-                        .filter(data => data._id === idTransaction)
-                        .map((data, idx) => (
-                            <Box key={idx}>
-                                {isLoading ? (
-                                   <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                                   <CircularProgress />
-                                   <Typography>Loading data...</Typography>
-                               </Box>                               
-                                ) : (
-                                    <>
-                                        <Typography
-                                            variant="h5"
-                                            sx={{
-                                                fontWeight: 'bold',
-                                                marginBottom: 3,
-                                                textAlign: 'center',
-                                                borderBottom: '2px solid #e0e0e0',
-                                                paddingBottom: 2,
-                                            }}
-                                        >
-                                            Detail Transaksi
-                                        </Typography>
-
-                                        <Box sx={{ marginBottom: 3 }}>
-                                            <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                <strong>No Order:</strong> {data._id || 'N/A'}
-                                            </Typography>
-                                            <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                <strong>Pembeli:</strong> {data.id_user?.username || 'N/A'}
-                                            </Typography>
-                                            <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                <strong>Tanggal:</strong>{' '}
-                                                {data.created_at ? new Date(data.created_at).toLocaleString('id-ID') : 'N/A'}
-                                            </Typography>
-                                            <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                <strong>Status:</strong>{' '}
-                                                {data.status
-                                                    ?.split('-')
-                                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                                                    .join(' ') || 'N/A'}
-                                            </Typography>
-                                            <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                <strong>Total Pembayaran:</strong> Rp.{' '}
-                                                {Number(data.total_payment).toLocaleString('id-ID') || 'N/A'}
-                                            </Typography>
+                </Table>
+            </StyledTableContainer>
+            <StyledModal open={openModal} onClose={handleCloseModal}>
+                <ModalContent
+                    sx={{
+                        padding: 3,
+                        borderRadius: 2,
+                        boxShadow: 24,
+                        maxWidth: 700,
+                        maxHeight: '90vh',
+                        margin: 'auto',
+                        backgroundColor: '#ffffff',
+                        overflowY: 'auto',
+                    }}
+                >
+                    {transaction && transaction.length > 0 ? (
+                        transaction
+                            .filter(data => data._id === idTransaction)
+                            .map((data, idx) => (
+                                <Box key={idx}>
+                                    {isLoading ? (
+                                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                                            <CircularProgress />
+                                            <Typography>Loading data...</Typography>
                                         </Box>
+                                    ) : (
+                                        <>
+                                            <Typography
+                                                variant="h5"
+                                                sx={{
+                                                    fontWeight: 'bold',
+                                                    marginBottom: 3,
+                                                    textAlign: 'center',
+                                                    borderBottom: '2px solid #e0e0e0',
+                                                    paddingBottom: 2,
+                                                }}
+                                            >
+                                                Detail Transaksi
+                                            </Typography>
 
-                                        <Typography
-                                            variant="h6"
-                                            sx={{
-                                                fontWeight: 'bold',
-                                                marginBottom: 2,
-                                                borderBottom: '1px solid #e0e0e0',
-                                                paddingBottom: 1,
-                                            }}
-                                        >
-                                            Detail Pengiriman
-                                        </Typography>
-                                        <Box sx={{ marginBottom: 3 }}>
-                                            <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                <strong>Alamat Penerima:</strong>{' '}
-                                                {`${data.id_user.address?.detail_address || 'N/A'}, ${cities}, ${provinces}, ${data.id_user.address?.postal_code || 'N/A'}`}
-                                            </Typography>
-                                            <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                <strong>Kurir:</strong> {data.expedition?.[0]?.courier || 'N/A'}
-                                            </Typography>
-                                            <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                <strong>Jenis Layanan:</strong> {data.expedition?.[0]?.shipping_option || 'N/A'}
-                                            </Typography>
-                                            <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                <strong>Ongkir:</strong> Rp.{' '}
-                                                {Number(data.expedition?.[0]?.shipping_cost || 0).toLocaleString('id-ID') || 'N/A'}
-                                            </Typography>
-                                            <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                <strong>Estimasi Pengiriman:</strong> {data.estimated_delivery || 'N/A'}
-                                            </Typography>
-                                        </Box>
+                                            <Box sx={{ marginBottom: 3 }}>
+                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                                    <strong>No Order:</strong> {data._id || 'N/A'}
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                                    <strong>Pembeli:</strong> {data.id_user?.username || 'N/A'}
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                                    <strong>Tanggal:</strong>{' '}
+                                                    {data.created_at ? new Date(data.created_at).toLocaleString('id-ID') : 'N/A'}
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                                    <strong>Status:</strong>{' '}
+                                                    {data.status
+                                                        ?.split('-')
+                                                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                                        .join(' ') || 'N/A'}
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                                    <strong>Total Pembayaran:</strong> Rp.{' '}
+                                                    {Number(data.total_payment).toLocaleString('id-ID') || 'N/A'}
+                                                </Typography>
+                                            </Box>
 
-                                        <Typography
-                                            variant="h6"
-                                            sx={{
-                                                fontWeight: 'bold',
-                                                marginBottom: 2,
-                                                borderBottom: '1px solid #e0e0e0',
-                                                paddingBottom: 1,
-                                            }}
-                                        >
-                                            Produk yang Dipesan
-                                        </Typography>
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                gap: 2,
-                                                marginBottom: 3,
-                                            }}
-                                        >
-                                            {data.product?.length > 0 ? (
-                                                data.product.map((product, index) => (
-                                                    <Box key={index}>
-                                                        {product.standart?.length > 0 && (
-                                                            <Box sx={{ marginBottom: 2 }}>
-                                                                <Typography
-                                                                    variant="body1"
-                                                                    sx={{ fontWeight: 'bold', marginBottom: 1 }}
-                                                                >
-                                                                    Produk Standar:
-                                                                </Typography>
-                                                                {product.standart.map((std, idx) => (
-                                                                    <Box
-                                                                        key={idx}
-                                                                        sx={{
-                                                                            display: 'flex',
-                                                                            alignItems: 'center',
-                                                                            gap: 2,
-                                                                            border: '1px solid #e0e0e0',
-                                                                            borderRadius: 2,
-                                                                            padding: 2,
-                                                                            marginBottom: 1,
-                                                                        }}
+                                            <Typography
+                                                variant="h6"
+                                                sx={{
+                                                    fontWeight: 'bold',
+                                                    marginBottom: 2,
+                                                    borderBottom: '1px solid #e0e0e0',
+                                                    paddingBottom: 1,
+                                                }}
+                                            >
+                                                Detail Pengiriman
+                                            </Typography>
+                                            <Box sx={{ marginBottom: 3 }}>
+                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                                    <strong>Alamat Penerima:</strong>{' '}
+                                                    {`${data.id_user.address?.detail_address || 'N/A'}, ${cities}, ${provinces}, ${data.id_user.address?.postal_code || 'N/A'}`}
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                                    <strong>Kurir:</strong> {data.expedition?.[0]?.courier || 'N/A'}
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                                    <strong>Jenis Layanan:</strong> {data.expedition?.[0]?.shipping_option || 'N/A'}
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                                    <strong>Ongkir:</strong> Rp.{' '}
+                                                    {Number(data.expedition?.[0]?.shipping_cost || 0).toLocaleString('id-ID') || 'N/A'}
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                                    <strong>Estimasi Pengiriman:</strong> {data.estimated_delivery || 'N/A'}
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                                    <strong>No Resi:</strong> {data.expedition?.[0]?.delivery_receipt || <i>Belum Diterbitkan</i>}
+                                                </Typography>
+                                            </Box>
+
+                                            <Typography
+                                                variant="h6"
+                                                sx={{
+                                                    fontWeight: 'bold',
+                                                    marginBottom: 2,
+                                                    borderBottom: '1px solid #e0e0e0',
+                                                    paddingBottom: 1,
+                                                }}
+                                            >
+                                                Produk yang Dipesan
+                                            </Typography>
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: 2,
+                                                    marginBottom: 3,
+                                                }}
+                                            >
+                                                {data.product?.length > 0 ? (
+                                                    data.product.map((product, index) => (
+                                                        <Box key={index}>
+                                                            {product.standart?.length > 0 && (
+                                                                <Box sx={{ marginBottom: 2 }}>
+                                                                    <Typography
+                                                                        variant="body1"
+                                                                        sx={{ fontWeight: 'bold', marginBottom: 1 }}
                                                                     >
-                                                                        <img
-                                                                            src={`http://localhost:5000${std.id_product.picture_url}`}
-                                                                            alt="Standart Product"
-                                                                            style={{
-                                                                                width: 80,
-                                                                                height: 80,
-                                                                                borderRadius: 4,
-                                                                                objectFit: 'cover',
+                                                                        Produk Standar:
+                                                                    </Typography>
+                                                                    {product.standart.map((std, idx) => (
+                                                                        <Box
+                                                                            key={idx}
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                gap: 2,
+                                                                                border: '1px solid #e0e0e0',
+                                                                                borderRadius: 2,
+                                                                                padding: 2,
+                                                                                marginBottom: 1,
                                                                             }}
-                                                                        />
-                                                                        <Box>
-                                                                            <Typography variant="body1">
-                                                                                <strong>Nama Produk:</strong> {std.id_product.product_name || 'N/A'}
-                                                                            </Typography>
-                                                                            <Typography variant="body1">
-                                                                                <strong>Harga:</strong> Rp{' '}
-                                                                                {std.id_product.harga?.toLocaleString('id-ID') || 'N/A'}
-                                                                            </Typography>
-                                                                            <Typography variant="body2">
-                                                                                <strong>Jumlah:</strong> {std.quantity || 'N/A'}
-                                                                            </Typography>
+                                                                        >
+                                                                            <img
+                                                                                src={`http://localhost:5000${std.id_product.picture_url}`}
+                                                                                alt="Standart Product"
+                                                                                style={{
+                                                                                    width: 80,
+                                                                                    height: 80,
+                                                                                    borderRadius: 4,
+                                                                                    objectFit: 'cover',
+                                                                                }}
+                                                                            />
+                                                                            <Box>
+                                                                                <Typography variant="body1">
+                                                                                    <strong>Nama Produk:</strong> {std.id_product.product_name || 'N/A'}
+                                                                                </Typography>
+                                                                                <Typography variant="body1">
+                                                                                    <strong>Harga:</strong> Rp{' '}
+                                                                                    {std.id_product.harga?.toLocaleString('id-ID') || 'N/A'}
+                                                                                </Typography>
+                                                                                <Typography variant="body2">
+                                                                                    <strong>Jumlah:</strong> {std.quantity || 'N/A'}
+                                                                                </Typography>
+                                                                            </Box>
                                                                         </Box>
-                                                                    </Box>
-                                                                ))}
-                                                            </Box>
-                                                        )}
-                                                        {product.costom_prototype?.length > 0 && (
-                                                            <Box>
-                                                                <Typography
-                                                                    variant="body1"
-                                                                    sx={{ fontWeight: 'bold', marginBottom: 1 }}
-                                                                >
-                                                                    Produk Custom Prototype:
-                                                                </Typography>
-                                                                {product.costom_prototype.map((custom, idx) => (
-                                                                    <Box
-                                                                        key={idx}
-                                                                        sx={{
-                                                                            display: 'flex',
-                                                                            alignItems: 'center',
-                                                                            gap: 2,
-                                                                            border: '1px solid #e0e0e0',
-                                                                            borderRadius: 2,
-                                                                            padding: 2,
-                                                                            marginBottom: 1,
-                                                                        }}
+                                                                    ))}
+                                                                </Box>
+                                                            )}
+                                                            {product.costom_prototype?.length > 0 && (
+                                                                <Box>
+                                                                    <Typography
+                                                                        variant="body1"
+                                                                        sx={{ fontWeight: 'bold', marginBottom: 1 }}
                                                                     >
-                                                                        <img
-                                                                            src={CostomPrototypeImg}
-                                                                            alt="Custom Product"
-                                                                            style={{
-                                                                                width: 80,
-                                                                                height: 80,
-                                                                                borderRadius: 4,
-                                                                                objectFit: 'cover',
+                                                                        Produk Custom Prototype:
+                                                                    </Typography>
+                                                                    {product.costom_prototype.map((custom, idx) => (
+                                                                        <Box
+                                                                            key={idx}
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                gap: 2,
+                                                                                border: '1px solid #e0e0e0',
+                                                                                borderRadius: 2,
+                                                                                padding: 2,
+                                                                                marginBottom: 1,
                                                                             }}
-                                                                        />
-                                                                        <Box>
-                                                                            <Typography variant="body1">
-                                                                                <strong>Tipe Custom:</strong> Custom Prototype
-                                                                            </Typography>
-                                                                            <Typography variant="body1">
-                                                                                <strong>Jumlah:</strong> 1
-                                                                            </Typography>
-                                                                            <Typography variant="body1">
-                                                                                <strong>Harga:</strong> Rp{' '}
-                                                                                {Number(custom.id_request_prototype.total_cost).toLocaleString('id-ID')}
-                                                                            </Typography>
+                                                                        >
+                                                                            <img
+                                                                                src={CostomPrototypeImg}
+                                                                                alt="Custom Product"
+                                                                                style={{
+                                                                                    width: 80,
+                                                                                    height: 80,
+                                                                                    borderRadius: 8,
+                                                                                    border: "1px solid #00A63F",
+                                                                                    borderColor: "primary.main",
+                                                                                }}
+                                                                            />
+                                                                            <Box>
+                                                                                <Typography variant="body1">
+                                                                                    <strong>Tipe Custom:</strong> Custom Prototype
+                                                                                </Typography>
+                                                                                <Typography variant="body1">
+                                                                                    <strong>Jumlah:</strong> 1
+                                                                                </Typography>
+                                                                                <Typography variant="body1">
+                                                                                    <strong>Harga:</strong> Rp{' '}
+                                                                                    {Number(custom.id_request_costom.total_cost).toLocaleString('id-ID')}
+                                                                                </Typography>
+                                                                            </Box>
                                                                         </Box>
-                                                                    </Box>
-                                                                ))}
-                                                                  <Typography
+                                                                    ))}
+                                                                    <Typography
                                                                         variant="body1"
                                                                         sx={{ fontWeight: 'bold', marginBottom: 1 }}
                                                                     >
@@ -692,15 +675,15 @@ export default function OrdersTable() {
                                                                         >
                                                                             <Box sx={{ flex: 1 }}>
                                                                                 {[
-                                                                                    { label: 'X Out', value: custom.id_request_prototype.x_out },
-                                                                                    { label: 'Route Process', value: custom.id_request_prototype.route_process },
-                                                                                    { label: 'Design in Panel', value: custom.id_request_prototype.design_in_panel },
-                                                                                    { label: 'Size', value: `${custom.id_request_prototype.length} X ${custom.id_request_prototype.width}` },
-                                                                                    { label: 'Quantity', value: custom.id_request_prototype.quantity },
-                                                                                    { label: 'Layer', value: custom.id_request_prototype.layer },
-                                                                                    { label: 'Copper Layer', value: custom.id_request_prototype.copper_layer },
-                                                                                    { label: 'Solder Mask Position', value: custom.id_request_prototype.solder_mask_position },
-                                                                                    { label: 'Material', value: custom.id_request_prototype.material },
+                                                                                    { label: 'X Out', value: custom.id_request_costom.x_out },
+                                                                                    { label: 'Route Process', value: custom.id_request_costom.route_process },
+                                                                                    { label: 'Design in Panel', value: custom.id_request_costom.design_in_panel },
+                                                                                    { label: 'Size', value: `${custom.id_request_costom.length} X ${custom.id_request_costom.width}` },
+                                                                                    { label: 'Quantity', value: custom.id_request_costom.quantity },
+                                                                                    { label: 'Layer', value: custom.id_request_costom.layer },
+                                                                                    { label: 'Copper Layer', value: custom.id_request_costom.copper_layer },
+                                                                                    { label: 'Solder Mask Position', value: custom.id_request_costom.solder_mask_position },
+                                                                                    { label: 'Material', value: custom.id_request_costom.material },
                                                                                 ].map((item, idx) => (
                                                                                     <Typography key={idx} variant="body2">
                                                                                         <strong>{item.label}: </strong> {item.value}
@@ -709,15 +692,15 @@ export default function OrdersTable() {
                                                                             </Box>
                                                                             <Box sx={{ flex: 1 }}>
                                                                                 {[
-                                                                                    { label: 'Thickness', value: custom.id_request_prototype.thickness },
-                                                                                    { label: 'Min Track', value: custom.id_request_prototype.min_track },
-                                                                                    { label: 'Min Hole', value: custom.id_request_prototype.min_hole },
-                                                                                    { label: 'Solder Mask', value: custom.id_request_prototype.solder_mask },
-                                                                                    { label: 'Silkscreen', value: custom.id_request_prototype.silkscreen },
-                                                                                    { label: 'UV Printing', value: custom.id_request_prototype.uv_printing },
-                                                                                    { label: 'Surface Finish', value: custom.id_request_prototype.surface_finish },
-                                                                                    { label: 'Finish Copper', value: custom.id_request_prototype.finish_copper },
-                                                                                    { label: 'Remove Product No', value: custom.id_request_prototype.remove_product_no },
+                                                                                    { label: 'Thickness', value: custom.id_request_costom.thickness },
+                                                                                    { label: 'Min Track', value: custom.id_request_costom.min_track },
+                                                                                    { label: 'Min Hole', value: custom.id_request_costom.min_hole },
+                                                                                    { label: 'Solder Mask', value: custom.id_request_costom.solder_mask },
+                                                                                    { label: 'Silkscreen', value: custom.id_request_costom.silkscreen },
+                                                                                    { label: 'UV Printing', value: custom.id_request_costom.uv_printing },
+                                                                                    { label: 'Surface Finish', value: custom.id_request_costom.surface_finish },
+                                                                                    { label: 'Finish Copper', value: custom.id_request_costom.finish_copper },
+                                                                                    { label: 'Remove Product No', value: custom.id_request_costom.remove_product_no },
                                                                                 ].map((item, idx) => (
                                                                                     <Typography key={idx} variant="body2">
                                                                                         <strong>{item.label}: </strong> {item.value}
@@ -726,40 +709,165 @@ export default function OrdersTable() {
                                                                             </Box>
                                                                         </Box>
                                                                     ))}
-                                                            </Box>
-                                                        )}
-                                                        
-                                                    </Box>
-                                                ))
-                                            ) : (
-                                                <Typography variant="body1">
-                                                    Tidak ada produk dalam transaksi ini.
-                                                </Typography>
-                                            )}
-                                        </Box>
-                                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 3 }}>
-                                            <Button
-                                                variant="contained"
-                                                sx={{
-                                                    backgroundColor: '#54cbbb',
-                                                    '&:hover': { backgroundColor: '#46b2a6' },
-                                                }}
-                                                onClick={handleCloseModal}
-                                            >
-                                                Tutup
-                                            </Button>
-                                        </Box>
-                                    </>
-                                )}
-                            </Box>
-                        ))
-                ) : (
-                    <Typography variant="body1">Tidak ada transaksi ditemukan.</Typography>
-                )}
-            </ModalContent>
-        </StyledModal>
+                                                                </Box>
+                                                            )}
+                                                            {product.costom_assembly?.length > 0 && (
+                                                                <Box>
+                                                                    <Typography
+                                                                        variant="body1"
+                                                                        sx={{ fontWeight: 'bold', marginBottom: 1 }}
+                                                                    >
+                                                                        Produk Custom Assembly:
+                                                                    </Typography>
+                                                                    {product.costom_assembly.map((custom, idx) => (
+                                                                        <Box
+                                                                            key={idx}
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                gap: 2,
+                                                                                border: '1px solid #e0e0e0',
+                                                                                borderRadius: 2,
+                                                                                padding: 2,
+                                                                                marginBottom: 1,
+                                                                            }}
+                                                                        >
+                                                                            <img
+                                                                                src={CostomAssemblyImg}
+                                                                                alt="Custom Assembly"
+                                                                                style={{
+                                                                                    width: 80,
+                                                                                    height: 80,
+                                                                                    borderRadius: 8,
+                                                                                    border: "1px solid #00A63F",
+                                                                                    borderColor: "primary.main",
+                                                                                }}
+                                                                            />
+                                                                            <Box>
+                                                                                <Typography variant="body1">
+                                                                                    <strong>Tipe Custom:</strong> Custom Assembly
+                                                                                </Typography>
+                                                                                <Typography variant="body1">
+                                                                                    <strong>Jumlah:</strong> {custom.quantity}
+                                                                                </Typography>
+                                                                                <Typography variant="body1">
+                                                                                    <strong>Harga:</strong> Rp{' '}
+                                                                                    {Number(custom.id_request_costom.total_cost).toLocaleString('id-ID')}
+                                                                                </Typography>
+                                                                            </Box>
+                                                                        </Box>
+                                                                    ))}
+                                                                    <Typography
+                                                                        variant="body1"
+                                                                        sx={{ fontWeight: 'bold', marginBottom: 1 }}
+                                                                    >
+                                                                        Spesifikasi:
+                                                                    </Typography>
+                                                                    {product.costom_assembly.map((custom, idx) => (
+                                                                        <Box
+                                                                            key={idx}
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                gap: 2,
+                                                                                border: '1px solid #e0e0e0',
+                                                                                borderRadius: 2,
+                                                                                padding: 2,
+                                                                                marginBottom: 1,
+                                                                            }}
+                                                                        >
+                                                                            <Box sx={{ flex: 1 }}>
+                                                                                {[
+                                                                                    { label: 'Flexible Option', value: custom.id_request_costom.flexible_option },
+                                                                                    { label: 'Board Type', value: custom.id_request_costom.board_type },
+                                                                                    { label: 'Assembly Side', value: custom.id_request_costom.assembly_side },
+                                                                                    { label: 'Quantity', value: custom.id_request_costom.quantity },
+                                                                                    { label: 'Pay Attention', value: custom.id_request_costom.pay_attention },
+                                                                                    { label: 'Notes', value: custom.id_request_costom.notes },
+                                                                                    { label: 'Number Unik Part', value: custom.id_request_costom.number_unik_part },
+                                                                                ].map((item, idx) => (
+                                                                                    <Typography key={idx} variant="body2">
+                                                                                        <strong>{item.label}: </strong> {item.value}
+                                                                                    </Typography>
+                                                                                ))}
+                                                                            </Box>
+                                                                            <Box sx={{ flex: 1 }}>
+                                                                                {[
+                                                                                    { label: 'Number SMD Part', value: custom.id_request_costom.number_SMD_part },
+                                                                                    { label: 'Number BGA/QFP', value: custom.id_request_costom.number_BGA_QFP },
+                                                                                    { label: 'Through Hole', value: custom.id_request_costom.throught_hole },
+                                                                                    { label: 'Board to Delivery', value: custom.id_request_costom.board_to_delivery },
+                                                                                    { label: 'Function Test', value: custom.id_request_costom.function_test },
+                                                                                    { label: 'Cable Wire Harness Assembly', value: custom.id_request_costom.cable_wire_harness_assembly },
+                                                                                    { label: 'Detail Information', value: custom.id_request_costom.detail_information },
+                                                                                ].map((item, idx) => (
+                                                                                    <Typography key={idx} variant="body2">
+                                                                                        <strong>{item.label}: </strong> {item.value}
+                                                                                    </Typography>
+                                                                                ))}
+                                                                            </Box>
+                                                                        </Box>
+                                                                    ))}
+                                                                    <Typography
+                                                                        variant="body1"
+                                                                        sx={{ fontWeight: 'bold', marginBottom: 1 }}
+                                                                    >
+                                                                        Informasi Tambahan:
+                                                                    </Typography>
+                                                                    {product.costom_assembly.map((custom, idx) => (
+                                                                        <Box
+                                                                            key={idx}
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                gap: 2,
+                                                                                border: '1px solid #e0e0e0',
+                                                                                borderRadius: 2,
+                                                                                padding: 2,
+                                                                                marginBottom: 1,
+                                                                            }}
+                                                                        >
+                                                                            <Box>
+                                                                                <Typography key={idx} variant="body2">
+                                                                                    {custom.id_request_costom.detail_information}
+                                                                                </Typography>
+                                                                            </Box>
+                                                                        </Box>
+                                                                    ))}
+                                                                </Box>
+                                                            )}
 
-    </Box>
-    
+                                                        </Box>
+                                                    ))
+                                                ) : (
+                                                    <Typography variant="body1">
+                                                        Tidak ada produk dalam transaksi ini.
+                                                    </Typography>
+                                                )}
+                                            </Box>
+                                            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 3 }}>
+                                                <Button
+                                                    variant="contained"
+                                                    sx={{
+                                                        backgroundColor: '#54cbbb',
+                                                        '&:hover': { backgroundColor: '#46b2a6' },
+                                                    }}
+                                                    onClick={handleCloseModal}
+                                                >
+                                                    Tutup
+                                                </Button>
+                                            </Box>
+                                        </>
+                                    )}
+                                </Box>
+                            ))
+                    ) : (
+                        <Typography variant="body1">Tidak ada transaksi ditemukan.</Typography>
+                    )}
+                </ModalContent>
+            </StyledModal>
+
+        </Box>
+
     );
 }

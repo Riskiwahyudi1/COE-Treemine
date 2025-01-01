@@ -37,6 +37,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { Link } from 'react-router-dom';
 import Logoweb from '../assets/images/logo.png';
+import { useAuth } from '../contexts/AuthContext';
 
 const drawerWidth = 240;
 
@@ -112,6 +113,7 @@ export default function MiniDrawer() {
   const [open, setOpen] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [menuStates, setMenuStates] = React.useState({});
+  const {logoutAdmin } = useAuth();
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -134,6 +136,12 @@ export default function MiniDrawer() {
       ...prev,
       [menuId]: !prev[menuId],
     }));
+  };
+
+  const handleLogout = () => {
+    logoutAdmin(); 
+   
+    window.location.href = '/admin-login'; 
   };
 
   const menuItems = [
@@ -197,7 +205,7 @@ export default function MiniDrawer() {
         {
           text: 'Pembayaran',
           icon: <PaymentIcon />,
-          path: 'transaksi?status=menunggu-pembayaran'
+          path: 'transaksi?status=menunggu-pembayaran&status=pembayaran-tertunda&status=sudah-bayar'
         },
         {
           text: 'Diproses',
@@ -212,7 +220,7 @@ export default function MiniDrawer() {
         {
           text: 'Riwayat',
           icon: <HistoryIcon />,
-          path: 'transaksi?status=selesai'
+          path: 'transaksi?status=selesai&status=gagal&status=pembayaran-kadarluarsa&status=dibatalkan-admin&dibatalkan-pembeli'
         }
       ]
     },
@@ -267,7 +275,7 @@ export default function MiniDrawer() {
             A
           </Avatar>
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
-            <MenuItem onClick={handleCloseMenu}>Logout</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>

@@ -19,7 +19,7 @@ import Toast from '../utils/Toast';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // Menggunakan hook useAuth
+  const { loginUser } = useAuth(); // Menggunakan hook useAuth
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -50,7 +50,7 @@ const LoginPage = () => {
       });
 
       if (response.status === 200 && response.data.token) {
-        login(response.data.token);
+        loginUser(response.data.token);
         Toast.fire({
           icon: 'success',
           title: 'Login successful',

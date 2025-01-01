@@ -36,7 +36,7 @@ export function AdminHome() {
         }}
       >
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          {/* <Route path="/" element={<Dashboard />} /> */}
           <Route path="/dashboard" element={<Dashboard />} />
 
           <Route path="dataProduct" element={<DataProduk />} />

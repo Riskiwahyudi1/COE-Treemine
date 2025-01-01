@@ -16,6 +16,7 @@ import {
     Divider
 } from "@mui/material";
 import CostomPrototypeImg from '../assets/images/1.png';
+import CostomAssemblyImg from '../assets/images/3.png';
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { getCost } from "../api/service/rajaOngkirApi";
@@ -38,10 +39,12 @@ const PaymentPage = () => {
     const [city, setCity] = useState('')
     const [totalPriceProduct, settotalPriceProduct] = useState(0);
     const [totalPayment, setTotalPayment] = useState(0);
+
+    // id untuk checkout
     const [idProductStandart, setIdProductStandart] = useState([])
     const [idProdukPrototype, setIdProductProrotype] = useState([])
+    const [idProdukAssembly, setIdProductAssembly] = useState([])
 
-    console.log(idProdukPrototype)
     // get standar produk dari keranjang
     const selectedProducts = location.state?.selectedItems || [];
     const productListInCart = location.state?.productListInCart || [];
@@ -51,8 +54,9 @@ const PaymentPage = () => {
         
       );
     // get costom produk dari keranjang
-    const costomPrototypeItem = location.state?.singleProductPrototype || [];
+    const costomProduct = location.state?.singleProductCostom || [];
       
+   
       // mengambil id produk standart
       useEffect(() => {
         if (Array.isArray(productsToCheckout)) {
@@ -65,25 +69,42 @@ const PaymentPage = () => {
         }
     }, []);
 
-      // mengambil id produk prototype
-      useEffect(() => {
-        if (Array.isArray(costomPrototypeItem)) {
-            const idProdukPrototype = costomPrototypeItem.map((product) => ({
-                id_request_prototype: product?._id, 
+    // cek produk costom atau assembly
+    useEffect(() => {
+        if (Array.isArray(costomProduct) && costomProduct.length > 0) {
+            
+            const idProdukCostom = costomProduct.map((product) => ({
+                id_request_costom: product?._id,
+                name_request_costom: product?.name,
                 quantity: 1,
             }));
     
-            setIdProductProrotype(idProdukPrototype); 
+            const prototypeItems = idProdukCostom.filter(
+                (item) => item.name_request_costom === "Costom Prototype"
+            );
+            const assemblyItems = idProdukCostom.filter(
+                (item) => item.name_request_costom === "Costom Assembly"
+            );
+            
+            console.log(prototypeItems)
+            console.log(assemblyItems)
+            if (prototypeItems.length > 0) {
+                setIdProductProrotype(prototypeItems);
+            }
+            if (assemblyItems.length > 0) {
+                setIdProductAssembly(assemblyItems);
+            }
         }
-    }, []);
+    }, [costomProduct]);
+    
 
 
     // menghitung total harga produk
     useEffect(() => {
         let total = 0;
     
-       if (costomPrototypeItem.length > 0) {
-            total = costomPrototypeItem.reduce((total, product) => {
+       if (costomProduct.length > 0) {
+            total = costomProduct.reduce((total, product) => {
                 const totalCost = Number(product.total_cost) || 0;
                 return total + totalCost;
             }, 0);
@@ -96,7 +117,7 @@ const PaymentPage = () => {
         }
     
         settotalPriceProduct(total);
-    }, [productsToCheckout, costomPrototypeItem]);
+    }, [productsToCheckout, costomProduct]);
     
   
     // menghitung total pembayaran
@@ -233,9 +254,9 @@ const PaymentPage = () => {
             id_user : dataAccount._id,
             product: [
                 {
-                    standart: idProductStandart
-                    ,
-                    costom_prototype: idProdukPrototype 
+                    standart: idProductStandart,
+                    costom_prototype: idProdukPrototype,
+                    costom_assembly: idProdukAssembly 
                 }
             ],
             expedition: [
@@ -246,11 +267,10 @@ const PaymentPage = () => {
                 },
             ],
             total_payment: totalPayment,
-            user_notes: 'nanti saja',
             estimated_delivery: estimasionDay,
 
         }
-        
+        console.log(data)
         try {
             const response = await getCostomPrototypeData(data);
             if (response.status === 201) {
@@ -348,14 +368,14 @@ const PaymentPage = () => {
                 </Card>
 
                 {
-                    productsToCheckout.length > 0 && costomPrototypeItem.length > 0 ? (
+                    productsToCheckout.length > 0 && costomProduct.length > 0 ? (
                         <Typography variant="body1" color="text.secondary">
                         Error: Tidak bisa menampilkan kedua jenis produk bersamaan!
                         </Typography>
-                    ) : costomPrototypeItem.length > 0 ? (
-                        // Render produk khusus (costomPrototypeItem)
+                    ) : costomProduct.length > 0 ? (
+                        // Render produk khusus (costomProduct)
                         <Grid container spacing={2} sx={{ mb: 2 }}>
-                        {costomPrototypeItem.map((product) => (
+                        {costomProduct.map((product) => (
                             <Grid item xs={12} key={product._id}>
                             <Box
                                 display="flex"
@@ -364,21 +384,38 @@ const PaymentPage = () => {
                                 sx={{ padding: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}
                             >
                                 {/* Gambar produk */}
+                               
+                                {product.name === 'Costom Prototype' ? (
                                 <CardMedia
                                 component="img"
                                 image={CostomPrototypeImg}
-                                alt={product.product_name}
+                                alt={product.name}
                                 
                                 sx={{
                                     width: 100,
                                     height: 100,
                                     objectFit: 'cover',
                                     borderRadius: 2,
-                                    border: "1px solid #007BFF",
+                                    border: "1px solid #00A63F",
                                     borderColor: "primary.main",
                                 }}
                                 />
-
+                            ) : (
+                                <CardMedia
+                                component="img"
+                                image={CostomAssemblyImg}
+                                alt={product.name}
+                                
+                                sx={{
+                                    width: 100,
+                                    height: 100,
+                                    objectFit: 'cover',
+                                    borderRadius: 2,
+                                    border: "1px solid #00A63F",
+                                    borderColor: "primary.main",
+                                }}
+                                />
+                            )}
                                 {/* Informasi produk */}
                                 <Box>
                                 <Typography variant="subtitle1" fontWeight="bold">
@@ -415,7 +452,7 @@ const PaymentPage = () => {
                                     height: 100,
                                     objectFit: 'cover',
                                     borderRadius: 2,
-                                    border: "1px solid #007BFF",
+                                    border: "1px solid #00A63F",
                                     borderColor: "primary.main",
                                 }}
                                 />

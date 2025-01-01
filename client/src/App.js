@@ -13,6 +13,7 @@ import ProductPage from './view/shopCard';
 import CustomPrototype from './view/customPrototype';
 import ProductAssemblyPage from './view/customAssembly';
 import ProtectedRoute from "./component/ProtectedRoute";
+import AdminProtectedRoute from "./component/AdminProtectedRoute";
 import DetailProduct from "./view/detailProduct";
 import Keranjang from "./view/keranjang";
 import KeranjangCostomProduct from "./view/keranjangCostomProduct";
@@ -27,6 +28,8 @@ import Review from './view/review';
 import Checkout from './view/checkout';
 import LoginAdmin from './component/loginAdmin';
 import ProfileSettings from './view/setingProfile';
+
+
 
 function App() {
   return (
@@ -59,11 +62,12 @@ function AppContent() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/loginAdmin" element={<LoginAdmin />} />        
+        <Route path="/admin-login" element={<LoginAdmin />} />        
 
         {/* Lindungi halaman admin dengan ProtectedRoute */}
-        <Route >
+        <Route element={<AdminProtectedRoute redirectTo="/admin-login" />}>
           <Route path="/admin/*" element={<AdminHome />} />
+         
         </Route>
 
         {/* Halaman yang memerlukan login */}
@@ -95,7 +99,7 @@ function AppContent() {
             }}
           >
             <Routes>
-              <Route>
+              <Route element={<ProtectedRoute redirectTo="/login" />}>
                 <Route path="/user" element={<UserPage />} />
                 <Route path="/user/profileSettings" element={<ProfileSettings />} />
                 <Route path="/change-password" element={<ChangePassword />} />
@@ -109,7 +113,6 @@ function AppContent() {
           </Box>
         </Box>
       )}
-
       {/* Footer hanya muncul jika bukan di halaman login, admin, dan profile */}
       {!isLoginPage && !isAdminPage && !isProfilePage && <Footer />}
     </>

@@ -15,9 +15,11 @@ const createPayment = async (req, res) => {
         const transaction = await Transaction.findById(transactionId)
             .populate('id_user', 'username email phone address')
             .populate(
-                'product.costom_prototype.id_request_prototype',
+                'product.costom_prototype.id_request_costom',
                 'name x_out notes route_process design_in_panel width length quantity layer copper_layer solder_mask_position silkscreen_position material thickness min_track min_hole solder_mask silkscreen uv_printing surface_finish finish_copper remove_product_no design_file status shiping_cost total_cost'
             )
+            .populate('product.costom_assembly.id_request_costom',
+                'name flexible_option board_type assembly_side quantity pay_attention notes number_unik_part number_SMD_part number_BGA_QFP throught_hole board_to_delivery function_test cable_wire_harness_assembly detail_information status total_cost design_file reject_reason')
             .populate('product.standart.id_product', 'product_name harga picture_url');;
         if (!transaction) {
             return res.status(404).json({ error: 'Transaction not found' });
@@ -26,7 +28,7 @@ const createPayment = async (req, res) => {
         const totalPayment = transaction.total_payment;
 
         let itemDetails = [];
-        const productData = transaction.product?.[0] || {}; // Hindari undefined access
+        const productData = transaction.product?.[0] || {}; 
 
         if (productData.standart?.length > 0) {
             itemDetails = productData.standart.map((product) => ({
@@ -38,11 +40,19 @@ const createPayment = async (req, res) => {
             }));
         } else if (productData.costom_prototype?.length > 0) {
             itemDetails = productData.costom_prototype.map((product) => ({
-                id: product.id_request_prototype._id.toString(),
-                name: product.id_request_prototype.name || 'Produk Custom',
-                price: Number(product.id_request_prototype.total_cost ) || 0,
+                id: product.id_request_costom._id.toString(),
+                name: product.id_request_costom.name || 'Produk Custom Prototype',
+                price: Number(product.id_request_costom.total_cost ) || 0,
                 quantity: Number(product.quantity),
-                url: product.id_request_prototype.design_file || 'https://default.url/custom-product',
+                url: product.id_request_costom.design_file || 'https://default.url/custom-product',
+            }));
+        } else if (productData.costom_assembly?.length > 0) {
+            itemDetails = productData.costom_assembly.map((product) => ({
+                id: product.id_request_costom._id.toString(),
+                name: product.id_request_costom.name || 'Produk Custom Assembly',
+                price: Number(product.id_request_costom.total_cost ) || 0,
+                quantity: Number(product.quantity),
+                url: product.id_request_costom.design_file || 'https://default.url/custom-product',
             }));
         } else {
             throw new Error('Produk tidak ditemukan dalam transaksi');

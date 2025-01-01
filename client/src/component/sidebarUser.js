@@ -165,7 +165,7 @@ export default function MiniDrawer() {
                 {
                     text: 'Pembayaran',
                     icon: <FactCheckIcon />,
-                    path: '/transaksi?status=menunggu-pembayaran&status=pembayaran-tertunda&status=gagal&status=pembayaran-kadarluarsa&status=dibatalkan-admin&status=sudah-bayar'
+                    path: '/transaksi?status=menunggu-pembayaran&status=pembayaran-tertunda&status=sudah-bayar'
                 },
                 {
                     text: 'Diproses',
@@ -185,7 +185,7 @@ export default function MiniDrawer() {
                 {
                     text: 'Dibatalkan',
                     icon: <CancelIcon />,
-                    path: '/transaksi?status=dibatalkan-pembeli'
+                    path: '/transaksi?status=dibatalkan-pembeli&status=gagal&status=pembayaran-kadarluarsa&status=dibatalkan-admin'
                 }
             ]
         },

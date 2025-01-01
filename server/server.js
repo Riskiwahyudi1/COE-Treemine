@@ -2,6 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+const cookieParser = require('cookie-parser');
+
+
+
+
 const fs = require('fs')
 const mongoose = require('mongoose');
 const Products = require('./models/product');
@@ -10,6 +15,8 @@ const verifyRoutes = require('./routes/buyer/auth/verify');
 const loginRoute = require('./routes/buyer/auth/login');
 const dashbord = require('./routes/buyer/dashbord');
 
+// admin
+const loginAdmin = require('./routes/admin/auth/login');
 
 // memanggil routes admin 
 const productCategories = require('./routes/admin/categories');
@@ -47,12 +54,14 @@ mongoose.connect('mongodb://localhost:27017/COE_Treemine', {
 // Konfigurasi CORS
 const corsOptions = {
     origin: 'http://localhost:3000',
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
 
 app.use('/product-picture', express.static(path.join(__dirname, 'storage/product-picture')));
 app.use('/category-picture', express.static(path.join(__dirname, 'storage/category-picture')));
@@ -106,6 +115,9 @@ app.use('/register/buyer', registerRoutes);
 app.use('/verify', verifyRoutes);
 app.use('/login/buyer', loginRoute);
 app.use('/dashbord', dashbord);
+
+app.use('/admin/login', loginAdmin);
+
 
 
 // allUser

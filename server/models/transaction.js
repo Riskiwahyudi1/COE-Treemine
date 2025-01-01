@@ -16,18 +16,29 @@ const TransactionSchema = new mongoose.Schema({
                 },
                 quantity: {
                     type: Number,
-                    required: true,
+                    required: false,
                 },
             }],
             costom_prototype: [{
-                id_request_prototype: {
+                id_request_costom: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'RequestCustomPrototype',
                     required: false,
                 },
                 quantity: {
                     type: Number,
-                    required: true,
+                    required: false,
+                },
+            }],
+            costom_assembly: [{
+                id_request_costom: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'RequestCustomAssembly',
+                    required: false,
+                },
+                quantity: {
+                    type: Number,
+                    required: false,
                 },
             }],
             
@@ -51,15 +62,15 @@ const TransactionSchema = new mongoose.Schema({
                 type: Number,
                 required: true,
             },
+            delivery_receipt: {
+                type: String,
+                required: true,
+            },
         },
     ],
     total_payment: {
         type: Number,
         required: true,
-    },
-    user_notes: {
-        type: String,
-        required: false, 
     },
     estimated_delivery: {
         type: String,

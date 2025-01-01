@@ -13,6 +13,7 @@ import { getTransaction } from "../api/transaksiApi"
 import { formatDate } from "../utils/isoDate"
 import { cancelTransaction, doneTransaction } from "../api/transaksiApi";
 import CostomPrototypeImg from '../assets/images/1.png';
+import CostomAssemblyImg from '../assets/images/3.png';
 import Toast from "../utils/Toast";
 import Dialog from "../utils/Dialog";
 import { useNavigate } from 'react-router-dom';
@@ -79,6 +80,7 @@ export default function OrdersTable() {
     const [loadingButtonId, setLoadingButtonId] = useState(null);
     const [error, setError] = useState(null);
     // transaksi berdasarkan quesry status
+
     useEffect(() => {
         const fetchTransaction = async () => {
             try {
@@ -252,7 +254,7 @@ export default function OrdersTable() {
                     onPending: function (result) {
                         Toast.fire({
                             icon: 'info',
-                            title: 'Pembayaran Dalam Proses',
+                            title: 'Pembayaran Tertunda',
                         });
                         setTransaction((prevList) =>
                             prevList.map((transaction) =>
@@ -318,31 +320,59 @@ export default function OrdersTable() {
                         icon: 'success',
                         title: 'Pembayaran Berhasil',
                     });
+                    setTransaction((prevList) =>
+                        prevList.map((transaction) =>
+                            transaction._id === transactionId
+                                ? { ...transaction, status: 'sudah-bayar' }
+                                : transaction
+                        )
+                    );
                 },
                 onPending: function (result) {
                     Toast.fire({
                         icon: 'info',
-                        title: 'Pembayaran Dalam Proses',
+                        title: 'Pembayaran Tertunda',
                     });
+                    setTransaction((prevList) =>
+                        prevList.map((transaction) =>
+                            transaction._id === transactionId
+                                ? { ...transaction, status: 'pembayaran-tertunda' }
+                                : transaction
+                        )
+                    );
                 },
                 onError: function (result) {
                     Toast.fire({
                         icon: 'error',
                         title: 'Pembayaran Gagal',
                     });
+                    setTransaction((prevList) =>
+                        prevList.map((transaction) =>
+                            transaction._id === transactionId
+                                ? { ...transaction, status: 'pembayaran-gagal' }
+                                : transaction
+                        )
+                    );
                 },
                 onClose: async () => {
                     Toast.fire({
                         icon: 'warning',
                         title: 'Pembayaran Tertunda',
                     });
+                    setTransaction((prevList) =>
+                        prevList.map((transaction) =>
+                            transaction._id === transactionId
+                                ? { ...transaction, status: 'pembayaran-tertunda' }
+                                : transaction
+                        )
+                    );
 
 
                 },
             });
         } catch (error) {
             console.error('Error continuing payment:', error);
-        }finally {
+        } finally {
             setLoadingButtonId(false);
         }
     };
@@ -398,15 +428,19 @@ export default function OrdersTable() {
                             transaction.map((order, idx) => (
                                 <StyledTableRow key={order._id}>
                                     <StyledTableCell>{idx + 1}</StyledTableCell>
+                                    {console.log('orderList', transaction)}
                                     {order.product.map((product, productIdx) => (
                                         <StyledTableCell align="center" key={`product-${productIdx}`}>
                                             {product.costom_prototype.length > 0
                                                 ? "Custom Prototype"
-                                                : product.standart.length > 0
-                                                    ? "Standard Product"
-                                                    : "No Product Data"}
+                                                : product.costom_assembly.length > 0
+                                                    ? "Custom Assembly"
+                                                    : product.standart.length > 0
+                                                        ? "Standard Product"
+                                                        : "No Product Data"}
                                         </StyledTableCell>
                                     ))}
+
 
                                     <StyledTableCell align="center">{formatDate(order.created_at)}</StyledTableCell>
                                     <StyledTableCell align="center">
@@ -454,7 +488,7 @@ export default function OrdersTable() {
                                                     <Button
                                                         variant="contained"
                                                         onClick={() => handlePayment(order._id)}
-                                                        disabled={loadingButtonId === order._id} // Disable hanya tombol yang loading
+                                                        disabled={loadingButtonId === order._id} 
                                                         startIcon={loadingButtonId === order._id ? <CircularProgress size={24} /> : null}
                                                         sx={{
                                                             backgroundColor: '#00A63F', // Hijau
@@ -465,7 +499,7 @@ export default function OrdersTable() {
                                                             },
                                                         }}
                                                     >
-                                                         {loadingButtonId === order._id ? 'Memulai Pembayaran...' : 'Bayar Sekarang'}
+                                                        {loadingButtonId === order._id ? 'Memulai Pembayaran...' : 'Bayar Sekarang'}
                                                     </Button>
 
                                                     <Button
@@ -491,7 +525,7 @@ export default function OrdersTable() {
                                                     variant="contained"
                                                     onClick={() => continuePayment(order._id)}
                                                     disabled={loadingButtonId === order._id} // Disable hanya tombol yang loading
-                            startIcon={loadingButtonId === order._id ? <CircularProgress size={24} /> : null}
+                                                    startIcon={loadingButtonId === order._id ? <CircularProgress size={24} /> : null}
                                                     sx={{
                                                         backgroundColor: '#00A63F', // Hijau
                                                         color: '#ffffff',
@@ -501,7 +535,7 @@ export default function OrdersTable() {
                                                         },
                                                     }}
                                                 >
-                                                     {loadingButtonId === order._id ? 'Memulai Pembayaran...' : 'Bayar Sekarang'}
+                                                    {loadingButtonId === order._id ? 'Memulai Pembayaran...' : 'Bayar Sekarang'}
                                                 </Button>
                                             )}
                                             {/* Kondisi jika status adalah "dikirim" */}
@@ -620,6 +654,9 @@ export default function OrdersTable() {
                                                 <Typography variant="body1" sx={{ marginBottom: 1 }}>
                                                     <strong>Estimasi Pengiriman:</strong> {data.estimated_delivery || 'N/A'}
                                                 </Typography>
+                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
+                                                    <strong>No Resi:</strong> {data.expedition?.[0]?.delivery_receipt || <i>Belum Diterbitkan</i>}
+                                                </Typography>
                                             </Box>
 
                                             <Typography
@@ -731,7 +768,7 @@ export default function OrdersTable() {
                                                                                 </Typography>
                                                                                 <Typography variant="body1">
                                                                                     <strong>Harga:</strong> Rp{' '}
-                                                                                    {Number(custom.id_request_prototype.total_cost).toLocaleString('id-ID')}
+                                                                                    {Number(custom.id_request_costom.total_cost).toLocaleString('id-ID')}
                                                                                 </Typography>
                                                                             </Box>
                                                                         </Box>
@@ -757,15 +794,15 @@ export default function OrdersTable() {
                                                                         >
                                                                             <Box sx={{ flex: 1 }}>
                                                                                 {[
-                                                                                    { label: 'X Out', value: custom.id_request_prototype.x_out },
-                                                                                    { label: 'Route Process', value: custom.id_request_prototype.route_process },
-                                                                                    { label: 'Design in Panel', value: custom.id_request_prototype.design_in_panel },
-                                                                                    { label: 'Size', value: `${custom.id_request_prototype.length} X ${custom.id_request_prototype.width}` },
-                                                                                    { label: 'Quantity', value: custom.id_request_prototype.quantity },
-                                                                                    { label: 'Layer', value: custom.id_request_prototype.layer },
-                                                                                    { label: 'Copper Layer', value: custom.id_request_prototype.copper_layer },
-                                                                                    { label: 'Solder Mask Position', value: custom.id_request_prototype.solder_mask_position },
-                                                                                    { label: 'Material', value: custom.id_request_prototype.material },
+                                                                                    { label: 'X Out', value: custom.id_request_costom.x_out },
+                                                                                    { label: 'Route Process', value: custom.id_request_costom.route_process },
+                                                                                    { label: 'Design in Panel', value: custom.id_request_costom.design_in_panel },
+                                                                                    { label: 'Size', value: `${custom.id_request_costom.length} X ${custom.id_request_costom.width}` },
+                                                                                    { label: 'Quantity', value: custom.id_request_costom.quantity },
+                                                                                    { label: 'Layer', value: custom.id_request_costom.layer },
+                                                                                    { label: 'Copper Layer', value: custom.id_request_costom.copper_layer },
+                                                                                    { label: 'Solder Mask Position', value: custom.id_request_costom.solder_mask_position },
+                                                                                    { label: 'Material', value: custom.id_request_costom.material },
                                                                                 ].map((item, idx) => (
                                                                                     <Typography key={idx} variant="body2">
                                                                                         <strong>{item.label}: </strong> {item.value}
@@ -774,15 +811,15 @@ export default function OrdersTable() {
                                                                             </Box>
                                                                             <Box sx={{ flex: 1 }}>
                                                                                 {[
-                                                                                    { label: 'Thickness', value: custom.id_request_prototype.thickness },
-                                                                                    { label: 'Min Track', value: custom.id_request_prototype.min_track },
-                                                                                    { label: 'Min Hole', value: custom.id_request_prototype.min_hole },
-                                                                                    { label: 'Solder Mask', value: custom.id_request_prototype.solder_mask },
-                                                                                    { label: 'Silkscreen', value: custom.id_request_prototype.silkscreen },
-                                                                                    { label: 'UV Printing', value: custom.id_request_prototype.uv_printing },
-                                                                                    { label: 'Surface Finish', value: custom.id_request_prototype.surface_finish },
-                                                                                    { label: 'Finish Copper', value: custom.id_request_prototype.finish_copper },
-                                                                                    { label: 'Remove Product No', value: custom.id_request_prototype.remove_product_no },
+                                                                                    { label: 'Thickness', value: custom.id_request_costom.thickness },
+                                                                                    { label: 'Min Track', value: custom.id_request_costom.min_track },
+                                                                                    { label: 'Min Hole', value: custom.id_request_costom.min_hole },
+                                                                                    { label: 'Solder Mask', value: custom.id_request_costom.solder_mask },
+                                                                                    { label: 'Silkscreen', value: custom.id_request_costom.silkscreen },
+                                                                                    { label: 'UV Printing', value: custom.id_request_costom.uv_printing },
+                                                                                    { label: 'Surface Finish', value: custom.id_request_costom.surface_finish },
+                                                                                    { label: 'Finish Copper', value: custom.id_request_costom.finish_copper },
+                                                                                    { label: 'Remove Product No', value: custom.id_request_costom.remove_product_no },
                                                                                 ].map((item, idx) => (
                                                                                     <Typography key={idx} variant="body2">
                                                                                         <strong>{item.label}: </strong> {item.value}
@@ -793,6 +830,130 @@ export default function OrdersTable() {
                                                                     ))}
                                                                 </Box>
                                                             )}
+                                                            {product.costom_assembly?.length > 0 && (
+                                                                <Box>
+                                                                    <Typography
+                                                                        variant="body1"
+                                                                        sx={{ fontWeight: 'bold', marginBottom: 1 }}
+                                                                    >
+                                                                        Produk Custom Assembly:
+                                                                    </Typography>
+                                                                    {product.costom_assembly.map((custom, idx) => (
+                                                                        <Box
+                                                                            key={idx}
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                gap: 2,
+                                                                                border: '1px solid #e0e0e0',
+                                                                                borderRadius: 2,
+                                                                                padding: 2,
+                                                                                marginBottom: 1,
+                                                                            }}
+                                                                        >
+                                                                            <img
+                                                                                src={CostomAssemblyImg}
+                                                                                alt="Custom Assembly"
+                                                                                style={{
+                                                                                    width: 80,
+                                                                                    height: 80,
+                                                                                    borderRadius: 4,
+                                                                                    objectFit: 'cover',
+                                                                                }}
+                                                                            />
+                                                                            <Box>
+                                                                                <Typography variant="body1">
+                                                                                    <strong>Tipe Custom:</strong> Custom Assembly
+                                                                                </Typography>
+                                                                                <Typography variant="body1">
+                                                                                    <strong>Jumlah:</strong> {custom.quantity}
+                                                                                </Typography>
+                                                                                <Typography variant="body1">
+                                                                                    <strong>Harga:</strong> Rp{' '}
+                                                                                    {Number(custom.id_request_costom.total_cost).toLocaleString('id-ID')}
+                                                                                </Typography>
+                                                                            </Box>
+                                                                        </Box>
+                                                                    ))}
+                                                                    <Typography
+                                                                        variant="body1"
+                                                                        sx={{ fontWeight: 'bold', marginBottom: 1 }}
+                                                                    >
+                                                                        Spesifikasi:
+                                                                    </Typography>
+                                                                    {product.costom_assembly.map((custom, idx) => (
+                                                                        <Box
+                                                                            key={idx}
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                gap: 2,
+                                                                                border: '1px solid #e0e0e0',
+                                                                                borderRadius: 2,
+                                                                                padding: 2,
+                                                                                marginBottom: 1,
+                                                                            }}
+                                                                        >
+                                                                            <Box sx={{ flex: 1 }}>
+                                                                                {[
+                                                                                    { label: 'Flexible Option', value: custom.id_request_costom.flexible_option },
+                                                                                    { label: 'Board Type', value: custom.id_request_costom.board_type },
+                                                                                    { label: 'Assembly Side', value: custom.id_request_costom.assembly_side },
+                                                                                    { label: 'Quantity', value: custom.id_request_costom.quantity },
+                                                                                    { label: 'Pay Attention', value: custom.id_request_costom.pay_attention },
+                                                                                    { label: 'Notes', value: custom.id_request_costom.notes },
+                                                                                    { label: 'Number Unik Part', value: custom.id_request_costom.number_unik_part },
+                                                                                ].map((item, idx) => (
+                                                                                    <Typography key={idx} variant="body2">
+                                                                                        <strong>{item.label}: </strong> {item.value}
+                                                                                    </Typography>
+                                                                                ))}
+                                                                            </Box>
+                                                                            <Box sx={{ flex: 1 }}>
+                                                                                {[
+                                                                                    { label: 'Number SMD Part', value: custom.id_request_costom.number_SMD_part },
+                                                                                    { label: 'Number BGA/QFP', value: custom.id_request_costom.number_BGA_QFP },
+                                                                                    { label: 'Through Hole', value: custom.id_request_costom.throught_hole },
+                                                                                    { label: 'Board to Delivery', value: custom.id_request_costom.board_to_delivery },
+                                                                                    { label: 'Function Test', value: custom.id_request_costom.function_test },
+                                                                                    { label: 'Cable Wire Harness Assembly', value: custom.id_request_costom.cable_wire_harness_assembly },
+                                                                                ].map((item, idx) => (
+                                                                                    <Typography key={idx} variant="body2">
+                                                                                        <strong>{item.label}: </strong> {item.value}
+                                                                                    </Typography>
+                                                                                ))}
+                                                                            </Box>
+                                                                        </Box>
+                                                                    ))}
+                                                                    <Typography
+                                                                        variant="body1"
+                                                                        sx={{ fontWeight: 'bold', marginBottom: 1 }}
+                                                                    >
+                                                                        Informasi Tambahan:
+                                                                    </Typography>
+                                                                    {product.costom_assembly.map((custom, idx) => (
+                                                                        <Box
+                                                                            key={idx}
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                gap: 2,
+                                                                                border: '1px solid #e0e0e0',
+                                                                                borderRadius: 2,
+                                                                                padding: 2,
+                                                                                marginBottom: 1,
+                                                                            }}
+                                                                        >
+                                                                            <Box>
+                                                                                <Typography key={idx} variant="body2">
+                                                                                    {custom.id_request_costom.detail_information}
+                                                                                </Typography>
+                                                                            </Box>
+                                                                        </Box>
+                                                                    ))}
+                                                                </Box>
+                                                            )}
+
                                                         </Box>
                                                     ))
                                                 ) : (

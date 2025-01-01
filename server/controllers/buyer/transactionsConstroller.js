@@ -21,7 +21,7 @@ const createTransactions = async (req, res) => {
         const newTransaction = new Transaction({
             id_user,
             product,
-            status: 'menunggu-pembayaran', 
+            status: 'menunggu-pembayaran',
             expedition,
             total_payment,
             user_notes,
@@ -47,13 +47,15 @@ const showTransactionBuyer = async (req, res) => {
     try {
         const status = req.query.status
 
-        const products = await Transaction.find({status: { $in: status }, id_user: user.id})
-        .populate('id_user', 'username address')
-        .populate(
-            'product.costom_prototype.id_request_prototype',
-             'name x_out notes route_process design_in_panel width length quantity layer copper_layer solder_mask_position silkscreen_position material thickness min_track min_hole solder_mask silkscreen uv_printing surface_finish finish_copper remove_product_no design_file status shiping_cost total_cost'
+        const products = await Transaction.find({ status: { $in: status }, id_user: user.id })
+            .populate('id_user', 'username address')
+            .populate(
+                'product.costom_prototype.id_request_costom',
+                'name x_out notes route_process design_in_panel width length quantity layer copper_layer solder_mask_position silkscreen_position material thickness min_track min_hole solder_mask silkscreen uv_printing surface_finish finish_copper remove_product_no design_file status shiping_cost total_cost'
             )
-        .populate('product.standart.id_product', 'product_name harga picture_url');
+            .populate('product.costom_assembly.id_request_costom',
+                'name flexible_option board_type assembly_side quantity pay_attention notes number_unik_part number_SMD_part number_BGA_QFP throught_hole board_to_delivery function_test cable_wire_harness_assembly detail_information status total_cost design_file reject_reason')
+            .populate('product.standart.id_product', 'product_name harga picture_url');
 
         if (!products || products.length === 0) {
             return res.status(404).json({ message: "Request not found!" });
@@ -121,5 +123,5 @@ module.exports = {
     showTransactionBuyer,
     cancelTransactionBuyer,
     doneTransactionBuyer,
-    
+
 }
