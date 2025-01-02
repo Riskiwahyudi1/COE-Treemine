@@ -66,10 +66,6 @@ const CustomAssembly = () => {
 
     const [totalCost, setTotalCost] = useState(0);
 
-
-    console.log(formData)
-    console.log(totalCost)
-
     const handleBack = () => {
         navigate('/custom');
     };

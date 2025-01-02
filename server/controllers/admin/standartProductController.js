@@ -20,7 +20,7 @@ const upload = multer({ storage: storage });
 
 const addProduct = async (req, res) => {
     try {
-        const { product_name, id_category, harga, stock, description } = req.body;
+        const { product_name, id_category, harga, stock, weight, description } = req.body;
         const image = req.file;
 
         // Data produk yang akan disimpan ke database
@@ -29,6 +29,7 @@ const addProduct = async (req, res) => {
             id_category,
             harga,
             stock,
+            weight,
             description,
             picture_url: `/product-picture/${image.filename}`,
         };
@@ -102,7 +103,7 @@ const deleteProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const { product_name, id_category, harga, stock, description } = req.body;
+        const { product_name, id_category, harga, stock, weight, description } = req.body;
         const image = req.file;
 
         // kelolah foto
@@ -124,6 +125,7 @@ const updateProduct = async (req, res) => {
             id_category,
             harga,
             stock,
+            weight,
             description,
             picture_url: pictureUrl,
         }, { new: true });

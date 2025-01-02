@@ -86,8 +86,7 @@ const PaymentPage = () => {
                 (item) => item.name_request_costom === "Costom Assembly"
             );
             
-            console.log(prototypeItems)
-            console.log(assemblyItems)
+            
             if (prototypeItems.length > 0) {
                 setIdProductProrotype(prototypeItems);
             }
@@ -183,12 +182,22 @@ const PaymentPage = () => {
         }
       }, [dataAccount]);
       
+   
     // memilih kurir
     useEffect(() => {
         const fetchCost = async () => {
+
+            const product = [
+                {
+                    standart: idProductStandart,
+                    costom_prototype: idProdukPrototype,
+                    costom_assembly: idProdukAssembly 
+                }
+            ]
+
             if (!selectedCourier) return;
             try {
-                const data = await getCost(selectedCourier); 
+                const data = await getCost(selectedCourier, product); 
                 setCost(data);  
             } catch (error) {
                 console.error("Error fetching cost:", error);
@@ -270,7 +279,7 @@ const PaymentPage = () => {
             estimated_delivery: estimasionDay,
 
         }
-        console.log(data)
+        
         try {
             const response = await getCostomPrototypeData(data);
             if (response.status === 201) {
@@ -278,7 +287,7 @@ const PaymentPage = () => {
                     icon: 'success',
                     title: 'Transaction is created!',
                 });
-                navigate('/transaksi?status=menunggu-pembayaran&status=pembayaran-tertunda&status=gagal&status=pembayaran-kadarluarsa&status=dibatalkan-admin&status=sudah-bayar', { state: { showToast: true } });
+                navigate('/transaksi?status=menunggu-pembayaran&status=pembayaran-tertunda&status=sudah-bayar', { state: { showToast: true } });
             }
         } catch (error) {
             alert('Failed to fetch data. Please try again.');

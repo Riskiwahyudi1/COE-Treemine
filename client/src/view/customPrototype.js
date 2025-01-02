@@ -35,7 +35,6 @@ const CustomPrototype = (part) => {
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
 
-        name: 'Costom Prototype',
         board_type: '',
         x_out: '',
         panel_Requirement: '',
@@ -50,6 +49,7 @@ const CustomPrototype = (part) => {
         solder_mask_position: '',
         silkscreen_position: '',
         material: '',
+        material_option: '',
         thickness: '',
         min_track: '',
         min_hole: '',
@@ -60,14 +60,14 @@ const CustomPrototype = (part) => {
         surface_finish: '',
         via_process: '',
         finish_copper: '',
-        remove_product_no: '',
+        inner_copper: '',
         design_file: '',
-        status: 'Menunggu Pengajuan',
-        shiping_cost: '35000',
         total_cost: 0,
 
     });
-  
+
+    console.log(formData)
+
     const [getCost, setGetCost] = useState({
         board_type: 0,
         x_out: 0,
@@ -98,32 +98,56 @@ const CustomPrototype = (part) => {
     })
     const [totalCost, setTotalCost] = useState(0);
 
+    // tambahan menu berdasarkan jenis board  
+    useEffect(() => {
+        if (formData.board_type) {
+            setSelectedBoardType(formData.board_type);
+        } else if (formData.material) {
+            setSelectedMaterial(formData.material)
+        }else if (formData.layer) {
+            setSelectedLayer(formData.layer)
+        }
+        
+    }, [formData.board_type, formData.material, formData.layer]);
+
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         let parsedValue;
 
         try {
+
             parsedValue = JSON.parse(value);
         } catch (error) {
+
             parsedValue = value;
         }
 
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: parsedValue.type,
-        }));
+        if (typeof parsedValue === 'object' && parsedValue !== null) {
 
-        setGetCost((prevCost) => {
-            const updatedCost = {
-                ...prevCost,
-                [name]: parseFloat(parsedValue.cost) || 0,
-            };
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: parsedValue.type,
+            }));
 
-            const total = Object.values(updatedCost).reduce((acc, val) => acc + val, 0);
-            setTotalCost(total);
+            setGetCost((prevCost) => {
+                const updatedCost = {
+                    ...prevCost,
+                    [name]: parseFloat(parsedValue.cost) || 0,
+                };
 
-            return updatedCost;
-        });
+                const total = Object.values(updatedCost).reduce((acc, val) => acc + val, 0);
+                setTotalCost(total);
+
+                return updatedCost;
+            });
+        } else {
+
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: parsedValue,
+            }));
+        }
     };
 
     useEffect(() => {
@@ -159,19 +183,6 @@ const CustomPrototype = (part) => {
         fetchPartCustomPrototype();
     }, []);
 
-    const handleBoardTypeChange = (event, newBoardType) => {
-        if (newBoardType) {
-            setSelectedBoardType(newBoardType);
-        }
-    };
-
-    const handleLayyerChange = (event) => {
-        setSelectedLayer(JSON.parse(event.target.value));
-    };
-    const handleMaterialChange = (event) => {
-        setSelectedMaterial(event.target.value);
-        setSelectedSubtype("");
-    }
 
     const handleBack = () => {
         navigate("/custom");
@@ -289,20 +300,23 @@ const CustomPrototype = (part) => {
                                             <Typography variant="body2" sx={{ mb: 1 }}>
                                                 Board Type
                                             </Typography>
-                                            <ToggleButtonGroup
-                                                exclusive
-                                                fullWidth
-                                                value={selectedBoardType}
-                                                onChange={handleBoardTypeChange}
-                                                aria-label="Board type"
-                                                sx={{ display: 'flex', gap: 1 }}
-                                            >
-                                                {part.data.map((typeObj, idx) => (
-                                                    <ToggleButton key={idx} value={typeObj.type}>
-                                                        {typeObj.type}
-                                                    </ToggleButton>
+                                            <RadioGroup row defaultValue={part.data[0]?.cost}>
+                                                {part.data.map((obj, idx) => (
+                                                    <FormControlLabel
+                                                        key={idx}
+                                                        label={obj.type}
+                                                        control={
+                                                            <Radio
+                                                                name="board_type"
+                                                                key={idx}
+                                                                value={JSON.stringify({ type: obj.type, cost: obj.cost })}
+                                                                label={obj.type}
+                                                                onChange={handleChange}
+                                                            />
+                                                        }
+                                                    />
                                                 ))}
-                                            </ToggleButtonGroup>
+                                            </RadioGroup>
                                         </Grid>
                                     );
                                 }
@@ -539,8 +553,10 @@ const CustomPrototype = (part) => {
                                             <RadioGroup
 
                                                 row
-                                                value={JSON.stringify(selectedLayer)}
-                                                onChange={handleLayyerChange}
+                                                name="layer"
+                                                value={JSON.stringify(formData.quantity.type)}
+                                                    label="Select Quantity"
+                                                    onChange={handleChange}
                                             >
                                                 {part.data.map((obj) => (
                                                     <FormControlLabel
@@ -556,7 +572,7 @@ const CustomPrototype = (part) => {
                                 }
 
                                 // Kondisi pertama untuk "Copper Layer"
-                                if (selectedLayer?.type === '1 Layer' && part.type === 'Copper Layer') {
+                                if (selectedLayer === '1 Layer' && part.type === 'Copper Layer') {
                                     return (
                                         <React.Fragment key="copper-layer">
                                             <Grid container item xs={12} spacing={2}>
@@ -584,7 +600,7 @@ const CustomPrototype = (part) => {
                                 }
 
                                 // Kondisi kedua untuk "Solder Mask Position"
-                                if (selectedLayer?.type === '1 Layer' && part.type === 'Solder Mask Position') {
+                                if (selectedLayer === '1 Layer' && part.type === 'Solder Mask Position') {
                                     return (
                                         <React.Fragment key="solder-mask-position">
                                             <Grid container item xs={12} spacing={2}>
@@ -612,7 +628,7 @@ const CustomPrototype = (part) => {
                                 }
 
                                 // Kondisi ketiga untuk "Silkscreen Position"
-                                if (selectedLayer?.type === '1 Layer' && part.type === 'Silkscreen Position') {
+                                if (selectedLayer === '1 Layer' && part.type === 'Silkscreen Position') {
                                     return (
                                         <React.Fragment key="silkscreen-position">
                                             <Grid container item xs={12} spacing={2}>
@@ -639,65 +655,65 @@ const CustomPrototype = (part) => {
                                     );
                                 }
 
-                                if (part.type === "Material" && part.data?.length > 0) {
+                                if (part.type === 'Material' && part.data?.length > 0) {
                                     return (
-                                        <Grid item xs={12} key={`material-${index}`}>
-                                            <Typography variant="body2" sx={{ mb: 1 }}>
-                                                Material
-                                            </Typography>
-                                            <FormControl fullWidth variant="outlined">
-                                                <InputLabel>Select Material</InputLabel>
-                                                <Select
-                                                    value={selectedMaterial}
-                                                    onChange={handleMaterialChange}
-                                                    label="Select Material"
-                                                >
-                                                    {part.data
-                                                        .map((obj) => obj.type)
-                                                        .filter((value, idx, self) => self.indexOf(value) === idx)
-                                                        .map((type, idx) => (
-                                                            <MenuItem key={idx} value={type}>
-                                                                {type}
-                                                            </MenuItem>
-                                                        ))}
-                                                </Select>
-                                            </FormControl>
-                                        </Grid>
-                                    );
-                                }
+                                        <React.Fragment key={`material-${index}`}>
+                                            <Grid item xs={12}>
+                                                <Box display="flex" justifyContent="space-between" gap={2} alignItems="flex-start">
+                                                    {/* Material */}
+                                                    <Box flex={1}>
+                                                        <Typography variant="body2" sx={{ mb: 1 }}>
+                                                            Material
+                                                        </Typography>
+                                                        <FormControl fullWidth variant="outlined">
+                                                            <InputLabel>Select Material</InputLabel>
+                                                            <Select
+                                                                name="material"
+                                                                value={JSON.stringify(formData.material.type)}
+                                                                onChange={handleChange}
+                                                                label="Select Material"
+                                                            >
+                                                                {part.data.map((obj, idx) => (
+                                                                    <MenuItem key={idx} value={JSON.stringify({ type: obj.type, cost: obj.cost })}>
+                                                                        {obj.type}
+                                                                    </MenuItem>
+                                                                ))}
+                                                            </Select>
+                                                        </FormControl>
+                                                    </Box>
 
-                                // Check if material is selected and filter subtype
-                                if (selectedMaterial) {
-                                    const uniqueSubtypes = part.data.filter(
-                                        (obj) => obj.type === selectedMaterial
-                                    );
-
-                                    // Debugging log
-
-                                    if (uniqueSubtypes.length > 0) {
-                                        return (
-                                            <Grid item xs={12} key={`subtype-${index}`}>
-                                                <Typography variant="body2" sx={{ mb: 1 }}>
-                                                    {selectedMaterial} Options
-                                                </Typography>
-                                                <RadioGroup
-                                                    value={selectedSubtype}
-                                                    onChange={(e) => setSelectedSubtype(e.target.value)}
-                                                    row
-                                                >
-                                                    {uniqueSubtypes.map((obj, idx) => (
-                                                        <FormControlLabel
-                                                            key={idx}
-                                                            value={obj.subtype}
-                                                            control={<Radio />}
-                                                            label={`${obj.subtype} (Cost: ${obj.cost})`}
-                                                        />
-                                                    ))}
-                                                </RadioGroup>
+                                                    {/* Material Options */}
+                                                    <Box flex={1}>
+                                                        <Typography variant="body2" sx={{ mb: 1 }}>
+                                                             Options
+                                                        </Typography>
+                                                        <FormControl fullWidth variant="outlined">
+                                                            <InputLabel>Select Option</InputLabel>
+                                                            <Select
+                                                                name="material_option"
+                                                                value={formData.material_option.type}
+                                                                onChange={handleChange}
+                                                                label="Select Option"
+                                                            >
+                                                                {partList
+                                                                    .find(p => p.type === selectedMaterial)
+                                                                    ?.data.map((obj, idx) => (
+                                                                        <MenuItem
+                                                                            key={idx}
+                                                                            value={JSON.stringify({ type: obj.type, cost: obj.cost })}
+                                                                        >
+                                                                            {obj.type}
+                                                                        </MenuItem>
+                                                                    ))}
+                                                            </Select>
+                                                        </FormControl>
+                                                    </Box>
+                                                </Box>
                                             </Grid>
-                                        );
-                                    }
+                                        </React.Fragment>
+                                    );
                                 }
+
 
                                 if (part.type === 'Thickness' && part.data?.length > 0) {
                                     return (
@@ -953,14 +969,14 @@ const CustomPrototype = (part) => {
                                         </Grid>
                                     )
                                 }
-                                if (part.type === 'Remove Product No' && part.data?.length > 0) {
+                                if (part.type === 'Inner Copper' && part.data?.length > 0) {
                                     return (
                                         <Grid item xs={12}>
                                             <Typography variant="body2" sx={{ mb: 1 }}>
-                                                Remove Product No
+                                                Inner Copper
                                             </Typography>
                                             <RadioGroup
-                                                name="remove_product_no"
+                                                name="inner_copper"
                                                 row
                                                 defaultValue=''
                                                 onChange={handleChange}
@@ -1000,8 +1016,8 @@ const CustomPrototype = (part) => {
                         </Box>
                     </Box>
 
-                    <Button type="submit" variant="contained" onClick={handleSubmit} fullWidth sx={{ mb: 2 , backgroundColor: '#00A63F', color: '#fff' }}>
-                    Simpan Ke Keranjang
+                    <Button type="submit" variant="contained" onClick={handleSubmit} fullWidth sx={{ mb: 2, backgroundColor: '#00A63F', color: '#fff' }}>
+                        Simpan Ke Keranjang
                     </Button>
                 </Paper>
             </Box>

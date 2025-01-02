@@ -22,7 +22,10 @@ const Products = mongoose.model('Products', {
         type: String,
         required: true
     },
-    
+    weight: {
+        type: String,
+        required: true
+    },
     picture_url: {
         type: String,
         require: true

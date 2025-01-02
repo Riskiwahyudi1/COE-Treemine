@@ -22,6 +22,7 @@ const requestCustomAssemblySchema = new mongoose.Schema(
         function_test: { type: String, required: false },
         cable_wire_harness_assembly: { type: String, required: false },
         detail_information: { type: String, required: false },
+        weight: { type: Number, required: false },
         status: { type: String, required: false },
         total_cost: { type: Number, required: false },
         design_file: { type: String, required: false },

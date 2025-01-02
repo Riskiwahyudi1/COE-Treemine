@@ -38,11 +38,12 @@ const requestCostomPrototype = async (req, res) => {
         return res.status(401).json({ message: 'User not logged in' });
     }
     const id_user = user.id;
-    console.log('user',user)
+   
     try {
         const { 
 
-            name,
+       
+            board_type,
             x_out,
             panel_Requirement,
             notes,
@@ -56,6 +57,7 @@ const requestCostomPrototype = async (req, res) => {
             solder_mask_position,
             silkscreen_position,
             material,
+            material_option,
             thickness,
             min_track,
             min_hole,
@@ -67,13 +69,13 @@ const requestCostomPrototype = async (req, res) => {
             finish_copper,
             remove_product_no,
             design_file,
-            shiping_cost,
             total_cost,
          } = req.body;
 
         const newProduct = {
             id_user,
-            name,
+            name: 'Costom Prototype',
+            board_type,
             x_out,
             panel_Requirement,
             notes,
@@ -87,6 +89,7 @@ const requestCostomPrototype = async (req, res) => {
             solder_mask_position,
             silkscreen_position,
             material,
+            material_option,
             thickness,
             min_track,
             min_hole,
@@ -97,9 +100,9 @@ const requestCostomPrototype = async (req, res) => {
             surface_finish,
             finish_copper,
             remove_product_no,
+            weight: 1000,
             design_file,
             status: 'menunggu-pengajuan',
-            shiping_cost,
             total_cost,
         };
 

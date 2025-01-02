@@ -27,6 +27,7 @@ export default function UpdateProductForm() {
         id_category: '',
         harga: '',
         stock: '',
+        weight: '',
         description: '',
         image: '',
     });
@@ -55,6 +56,7 @@ export default function UpdateProductForm() {
                     product_name: product.product_name,
                     id_category: product.id_category?._id,
                     harga: product.harga,
+                    weight: product.weight,
                     stock: product.stock,
                     description: product.description,
                     image: '', 
@@ -100,7 +102,7 @@ export default function UpdateProductForm() {
         setError('');
         setLoading(true);
     
-        if (!formData.product_name || !formData.id_category || !formData.harga || !formData.stock || !formData.description) {
+        if (!formData.product_name || !formData.id_category || !formData.harga || !formData.weight || !formData.stock || !formData.description) {
             setError('All fields are required.');
             setLoading(false);
             return;
@@ -112,6 +114,7 @@ export default function UpdateProductForm() {
             data.append('id_category', formData.id_category);
             data.append('harga', formData.harga);
             data.append('stock', formData.stock);
+            data.append('weight', formData.weight);
             data.append('description', formData.description);
             if (formData.image) data.append('image', formData.image);
         
@@ -223,6 +226,16 @@ export default function UpdateProductForm() {
                                 type="number"
                                 name="stock"
                                 value={formData.stock}
+                                onChange={handleChange}
+                                fullWidth
+                                sx={{ mb: 2, bgcolor: 'rgba(255, 192, 203, 0.1)' }}
+                                required
+                            />
+                            <TextField
+                                label="Weight(gram)"
+                                type="number"
+                                name="weight"
+                                value={formData.weight}
                                 onChange={handleChange}
                                 fullWidth
                                 sx={{ mb: 2, bgcolor: 'rgba(255, 192, 203, 0.1)' }}

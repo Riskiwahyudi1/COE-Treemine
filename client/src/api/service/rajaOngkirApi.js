@@ -33,12 +33,14 @@ export const getCities = async (provinceId) => {
 };
 
 // biaya pengiriman
-export const getCost = async (couriers) => {
+export const getCost = async (couriers, product) => {
+    console.log(product)
     try {
        
         const response = await axios.get(`${API_URL}/calculate-cost`, {
-            params: { couriers }, 
+            params: { couriers, product }, 
             headers: {
+                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`, 
             }
         });

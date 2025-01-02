@@ -76,6 +76,7 @@ const requestCostomAssembly = async (req, res) => {
             function_test,
             cable_wire_harness_assembly,
             detail_information,
+            weight: 1000,
             status: 'menunggu-pengajuan',
             total_cost
         };

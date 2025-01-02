@@ -27,6 +27,7 @@ export default function ProductForm() {
         id_category: '',
         harga: '',
         stock: '',
+        weight: '',
         description: '',
         image: '',
     });
@@ -81,7 +82,7 @@ export default function ProductForm() {
         setLoading(true);
 
         // Validasi input
-        if (!formData.product_name || !formData.id_category || !formData.harga || !formData.stock || !formData.description || !formData.image) {
+        if (!formData.product_name || !formData.id_category || !formData.harga || !formData.stock || !formData.weight || !formData.description || !formData.image) {
             setError('All fields are required.');
             setLoading(false);
             return;
@@ -93,6 +94,7 @@ export default function ProductForm() {
             data.append('id_category', formData.id_category);
             data.append('harga', formData.harga);
             data.append('stock', formData.stock);
+            data.append('weight', formData.weight);
             data.append('description', formData.description);
             data.append('image', formData.image);
 
@@ -215,6 +217,16 @@ export default function ProductForm() {
                                 type="number"
                                 name="stock"
                                 value={formData.stock}
+                                onChange={handleChange}
+                                fullWidth
+                                sx={{ mb: 2, bgcolor: 'rgba(255, 192, 203, 0.1)' }}
+                                required
+                            />
+                            <TextField
+                                label="Weight(gram)"
+                                type="number"
+                                name="weight"
+                                value={formData.weight}
                                 onChange={handleChange}
                                 fullWidth
                                 sx={{ mb: 2, bgcolor: 'rgba(255, 192, 203, 0.1)' }}
