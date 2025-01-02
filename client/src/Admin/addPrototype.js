@@ -13,8 +13,10 @@ import {
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import axios from 'axios';
 import Toast from '../utils/Toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const UpdateBoardTypePage = () => {
+  const { adminToken } = useAuth();
   const [boardName, setBoardName] = useState('');
   const [boardPrice, setBoardPrice] = useState('');
   const [error, setError] = useState('');
@@ -28,44 +30,50 @@ const UpdateBoardTypePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!boardName || !boardPrice) {
       setError('Please fill in all fields');
       return;
     }
-  
+
     if (typeof boardName !== 'string') {
       setError('Board name must be at least 3 characters long');
       return;
     }
-  
+
     const price = parseFloat(boardPrice);
     if (isNaN(price)) {
       setError('Price must be a  number');
       return;
     }
-  
+
     try {
       setLoading(true);
+      if (!adminToken) {
+        setError('Kamu tidak terountetikasi, silahkan login kembali!');
+        setLoading(false);
+        return;
+      }
       const response = await axios.post(
         `http://localhost:5000/admin/costom-prototype/add-component/${id}`,
         {
-          type: boardName, 
-          cost: price, 
+          type: boardName,
+          cost: price,
         },
         {
           headers: {
             'Content-Type': 'application/json',
-          },
+            'Authorization': `Bearer ${adminToken}`, 
+        },
         }
       );
-  
+
       if (response.status === 200) {
         Toast.fire({
           icon: 'success',
           title: 'Item added successfully',
         });
-        navigate('../custom-prototype'); 
+        navigate('../custom-prototype');
       } else {
         setError('Failed to update the board type. Please try again.');
       }
@@ -78,7 +86,7 @@ const UpdateBoardTypePage = () => {
     } finally {
       setLoading(false);
     }
-  
+
   };
 
   return (

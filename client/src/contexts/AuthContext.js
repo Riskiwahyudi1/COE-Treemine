@@ -1,4 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+
 
 const AuthContext = createContext();
 
@@ -11,7 +15,9 @@ export const AuthProvider = ({ children }) => {
 
     const [isAuthChecked, setIsAuthChecked] = useState(false);
 
-    console.log('isAdminAuthenticated', isAdminAuthenticated);
+    const [adminToken, setAdminToken] = useState(null);
+
+    
 
     const loginUser = (token) => {
         localStorage.setItem('token', token); 
@@ -44,6 +50,17 @@ export const AuthProvider = ({ children }) => {
         return null;
     };
 
+    const checkTokenExpiration = (token) => {
+        try {
+            const decoded = jwtDecode(token);
+            const currentTime = Date.now() / 1000; 
+            return decoded.exp < currentTime; 
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            return true; 
+        }
+    };
+
     useEffect(() => {
         const userToken = localStorage.getItem('token'); 
         const adminToken = getCookie('adminToken');
@@ -51,13 +68,36 @@ export const AuthProvider = ({ children }) => {
         if (userToken) {
             setIsUserAuthenticated(true);
         }
-    
+
         if (adminToken) {
-            setIsAdminAuthenticated(true);
-        } 
+            if (checkTokenExpiration(adminToken)) {
+                window.alert('Token Anda telah kedaluwarsa. Silakan login kembali.');
+                setIsAdminAuthenticated(false);
+                logoutAdmin();
+            } else {
+                setIsAdminAuthenticated(true);
+                setAdminToken(adminToken);
+            }
+        }
 
         
         setIsAuthChecked(true);
+
+         const interceptor = axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response && error.response.status === 401) {
+                    logoutUser();
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        return () => {
+            // Hapus interceptor saat komponen unmount
+            axios.interceptors.response.eject(interceptor);
+        };
+
     }, []);
 
     return (
@@ -69,7 +109,9 @@ export const AuthProvider = ({ children }) => {
                 isUserAuthenticated,
                 loginUser,
                 logoutUser,
-                isAuthChecked, 
+                isAuthChecked,
+                adminToken
+                 
             }}
         >
             {children}

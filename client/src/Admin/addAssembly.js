@@ -13,8 +13,10 @@ import {
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import axios from 'axios';
 import Toast from '../utils/Toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const UpdateBoardTypePage = () => {
+  const { adminToken } = useAuth(); 
   const [boardName, setBoardName] = useState('');
   const [boardPrice, setBoardPrice] = useState('');
   const [error, setError] = useState('');
@@ -47,6 +49,12 @@ const UpdateBoardTypePage = () => {
   
     try {
       setLoading(true);
+
+      if (!adminToken) {
+        setError('Kamu tidak terountetikasi, silahkan login kembali!');
+        setLoading(false);
+        return;
+    }
       const response = await axios.post(
         `http://localhost:5000/admin/costom-assembly/add-component/${id}`,
         {
@@ -56,7 +64,8 @@ const UpdateBoardTypePage = () => {
         {
           headers: {
             'Content-Type': 'application/json',
-          },
+            'Authorization': `Bearer ${adminToken}`, 
+        },
         }
       );
   

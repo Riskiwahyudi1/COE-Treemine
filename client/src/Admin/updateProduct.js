@@ -18,7 +18,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import getCategories from './api/categoriesApi';
 import axios from 'axios';
 import Toast from '../utils/Toast';
+import { useAuth } from '../contexts/AuthContext';
+
 export default function UpdateProductForm() {
+    const { adminToken } = useAuth(); 
     const [formData, setFormData] = useState({
         product_name: '',
         id_category: '',
@@ -47,7 +50,6 @@ export default function UpdateProductForm() {
         const fetchProductData = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/admin/product/${id}`);
-                 console.log('Fetched product data:', response.data); 
                 const product = response.data;
                 setFormData({
                     product_name: product.product_name,
@@ -113,12 +115,19 @@ export default function UpdateProductForm() {
             data.append('description', formData.description);
             if (formData.image) data.append('image', formData.image);
         
+            if (!adminToken) {
+                setError('Kamu tidak terountetikasi, silahkan login kembali!');
+                setLoading(false);
+                return;
+            }
+
             const response = await axios.put(
                 `http://localhost:5000/admin/product/${id}`, 
                 data,
                 {
-                    headers: {
-                        'Content-Type': 'multipart/form-data', 
+                     headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${adminToken}`, 
                     },
                 }
             );

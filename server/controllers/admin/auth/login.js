@@ -1,11 +1,11 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../../../models/users'); // Sesuaikan dengan lokasi model User Anda
+const User = require('../../../models/users'); 
 
-// Fungsi untuk menghasilkan JWT
+
 const generateToken = (user) => {
     return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-        expiresIn: '1h', // Token kedaluwarsa dalam 1 jam
+        expiresIn: '1h', 
     });
 };
 
@@ -20,7 +20,7 @@ const loginAdmin = async (req, res) => {
         if (!user) return res.status(404).json({ message: 'User tidak ditemukan' });
 
         if (user.role !== 'admin') {
-            return res.status(403).json({ message: 'Unauthorized' });
+            return res.status(403).json({ message: 'Email atau Password Salah!' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);

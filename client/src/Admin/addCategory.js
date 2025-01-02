@@ -14,8 +14,11 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Toast from '../utils/Toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const UpdateCategoryPage = () => {
+    const { adminToken } = useAuth(); 
+
     const [formData, setFormData] = useState({
         category_name: '',
         image: '',
@@ -66,12 +69,19 @@ const UpdateCategoryPage = () => {
             data.append('category_name', formData.category_name);
             data.append('image', formData.image);
         
+            if (!adminToken) {
+                setError('Kamu tidak terountetikasi, silahkan login kembali!');
+                setLoading(false);
+                return;
+            }
+       
             const response = await axios.post(
                 'http://localhost:5000/admin/product/categories/add',
                 data,
                 {
-                    headers: {
+                     headers: {
                         'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${adminToken}`, 
                     },
                 }
             );
@@ -110,7 +120,7 @@ const UpdateCategoryPage = () => {
     };
 
     const handleBack = () => {
-        navigate('/admin/category');
+        navigate('/admin/kategoriPortofolio');
     };
 
     return (

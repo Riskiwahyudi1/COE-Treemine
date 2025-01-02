@@ -18,6 +18,7 @@ import axios from 'axios';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import PrintIcon from '@mui/icons-material/Print';
+import { useAuth } from '../contexts/AuthContext';
 
 const showToast = (message, icon) => {
   Swal.fire({
@@ -72,6 +73,7 @@ const StyledButton = styled(Button)({
 });
 
 export default function CustomizedTables() {
+  const { adminToken } = useAuth();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
 
@@ -102,7 +104,18 @@ export default function CustomizedTables() {
 
     if (result.isConfirmed) {
       try {
-        const response = await axios.delete(`http://localhost:5000/admin/product/${id}`);
+
+        if (!adminToken) {
+          showToast('Kamu tidak terountetikasi, silahkan login kembali!');
+          
+          return;
+        }
+        const response = await axios.delete(`http://localhost:5000/admin/product/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${adminToken}`,
+          },
+        });
+
         setProducts(products.filter((product) => product._id !== id));
         if (response.status === 200) {
           showToast('Product has been deleted', 'success');

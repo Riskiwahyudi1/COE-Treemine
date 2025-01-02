@@ -13,8 +13,10 @@ import {
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import axios from 'axios';
 import Toast from '../utils/Toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const UpdateBoardTypePage = () => {
+  const { adminToken } = useAuth(); 
   const [formData, setFormData] = useState({ type: '', cost: '', data: [] });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -81,8 +83,14 @@ const UpdateBoardTypePage = () => {
   
     try {
       setLoading(true);
+
+      if (!adminToken) {
+        setError('Kamu tidak terountetikasi, silahkan login kembali!');
+        setLoading(false);
+        return;
+    }
       const response = await axios.put(
-        `http://localhost:5000/admin/costom-prototype/${typeId}/item/${itemId}`,
+        `http://localhost:5000/admin/costom-assembly/${typeId}/item/${itemId}`,
         {
           type: formData.type, 
           cost: costValue, 
@@ -90,7 +98,8 @@ const UpdateBoardTypePage = () => {
         {
           headers: {
             'Content-Type': 'application/json',
-          },
+            'Authorization': `Bearer ${adminToken}`, 
+        },
         }
       );
   
@@ -99,7 +108,7 @@ const UpdateBoardTypePage = () => {
           icon: 'success',
           title: 'Item updated successfully',
         });
-        navigate('../custom-prototype'); 
+        navigate('../custom-assembly'); 
       } else {
         setError('Failed to update the board type. Please try again.');
       }

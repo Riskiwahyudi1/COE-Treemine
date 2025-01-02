@@ -15,10 +15,8 @@ import KategoriPortofolio from './kategoriPortofolio';
 import AddCategory from './addCategory';
 import EditCategory from './editCategory';
 import RequestCustom from './requestCustom';
-import ReviewPayment from './reviewpayment';
-import OnProgress from './onprogress';
-import History from './history';
-import Kirim from './kirim';
+import Transaksi from './transaksi';
+
 import { Routes, Route } from 'react-router-dom';
 
 export function AdminHome() {
@@ -56,10 +54,8 @@ export function AdminHome() {
           <Route path="kategoriPortofolio/edit-category/:id" element={<EditCategory />} />
 
           <Route path="/request-custom" element={<RequestCustom />} />
-          <Route path="/transaksi" element={<ReviewPayment />} />
-          <Route path="/onprogress" element={<OnProgress />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/kirim" element={<Kirim />} />
+          <Route path="/transaksi" element={<Transaksi />} />
+         
 
 
         </Routes>

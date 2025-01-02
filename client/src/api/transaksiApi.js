@@ -1,9 +1,8 @@
 import axios from "axios";
-
 const API_URL = 'http://localhost:5000/transaction';
 const API_URL_ADMIN = 'http://localhost:5000/admin/transaction';
-
 const token = localStorage.getItem('token');
+
 
 export const getCostomPrototypeData = async (data) => {
     try {
@@ -66,9 +65,6 @@ export const getTransactionAdmin = async (status) => {
     try {
         const response = await axios.get(`${API_URL_ADMIN}`, {
             params: { status }, 
-            // headers: {
-            //     'Authorization': `Bearer ${token}`, 
-            // }
         });
         return response.data; 
     } catch (error) {
@@ -77,12 +73,12 @@ export const getTransactionAdmin = async (status) => {
     }
 };
 
-export const approveTransaction = async (data) => {
+export const approveTransaction = async (data, adminToken) => {
     try {
         const respon = await axios.put(`${API_URL_ADMIN}/approve`, data ,{
-            // headers: {
-            //     'Authorization': `Bearer ${token}`,  
-            // }
+            headers: {
+                'Authorization': `Bearer ${adminToken}`,  
+            }
         });
         return respon;
     } catch (error) {
@@ -91,12 +87,13 @@ export const approveTransaction = async (data) => {
     }
 };
 
-export const rejectTransaction = async (data) => {
+export const rejectTransaction = async (data, adminToken) => {
+    
     try {
         const respon = await axios.put(`${API_URL_ADMIN}/reject`, data ,{
-            // headers: {
-            //     'Authorization': `Bearer ${token}`,  
-            // }
+            headers: {
+                'Authorization': `Bearer ${adminToken}`,  
+            }
         });
         return respon;
     } catch (error) {
@@ -104,12 +101,12 @@ export const rejectTransaction = async (data) => {
         throw error;
     }
 };
-export const sendTransaction = async (data) => {
+export const sendTransaction = async (data, adminToken) => {
     try {
         const respon = await axios.put(`${API_URL_ADMIN}/send`, data ,{
-            // headers: {
-            //     'Authorization': `Bearer ${token}`,  
-            // }
+            headers: {
+                'Authorization': `Bearer ${adminToken}`,  
+            }
         });
         return respon;
     } catch (error) {

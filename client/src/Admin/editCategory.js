@@ -14,8 +14,10 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Toast from '../utils/Toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const UpdateCategoryPage = () => {
+    const { adminToken } = useAuth(); 
     const [formData, setFormData] = useState({
         category_name: '',
         image: '',
@@ -29,7 +31,11 @@ const UpdateCategoryPage = () => {
     useEffect(() => {
         const fetchCategory = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/admin/product/categories/${id}`);
+                const response = await axios.get(`http://localhost:5000/admin/product/categories/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`,
+                    },
+                });
                 setFormData({
                     category_name: response.data.category_name || '',
                     image: response.data.picture_url || '',
@@ -87,12 +93,19 @@ const UpdateCategoryPage = () => {
                 data.append('image', formData.image);
             }
         
+            if (!adminToken) {
+                setError('Kamu tidak terountetikasi, silahkan login kembali!');
+                setLoading(false);
+                return;
+            }
+            
             const response = await axios.put(
                 `http://localhost:5000/admin/product/categories/edit/${id}`,
                 data,
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${adminToken}`, 
                     },
                 }
             );
@@ -129,7 +142,7 @@ const UpdateCategoryPage = () => {
     };
 
     const handleBack = () => {
-        navigate('/admin/category');
+        navigate('/admin/kategoriPortofolio');
     };
 
     return (

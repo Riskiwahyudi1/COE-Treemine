@@ -19,6 +19,7 @@ import axios from 'axios';
 import Toast from '../utils/Toast';
 import Dialog from '../utils/Dialog';
 import { formatDate } from '../utils/isoDate';
+import { useAuth } from '../contexts/AuthContext';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -70,6 +71,7 @@ const ModalContent = styled(Box)(({ theme }) => ({
 }));
 
 export default function OrdersTable() {
+    const { adminToken } = useAuth(); 
     const navigate = useNavigate();
     const [requestPrototype, setRequestPrototype] = useState([]);
     const [requestAssembly, setRequestAssembly] = useState([]);
@@ -134,12 +136,23 @@ export default function OrdersTable() {
     
         if (result.isConfirmed) {
             try {
+                if (!adminToken) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Kamu tidak terountetikasi, silahkan login kembali!',
+                    });
+                    return;
+                }
                 const url =
                     orderType === 'Costom Prototype'
                         ? `http://localhost:5000/admin/request-custom-prototype/${orderId}/approve`
                         : `http://localhost:5000/admin/request-custom-assembly/${orderId}/approve`;
     
-                const response = await axios.put(url);
+                        const response = await axios.put(url, {}, {
+                            headers: {
+                                'Authorization': `Bearer ${adminToken}`,
+                            },
+                        });
     
                 if (response.status === 200) {
                     
@@ -168,7 +181,6 @@ export default function OrdersTable() {
             }
         }
     };
-    
     const handleReject = async (orderId, orderType) => {
         const { value: reason } = await Dialog.fire({
             title: 'Anda yakin?',
@@ -193,7 +205,11 @@ export default function OrdersTable() {
                         ? `http://localhost:5000/admin/request-custom-prototype/${orderId}/reject`
                         : `http://localhost:5000/admin/request-custom-assembly/${orderId}/reject`;
     
-                const response = await axios.put(url, { reason });
+                const response = await axios.put(url, { reason }, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`, 
+                    },
+                });
     
                 if (response.status === 200) {
                     // Perbarui data sesuai dengan tipe order

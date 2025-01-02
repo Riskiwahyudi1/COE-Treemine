@@ -34,6 +34,10 @@ router.post('/', loginRateLimiter, async (req, res) => {
             return res.status(401).json({ message: "Email or password incorrect!" });
         }
 
+        if (user.role !== 'buyer') {
+            return res.status(403).json({ message: 'Email atau Password Salah!' });
+        }
+
         // cek verifikasi email
         if (!user.isVerified) {
             return res.status(401).json({ message: "Please verify your Email!" });

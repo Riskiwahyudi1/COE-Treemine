@@ -10,8 +10,6 @@ const AdminProtectedRoute = ({ redirectTo = '/admin-login' }) => {
         return <div>Loading...</div>; // Bisa diganti dengan spinner atau animasi
     }
 
-    console.log('isAdminAuthenticated di route', isAdminAuthenticated);
-
     // Jika sudah terautentikasi, render Outlet, jika tidak, arahkan ke halaman login
     return isAdminAuthenticated ? <Outlet /> : <Navigate to={redirectTo} />;
 };

@@ -64,7 +64,7 @@ const TransactionSchema = new mongoose.Schema({
             },
             delivery_receipt: {
                 type: String,
-                required: true,
+                required: false,
             },
         },
     ],

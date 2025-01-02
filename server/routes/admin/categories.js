@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
+const verifyTokenAdm = require("../../middlewares/autenticateTokenAdmin")
 const {
     showCategories,
     addCategories,
@@ -40,17 +41,20 @@ const validateCategory = [
 
 router.get('/', showCategories);
 router.get('/:id', getCategoryById);
+
 router.post(
     '/add',
+    verifyTokenAdm,
     upload.single('image'),
     validateCategory,
     handleValidationErrors,
     imageValidation,
     addCategories
 );
-router.delete('/delete/:id', deleteCategory);
+router.delete('/delete/:id', verifyTokenAdm, deleteCategory);
 router.put(
     '/edit/:id',
+    verifyTokenAdm,
     upload.single('image'),
     validateCategory,
     handleValidationErrors,

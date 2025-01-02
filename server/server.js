@@ -3,6 +3,7 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const verifyToken = require('./middlewares/autenticateTokenAdmin');
 
 
 

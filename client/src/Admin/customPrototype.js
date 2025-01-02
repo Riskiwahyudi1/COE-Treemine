@@ -21,6 +21,7 @@ import { InputLabel } from '@mui/material';
 import axios from 'axios';
 import Toast from '../utils/Toast';
 import Swal from 'sweetalert2';
+import { useAuth } from '../contexts/AuthContext';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -57,6 +58,7 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
 
 const BoardTypePage = () => {
   const navigate = useNavigate();
+  const { adminToken } = useAuth(); 
   const [selectedBoard, setSelectedBoard] = useState('');
   const [prototypeItem, setPrototypeItem] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -132,8 +134,17 @@ const BoardTypePage = () => {
   
       if (result.isConfirmed) {
         try {
+          if (!adminToken) {
+            setError('Kamu tidak terountetikasi, silahkan login kembali!');
+            setLoading(false);
+            return;
+        }
           const response = await axios.delete(
-            `http://localhost:5000/admin/costom-prototype/${typeId}/item/${itemId}`
+            `http://localhost:5000/admin/costom-prototype/${typeId}/item/${itemId}`, {
+              headers: {
+                'Authorization': `Bearer ${adminToken}`, 
+            },
+            }
           );
   
           if (response.status === 200) {

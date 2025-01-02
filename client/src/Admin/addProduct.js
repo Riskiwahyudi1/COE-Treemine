@@ -18,8 +18,10 @@ import { useNavigate } from 'react-router-dom';
 import getCategories from './api/categoriesApi';
 import Toast from '../utils/Toast';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ProductForm() {
+    const { adminToken } = useAuth(); 
     const [formData, setFormData] = useState({
         product_name: '',
         id_category: '',
@@ -94,12 +96,18 @@ export default function ProductForm() {
             data.append('description', formData.description);
             data.append('image', formData.image);
 
+            if (!adminToken) {
+                setError('Kamu tidak terountetikasi, silahkan login kembali!');
+                setLoading(false);
+                return;
+            }
             const response = await axios.post(
                 'http://localhost:5000/admin/product',
                 data,
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${adminToken}`, 
                     },
                 }
             );

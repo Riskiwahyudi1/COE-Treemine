@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const verifyTokenAdm = require("../../middlewares/autenticateTokenAdmin")
 const { body, validationResult } = require('express-validator');
 const Categories = require('../../models/categories');
 const { addProduct, showProduct, deleteProduct, updateProduct, getProductById ,upload } = require('../../controllers/admin/standartProductController');
@@ -56,8 +57,8 @@ const validateRequest = (req, res, next) => {
 
 router.get('/', showProduct);
 router.get('/:id', getProductById);
-router.post('/', upload.single('image'), productValidation, imageValidation, validateRequest, addProduct );
-router.delete('/:id', deleteProduct);
-router.put('/:id', upload.single('image'), productValidation, imageValidation, validateRequest, updateProduct);
+router.post('/',verifyTokenAdm, upload.single('image'), productValidation, imageValidation, validateRequest, addProduct );
+router.delete('/:id', verifyTokenAdm, deleteProduct);
+router.put('/:id',verifyTokenAdm, upload.single('image'), productValidation, imageValidation, validateRequest, updateProduct);
 
 module.exports = router;

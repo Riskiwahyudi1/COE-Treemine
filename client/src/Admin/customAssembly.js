@@ -20,6 +20,7 @@ import axios from 'axios';
 import Toast from '../utils/Toast';
 import Dialog from "../utils/Dialog";
 import { getAssemblyItem, getAssemblyById } from '../api/costomAssemblyApi';
+import { useAuth } from '../contexts/AuthContext';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -55,6 +56,7 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
 }));
 
 const CustomAssemblyPage = () => {
+  const { adminToken } = useAuth();
   const navigate = useNavigate();
   const [selectedBoard, setSelectedBoard] = useState('');
   const [assemblyItem, setAssemblyItem] = useState([]);
@@ -84,78 +86,86 @@ const CustomAssemblyPage = () => {
   }, []);
 
   useEffect(() => {
-      const fetchProductById = async () => {
-        try {
-          if (selectedBoard) {
-            const data = await getAssemblyById(selectedBoard);
-            setProductData(data);
-          }
-        } catch (error) {
-          setError('Failed to load categories');
-        }
-      };
-      fetchProductById();
-    }, [selectedBoard]);
-
-    const handleAddBoard = () => {
-      navigate(`./addAssembly/${selectedBoard}`);
-    };
-
-    const handleDeleteData = async (typeId, itemId) => {
-    
-      console.log(typeId)
-      console.log(itemId)
-      if (!typeId || !itemId) {
-        setError("Invalid typeId or itemId. Please try again.");
-        return;
-      }
-    
+    const fetchProductById = async () => {
       try {
-        setLoading(true);
-        const isValidTypeId = /^[a-fA-F0-9]{24}$/.test(itemId);
-        const isValidItemId = /^[a-fA-F0-9]{24}$/.test(itemId);
-    
-        if (!isValidTypeId || !isValidItemId) {
-          setError("Invalid typeId or itemId format.");
-          return;
-        }
-    
-        const result = await Dialog.fire({
-          title: 'Anda Yakin?',
-          text: "Hapus item ini?",
-         
-        });
-    
-        if (result.isConfirmed) {
-          try {
-            const response = await axios.delete(
-              `http://localhost:5000/admin/costom-assembly/${typeId}/item/${itemId}`
-            );
-    
-            if (response.status === 200) {
-              Toast.fire({
-                icon: 'success',
-                title: 'Item deleted successfully',
-              });
-  
-              setLoading(false)
-    
-              const updatedData = productData.data.filter((item) => item._id !== itemId);
-              setProductData({ ...productData, data: updatedData });
-            } else {
-              setError("Failed to delete data. Please try again.");
-            }
-          } catch (error) {
-            console.error("Failed to delete data:", error);
-            setError("Failed to delete data. Please try again later.");
-          }
+        if (selectedBoard) {
+          const data = await getAssemblyById(selectedBoard);
+          setProductData(data);
         }
       } catch (error) {
-        console.error("Validation failed:", error);
-        setError("An error occurred while processing your request.");
+        setError('Failed to load categories');
       }
-  
     };
+    fetchProductById();
+  }, [selectedBoard]);
+
+  const handleAddBoard = () => {
+    navigate(`./addAssembly/${selectedBoard}`);
+  };
+
+  const handleDeleteData = async (typeId, itemId) => {
+
+    if (!typeId || !itemId) {
+      setError("Invalid typeId or itemId. Please try again.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const isValidTypeId = /^[a-fA-F0-9]{24}$/.test(itemId);
+      const isValidItemId = /^[a-fA-F0-9]{24}$/.test(itemId);
+
+      if (!isValidTypeId || !isValidItemId) {
+        setError("Invalid typeId or itemId format.");
+        return;
+      }
+
+      const result = await Dialog.fire({
+        title: 'Anda Yakin?',
+        text: "Hapus item ini?",
+
+      });
+
+      if (result.isConfirmed) {
+        try {
+
+          if (!adminToken) {
+            setError('Kamu tidak terountetikasi, silahkan login kembali!');
+            setLoading(false);
+            return;
+          }
+          const response = await axios.delete(
+            `http://localhost:5000/admin/costom-assembly/${typeId}/item/${itemId}`,{
+              headers: {
+                'Authorization': `Bearer ${adminToken}`, 
+            },
+            }
+          );
+
+          if (response.status === 200) {
+            Toast.fire({
+              icon: 'success',
+              title: 'Item deleted successfully',
+            });
+
+            setLoading(false)
+
+            const updatedData = productData.data.filter((item) => item._id !== itemId);
+            setProductData({ ...productData, data: updatedData });
+          } else {
+            setError("Failed to delete data. Please try again.");
+          }
+        } catch (error) {
+          console.error("Failed to delete data:", error);
+          setError("Failed to delete data. Please try again later.");
+        }
+      }
+    } catch (error) {
+      console.error("Validation failed:", error);
+      setError("An error occurred while processing your request.");
+    }
+
+  };
 
   return (
     <div>
@@ -168,23 +178,23 @@ const CustomAssemblyPage = () => {
         }}
       >
         {selectedBoard && (
-        <Button
-          variant="contained"
-          onClick={handleAddBoard}
-          startIcon={<AddIcon />}
-          sx={{
-            backgroundColor: '#54cbbb',
-            color: '#ffffff',
-            textTransform: 'none',
-            '&:hover': {
-              backgroundColor: '#7fd685',
-            },
-            height: '54px',
-          }}
-        >
-          Add
-        </Button>
-      )}
+          <Button
+            variant="contained"
+            onClick={handleAddBoard}
+            startIcon={<AddIcon />}
+            sx={{
+              backgroundColor: '#54cbbb',
+              color: '#ffffff',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: '#7fd685',
+              },
+              height: '54px',
+            }}
+          >
+            Add
+          </Button>
+        )}
 
         <FormControl sx={{ width: '250px' }}>
           <Select
@@ -193,7 +203,7 @@ const CustomAssemblyPage = () => {
             displayEmpty
             inputProps={{ 'aria-label': 'Select Assembly Type' }}
           >
-           <MenuItem value="" disabled>
+            <MenuItem value="" disabled>
               Select an item
             </MenuItem>
             {assemblyItem.map((item) => (
@@ -264,7 +274,7 @@ const CustomAssemblyPage = () => {
                         },
                       }}
                       startIcon={<DeleteIcon />}
-                      onClick={() => handleDeleteData(selectedBoard, row._id)} 
+                      onClick={() => handleDeleteData(selectedBoard, row._id)}
                     >
                       Delete
                     </Button>

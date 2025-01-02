@@ -2,6 +2,7 @@ const express = require('express');
 const { check, param } = require('express-validator');
 const router = express.Router();
 const validateRequest = require('../../middlewares/handleValidationErrors')
+const verifyTokenAdm = require("../../middlewares/autenticateTokenAdmin")
 const {
   showCustomAssemblyData,
   showCustomAssemblyDataById,
@@ -31,6 +32,7 @@ router.get(
 
 router.post(
   '/add-component/:id',
+  verifyTokenAdm,
   validateRequest([
     param('id').isMongoId().withMessage('Invalid ID format'),
     check('type').notEmpty().withMessage('Type is required'),
@@ -41,6 +43,7 @@ router.post(
 
 router.put(
   '/:typeId/item/:itemId',
+  verifyTokenAdm,
   validateRequest([
     param('typeId').isMongoId().withMessage('Invalid typeId format'),
     param('itemId').isMongoId().withMessage('Invalid itemId format'),
@@ -52,6 +55,7 @@ router.put(
 
 router.delete(
   '/:typeId/item/:itemId',
+  verifyTokenAdm,
   validateRequest([
     param('typeId').isMongoId().withMessage('Invalid typeId format'),
     param('itemId').isMongoId().withMessage('Invalid itemId format'),

@@ -21,6 +21,7 @@ import { getTransactionAdmin, approveTransaction, rejectTransaction, sendTransac
 import { getProvinces, getCities } from '../api/service/rajaOngkirApi'
 import Toast from '../utils/Toast';
 import Dialog from "../utils/Dialog";
+import { useAuth } from '../contexts/AuthContext';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -70,6 +71,7 @@ const ModalContent = styled(Box)(({ theme }) => ({
 }));
 
 export default function OrdersTable() {
+    const { adminToken } = useAuth(); 
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [transaction, setTransaction] = useState([]);
@@ -111,7 +113,7 @@ export default function OrdersTable() {
         }
         if (result.isConfirmed) {
             try {
-                const response = await approveTransaction(data)
+                const response = await approveTransaction(data, adminToken)
 
                 if (response.status === 200) {
                     setTransaction((prev) =>
@@ -143,7 +145,7 @@ export default function OrdersTable() {
         }
         if (result.isConfirmed) {
             try {
-                const response = await rejectTransaction(data)
+                const response = await rejectTransaction(data, adminToken)
 
                 if (response.status === 200) {
                     setTransaction((prev) =>
@@ -187,7 +189,7 @@ export default function OrdersTable() {
 
         if (resi) {
             try {
-                const response = await sendTransaction(data)
+                const response = await sendTransaction(data, adminToken)
 
                 if (response.status === 200) {
                     setTransaction((prev) =>
@@ -373,7 +375,22 @@ export default function OrdersTable() {
                                     {/* Tombol Lain */}
                                     <StyledTableCell align="center">
                                         <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                                            {order.status === 'menunggu-pembayaran' || order.status === 'sudah-bayar' && (
+                                            {order.status === 'menunggu-pembayaran' && (
+                                                <>
+                                                    <IconButton
+                                                        sx={{
+                                                            color: '#f44336',
+                                                            display: 'flex',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center',
+                                                        }}
+                                                        onClick={() => handleReject(order._id)}
+                                                    >
+                                                        <CancelIcon />
+                                                    </IconButton>
+                                                </>
+                                            )}
+                                            {order.status === 'sudah-bayar' && (
                                                 <>
                                                     <IconButton
                                                         sx={{
@@ -386,18 +403,7 @@ export default function OrdersTable() {
                                                     >
                                                         <CheckCircleIcon />
                                                     </IconButton>
-                                                    {console.log(order._id)}
-                                                    <IconButton
-                                                        sx={{
-                                                            color: '#f44336',
-                                                            display: 'flex',
-                                                            justifyContent: 'center',
-                                                            alignItems: 'center',
-                                                        }}
-                                                        onClick={() => handleReject(order._id)}
-                                                    >
-                                                        <CancelIcon />
-                                                    </IconButton>
+                                                   
                                                 </>
                                             )}
 
