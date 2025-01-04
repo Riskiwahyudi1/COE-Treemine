@@ -51,10 +51,10 @@ const checkShippingCost = async (req, res) => {
         }
 
         const courier = req.query.couriers;
-        const product = req.query.product; // Data produk dari request
+        const product = req.query.product; 
 
 
-        // Menentukan semua jenis produk yang ingin diperiksa
+        
         const productTypes = ['standart', 'costom_prototype', 'costom_assembly'];
 
         const productQuantities = {};
@@ -102,11 +102,6 @@ const checkShippingCost = async (req, res) => {
             const weight = parseInt(product.weight) || 0;
             return total + (quantity * weight);
         }, 0);
-
-
-        console.log('Total Weight Standart Product:', totalWeightStandartProduct);
-        console.log('Total Weight Prototype:', weigthPrototype);
-        console.log('Total Weight Assembly:', weigthAssembly);
 
         if (!courier) {
             return res.status(400).json({ message: 'Courier is required' });

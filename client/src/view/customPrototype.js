@@ -102,9 +102,11 @@ const CustomPrototype = (part) => {
     useEffect(() => {
         if (formData.board_type) {
             setSelectedBoardType(formData.board_type);
-        } else if (formData.material) {
+        }
+        if (formData.material) {
             setSelectedMaterial(formData.material)
-        }else if (formData.layer) {
+        }
+        if (formData.layer) {
             setSelectedLayer(formData.layer)
         }
         
@@ -713,7 +715,6 @@ const CustomPrototype = (part) => {
                                         </React.Fragment>
                                     );
                                 }
-
 
                                 if (part.type === 'Thickness' && part.data?.length > 0) {
                                     return (

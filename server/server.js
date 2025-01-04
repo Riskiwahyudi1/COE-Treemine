@@ -34,6 +34,7 @@ const cart = require('./routes/buyer/cart');
 const costomPrototypeBuyer = require('./routes/buyer/costomPrototype');
 const costomAssemblyBuyer = require('./routes/buyer/costomAssembly');
 const Transactions = require('./routes/buyer/transactions');
+const SettingPassword = require('./routes/buyer/auth/settingPassword')
 
 // service
 const rajaOngkirService = require('./routes/services/rajaOngkir')
@@ -139,6 +140,7 @@ app.use('/account', account)
 app.use('/cart', cart);
 app.use('/costom-prototype', costomPrototypeBuyer);
 app.use('/costom-assembly', costomAssemblyBuyer);
+app.use('/password', SettingPassword);
 
 // service
 app.use('/raja-ongkir', rajaOngkirService);

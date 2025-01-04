@@ -83,11 +83,16 @@ export const AuthProvider = ({ children }) => {
         
         setIsAuthChecked(true);
 
-         const interceptor = axios.interceptors.response.use(
+        const interceptor = axios.interceptors.response.use(
             (response) => response,
             (error) => {
                 if (error.response && error.response.status === 401) {
-                    logoutUser();
+                    
+                    const isTokenExpired = error.response.data?.message === "Token expired";
+        
+                    if (isTokenExpired) {
+                        logoutUser(); 
+                    }
                 }
                 return Promise.reject(error);
             }

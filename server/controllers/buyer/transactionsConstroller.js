@@ -1,10 +1,12 @@
 const Transaction = require('../../models/transaction');
+const Cart = require('../../models/cart');
+const RequestCustomPrototype = require('../../models/request-costom-prototype');
+const RequestCustomAssembly = require('../../models/request-costom-assembly');
 
+// buat transaksi
 const createTransactions = async (req, res) => {
     try {
-        // Ambil data dari request body
         const {
-            id_user,
             product,
             expedition,
             total_payment,
@@ -12,12 +14,17 @@ const createTransactions = async (req, res) => {
             estimated_delivery,
         } = req.body;
 
-        // Validasi data wajib
+        const user = req.user;
+        const id_user = user.id;
+        
         if (!id_user || !product || !expedition || !total_payment) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        // Buat transaksi baru
+        if (!Array.isArray(product) || product.length === 0) {
+            return res.status(400).json({ error: 'Product list must be a non-empty array' });
+        }
+
         const newTransaction = new Transaction({
             id_user,
             product,
@@ -28,12 +35,37 @@ const createTransactions = async (req, res) => {
             estimated_delivery,
         });
 
-        // Simpan transaksi ke database
         const savedTransaction = await newTransaction.save();
 
-        // Kirim respon sukses
+        // hapus keranjang produk standar dan ubah status request costom
+        const id_standart_list = product.flatMap((item) =>
+            item.standart ? item.standart.map((standard) => standard.id_product) : []
+        );
+        const id_costom_prototype_list = product.flatMap((item) =>
+            item.costom_prototype ? item.costom_prototype.map((prototype) => prototype.id_request_costom) : []
+        );
+        const id_costom_assembly_list = product.flatMap((item) =>
+            item.costom_assembly ? item.costom_assembly.map((assembly) => assembly.id_request_costom) : []
+        );
+
+        if (id_standart_list.length > 0) {
+            await Cart.deleteMany({ id_product: { $in: id_standart_list }, id_user: id_user });
+        }
+        if (id_costom_prototype_list.length > 0) {
+            await RequestCustomPrototype.findByIdAndUpdate(
+                id_costom_prototype_list,
+                { status: 'sudah-checkout' },
+                { new: true });
+        }
+        if (id_costom_assembly_list.length > 0) {
+            await RequestCustomAssembly.findByIdAndUpdate(
+                id_costom_assembly_list,
+                { status: 'sudah-checkout' },
+                { new: true });
+        }
+
         res.status(201).json({
-            message: 'Transaction created successfully',
+            message: 'Transaction created successfully ',
             data: savedTransaction,
         });
     } catch (error) {
@@ -42,6 +74,7 @@ const createTransactions = async (req, res) => {
     }
 };
 
+// menampilkan transaksi
 const showTransactionBuyer = async (req, res) => {
     const user = req.user;
     try {
@@ -68,6 +101,7 @@ const showTransactionBuyer = async (req, res) => {
     }
 };
 
+// cancel transaksi
 const cancelTransactionBuyer = async (req, res) => {
     const user = req.user;
     const { id } = req.body;
@@ -93,6 +127,7 @@ const cancelTransactionBuyer = async (req, res) => {
     }
 };
 
+// transaksi selesai
 const doneTransactionBuyer = async (req, res) => {
     const user = req.user;
     const { id } = req.body;
