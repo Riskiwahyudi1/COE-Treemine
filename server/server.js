@@ -12,7 +12,6 @@ const fs = require('fs')
 const mongoose = require('mongoose');
 const Products = require('./models/product');
 const registerRoutes = require('./routes/buyer/auth/register');
-const verifyRoutes = require('./routes/buyer/auth/verify');
 const loginRoute = require('./routes/buyer/auth/login');
 const dashbord = require('./routes/buyer/dashbord');
 
@@ -114,7 +113,6 @@ app.get('/api/products', async (req, res) => {
 
 
 app.use('/register/buyer', registerRoutes);
-app.use('/verify', verifyRoutes);
 app.use('/login/buyer', loginRoute);
 app.use('/dashbord', dashbord);
 

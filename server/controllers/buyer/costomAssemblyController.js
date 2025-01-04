@@ -4,19 +4,6 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// const showCustomPrototypeData = async (req, res) => {
-//     try {
-//         const customPrototypeData = await CustomPrototype.find(); 
-//         if (!customPrototypeData || customPrototypeData.length === 0) {
-//             return res.status(404).json({ message: 'Data tidak ditemukan!' });
-//         }
-//         res.json(customPrototypeData);
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: "Terjadi kesalahan server!" });
-//     }
-// };
-
 const showCustomAssemblyByUser = async (req, res) => {
     const user = req.user;
     try {
@@ -38,7 +25,6 @@ const requestCostomAssembly = async (req, res) => {
         return res.status(401).json({ message: 'User not logged in' });
     }
     const id_user = user.id;
-    console.log('user',user)
     try {
         const { 
             name,

@@ -7,7 +7,8 @@ import {
   Grid,
   CircularProgress,
   Alert,
-  Paper
+  Paper,
+  Link
 } from '@mui/material';
 import { Home as HomeIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -29,6 +30,10 @@ const LoginPage = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
+  const handleForgotPassword = () => {
+    navigate('/forgot-password')
+  }
 
   // Handle submit form login
   const handleSubmit = async (e) => {
@@ -60,11 +65,17 @@ const LoginPage = () => {
         setError('Failed to login. No token received.');
       }
     } catch (error) {
-      console.error('Login error:', error);
       if (error.response) {
-        setError(error.response.data.message || 'An unexpected error occurred.');
+        const { errors } = error.response.data;
+        if (errors && Array.isArray(errors)) {
+
+          const errorMessage = errors.map((err) => err.msg).join(' | ');
+          setError(errorMessage);
+        } else {
+          setError(error.response.data?.message || 'Terjadi kesalahan.');
+        }
       } else {
-        setError('An unexpected error occurred. Please try again.');
+        setError('Terjadi kesalahan.');
       }
     } finally {
       setLoading(false);
@@ -171,10 +182,10 @@ const LoginPage = () => {
               onChange={handleChange}
               InputLabelProps={{
                 sx: {
-                    color: "black",
-                    "&.Mui-focused": { color: "black" },
+                  color: "black",
+                  "&.Mui-focused": { color: "black" },
                 },
-            }}
+              }}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
@@ -203,6 +214,20 @@ const LoginPage = () => {
             >
               {loading ? <CircularProgress size={24} /> : 'Login'}
             </Button>
+            <Button
+              sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                color: 'blue',
+                textDecoration: 'none',
+                fontSize: '0.875rem',
+                textTransform: 'capitalize',
+              }}
+              onClick={handleForgotPassword}
+            >
+              Forgot Password?
+            </Button>
+
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2, width: '100%' }}>
               <Button
                 variant="outlined"

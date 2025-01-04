@@ -19,6 +19,8 @@ import Keranjang from "./view/keranjang";
 import KeranjangCostomProduct from "./view/keranjangCostomProduct";
 import SidebarProfile from "./component/sidebarUser";
 import ChangePassword from './view/changePassword';
+import ForgotPassword from './view/forgotPassword';
+import ResetPassword from './view/resetPassword';
 import UserPage from './view/userPage';
 import Proses from './view/proses';
 import Finish from './view/finish';
@@ -45,6 +47,8 @@ function AppContent() {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login' || location.pathname === '/register';
   const isAdminPage = location.pathname.startsWith('/admin');
+  const isForgotPassword = location.pathname === '/forgot-password' ;
+  const isResetPassword = location.pathname.startsWith('/reset-password');
   const isProfilePage = location.pathname.startsWith('/user') ||
     location.pathname === '/change-password' ||
     location.pathname === '/proses' ||
@@ -56,13 +60,15 @@ function AppContent() {
   return (
     <>
       {/* Navbar hanya muncul jika bukan di halaman login, admin, dan profile */}
-      {!isLoginPage && !isAdminPage && !isProfilePage && <ResponsiveAppBar />}
+      {!isLoginPage && !isAdminPage && !isProfilePage && !isForgotPassword && !isResetPassword && <ResponsiveAppBar />}
 
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin-login" element={<LoginAdmin />} />        
+        <Route path="/forgot-password" element={<ForgotPassword />} />        
+        <Route path="/reset-password/:token" element={<ResetPassword />} />        
 
         {/* Lindungi halaman admin dengan ProtectedRoute */}
         <Route element={<AdminProtectedRoute redirectTo="/admin-login" />}>

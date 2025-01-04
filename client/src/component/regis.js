@@ -30,21 +30,27 @@ const RegisterPage = () => {
       });
 
       if (response.status === 201) {
-        console.log('Register successful', response.data);
+
         Toast.fire({
           icon: 'success',
-          title: 'Register successful',
+          title: 'Register Berhasil!, silahkan periksa inbox email anda untuk verifikasi!',
         });
+
         navigate('/', { state: { showToast: true } });
         navigate('/login');
       }
     } catch (error) {
       if (error.response) {
-        setError(error.response.data.message);
-      } else if (error.request) {
-        setError('No response from the server. Please try again later.');
+        const { errors } = error.response.data;
+        if (errors && Array.isArray(errors)) {
+
+          const errorMessage = errors.map((err) => err.msg).join(' | ');
+          setError(errorMessage);
+        } else {
+          setError(error.response.data?.message || 'Terjadi kesalahan.');
+        }
       } else {
-        setError('An error occurred. Please try again.');
+        setError('Terjadi kesalahan.');
       }
     } finally {
       setLoading(false);
@@ -68,7 +74,7 @@ const RegisterPage = () => {
             alignItems: 'center',
           }}
         >
-          <Typography component="h1" variant="h4" sx={{fontWeight: 'bold', mb: 2 }}>
+          <Typography component="h1" variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
             Register
           </Typography>
           <Typography variant="body2" sx={{ mb: 1 }}>
@@ -92,10 +98,10 @@ const RegisterPage = () => {
               onChange={handleChage}
               InputLabelProps={{
                 sx: {
-                    color: "black",
-                    "&.Mui-focused": { color: "black" },
+                  color: "black",
+                  "&.Mui-focused": { color: "black" },
                 },
-            }}
+              }}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
