@@ -80,6 +80,7 @@ export default function OrdersTable() {
     const [openModal, setOpenModal] = useState(false);
     const [selectedIdPrototype, setselectedIdPrototype] = useState(null);
     const [selectedIdAssembly, setselectedIdAssembly] = useState(null);
+    const [totalRequestCostom, setTotalRequestCostom] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -111,6 +112,10 @@ export default function OrdersTable() {
                     let combinedData = [...resolvedPrototypeData, ...resolvedAssemblyData];
     
                     combinedData = combinedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                    const totalDataCount = combinedData.length;
+                    setTotalRequestCostom(totalDataCount);
+
     
                     // Update state
                     setRequestPrototype(resolvedPrototypeData);

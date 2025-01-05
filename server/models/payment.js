@@ -4,11 +4,11 @@ const PaymentSchema = new mongoose.Schema({
     order_id: {
         type: String,
         required: true,
-        unique: true, // Agar tidak ada duplikasi order_id
+        unique: true, 
     },
     transaction_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Transaction', // Menghubungkan ke transaksi jika diperlukan
+        ref: 'Transaction',
         required: true,
     },
     payment_method: {
@@ -17,7 +17,7 @@ const PaymentSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        required: true, // Contoh: "pending", "success", "failed"
+        required: true, 
     },
     amount: {
         type: Number,

@@ -26,6 +26,8 @@ const costomPrototype = require('./routes/admin/costomPrototype');
 const admReqCostomPrptptype = require('./routes/admin/requestCostomPrototype');
 const admReqCostomAssembly = require('./routes/admin/requestCostomAssembly');
 const transactionAdmin = require('./routes/admin/transactions');
+const dashbordAdmin = require('./routes/admin/dashboard');
+
 
 // memanggil routes buyer
 const account = require('./routes/buyer/auth/accountSetting')
@@ -132,6 +134,7 @@ app.use('/admin/costom-assembly', costomAssembly);
 app.use('/admin/request-custom-prototype', admReqCostomPrptptype);
 app.use('/admin/request-custom-assembly', admReqCostomAssembly);
 app.use('/admin/transaction', transactionAdmin);
+app.use('/admin/dashboard', dashbordAdmin);
 
 // buyer
 app.use('/account', account)
