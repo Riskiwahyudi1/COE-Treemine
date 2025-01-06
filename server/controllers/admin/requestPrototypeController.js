@@ -1,5 +1,6 @@
 const RequestCustomPrototype = require('../../models/request-costom-prototype')
 
+
 const approvedPrototype = async (req, res) => {
     try {
         const { id } = req.params;

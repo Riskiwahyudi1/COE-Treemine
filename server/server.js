@@ -148,6 +148,31 @@ app.use('/raja-ongkir', rajaOngkirService);
 app.use('/payments', paymentService);
 
 
+// donwload file
+app.get('/download/assembly-design/:fileName', (req, res) => {
+    const fileName = req.params.fileName;
+    const filePath = path.join(__dirname, 'storage/assembly-design', fileName);
+
+    res.download(filePath, fileName, (err) => {
+        if (err) {
+            console.error('Error while serving file:', err);
+            res.status(404).send('File not found.');
+        }
+    });
+});
+
+app.get('/download/prototype-design/:fileName', (req, res) => {
+    const fileName = req.params.fileName;
+    const filePath = path.join(__dirname, 'storage/prototype-design', fileName);
+
+    res.download(filePath, fileName, (err) => {
+        if (err) {
+            console.error('Error while serving file:', err);
+            res.status(404).send('File not found.');
+        }
+    });
+});
+
 app.listen(port, () => {
     console.log(`App running at http://localhost:${port}`);
 });

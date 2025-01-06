@@ -9,6 +9,7 @@ import {
   CardActions,
   Checkbox,
   Paper,
+   Modal
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -20,19 +21,23 @@ import CostomPrototypeImg from '../assets/images/1.png';
 import CostomAssemblyImg from '../assets/images/3.png';
 import Toast from '../utils/Toast';
 import Dialog from '../utils/Dialog';
+import { formatDate } from '../utils/isoDate';
+import { styled } from '@mui/material/styles';
 
-const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, handleCancel, handleCheckout }) => {
-  const [file, setFile] = useState(null);  // Store the file
+
+
+const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, handleCancel, handleCheckout , handleOpenModal}) => {
+  const [file, setFile] = useState(null); 
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
-    const maxFileSize = 2 * 1024 * 1024; // 2MB limit
+    const maxFileSize = 2 * 1024 * 1024; 
 
     if (selectedFile) {
       // Validasi ekstensi file
-      const allowedExtensions = /\.(zip|rar)$/i; // regex untuk .zip dan .rar
+      const allowedExtensions = /\.(zip|rar)$/i; 
       if (!allowedExtensions.test(selectedFile.name)) {
         setError('Only .zip or .rar files are allowed.');
         return;
@@ -229,7 +234,7 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
         <Button
           variant="contained"
           size="small"
-          // onClick={() => handleDetail(id)}
+          onClick={() => handleOpenModal(id)}
           sx={{
             height: 32,
             backgroundColor: '#0077B5',
@@ -248,19 +253,40 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
   );
 };
 
+
+const StyledModal = styled(Modal)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const ModalContent = styled(Box)(({ theme }) => ({
+  width: 500,
+  backgroundColor: 'white',
+  borderRadius: 8,
+  boxShadow: 24,
+  padding: theme.spacing(4),
+  outline: 'none',
+}));
+
+
 const ShoppingCart = () => {
   const navigate = useNavigate();
   const [requestPrototype, setRequestPrototype] = useState([]);
   const [requestAssembly, setRequestAssembly] = useState([]);
   const [requestCustom, setRequestCustom] = useState([]);
   const [selectedId, setSelectedId] = useState('')
+  const [openModalId, setIdOpenModal] = useState('')
   const [checkoutPrototype, setCheckoutPrototype] = useState([]);
   const [shouldNavigate, setShouldNavigate] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
+console.log(requestAssembly)
+console.log('selectedId', selectedId)
 
   const singleProductCostom = requestCustom.filter(
     (product) => product._id === selectedId
   );
-
 
   useEffect(() => {
     if (selectedId && requestPrototype.length > 0) {
@@ -468,6 +494,16 @@ const ShoppingCart = () => {
     }
   };
 
+  const handleOpenModal = (order) => {
+    setIdOpenModal(order);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setRequestPrototype(null);
+  };
+
   return (
     <Box
       sx={{
@@ -500,6 +536,7 @@ const ShoppingCart = () => {
               handleRequest={handleRequest}
               handleCancel={handleCancel}
               handleCheckout={handleCheckout}
+              handleOpenModal={handleOpenModal}
             />
           ))
         ) : (
@@ -532,6 +569,153 @@ const ShoppingCart = () => {
           </Paper>
         )}
       </Box>
+      <StyledModal open={openModal} onClose={handleCloseModal}>
+        <ModalContent>
+          {/* Detail untuk Prototype */}
+          {requestPrototype && requestPrototype.length > 0 ? (
+            requestPrototype
+              .filter(data => data._id === openModalId)
+              .map((data, idx) => (
+                <div key={idx}>
+                  {/* Header */}
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
+                    Detail Pesanan - Prototype
+                  </Typography>
+
+                  {/* Informasi Pesanan */}
+                 
+                  <Typography variant="body1">
+                    <strong>Type Custom:</strong> {data.name}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Tanggal:</strong> {formatDate(data.createdAt)}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Harga:</strong> Rp.{Number(data.total_cost).toLocaleString('id-ID')}
+                  </Typography>
+
+                  <Typography variant="body1">
+                    <strong>Status:</strong> {data.status
+                      .split('-')
+                      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(' ')}
+                  </Typography>
+
+                  {/* Spesifikasi */}
+                  <Typography variant="body1" sx={{ marginTop: 2, fontWeight: 'bold', marginBottom: 1 }}>
+                    Spesifikasi :
+                  </Typography>
+                  <Box>
+                    {[
+                    { label: 'Board Type', value: data.board_type },
+                    { label: 'X Out', value: data.x_out },
+                    { label: 'Route Process', value: data.route_process },
+                    { label: 'Design in Panel', value: data.design_in_panel },
+                    { label: 'Size', value: `${data.length} X ${data.width}` },
+                    { label: 'Quantity', value: data.quantity },
+                    { label: 'Layer', value: data.layer },
+                    { label: 'Copper Layer', value: data.copper_layer },
+                    { label: 'Solder Mask Position', value: data.solder_mask_position },
+                    { label: 'Material', value: data.material },
+                    { label: 'Thickness', value: data.thickness },
+                    { label: 'Min Track', value: data.min_track },
+                    { label: 'Min Hole', value: data.min_hole },
+                    { label: 'Solder Mask', value: data.solder_mask },
+                    { label: 'Silkscreen', value: data.silkscreen },
+                    { label: 'UV Printing', value: data.uv_printing },
+                    { label: 'Surface Finish', value: data.surface_finish },
+                    { label: 'Finish Copper', value: data.finish_copper },
+                    ]
+                      .map((item, idx) => (
+                        <Typography key={idx} variant="body2">
+                          <strong>{item.label}: </strong> {item.value}
+                        </Typography>
+                      ))}
+                  </Box>
+                </div>
+              ))
+          ) : (
+            // Loading State
+            <Typography variant="body1"></Typography>
+          )}
+          {/* Detail untuk Assembly */}
+          {requestAssembly && requestAssembly.length > 0 ? (
+            requestAssembly
+              .filter(data => data._id === openModalId)
+              .map((data, idx) => (
+                <div key={idx}>
+                  {/* Header */}
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
+                    Detail Pesanan - Assembly
+                  </Typography>
+
+                  {/* Informasi Pesanan */}
+                
+                  <Typography variant="body1">
+                    <strong>Type Custom:</strong> {data.name}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Tanggal:</strong> {formatDate(data.createdAt)}
+                  </Typography>
+                  <Typography variant="body1">
+                    <strong>Harga:</strong> Rp.{Number(data.total_cost).toLocaleString('id-ID')}
+                  </Typography>
+
+                  <Typography variant="body1">
+                    <strong>Status:</strong> {data.status
+                      .split('-')
+                      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(' ')}
+                  </Typography>
+
+                  {/* Spesifikasi untuk Assembly */}
+                  <Typography variant="body1" sx={{ marginTop: 2, fontWeight: 'bold', marginBottom: 1 }}>
+                    Spesifikasi :
+                  </Typography>
+                  <Box>
+                    {[{ label: 'Flexible Option', value: data.flexible_option },
+                    { label: 'Board Type', value: data.board_type },
+                    { label: 'Assembly Side', value: data.assembly_side },
+                    { label: 'Quantity', value: data.quantity },
+                    { label: 'Pay Attention', value: data.pay_attention },
+                    { label: 'Notes', value: data.notes },
+                    { label: 'Unique Part Number', value: data.number_unik_part },
+                    { label: 'SMD Part Number', value: data.number_SMD_part },
+                    { label: 'BGA/QFP Part Number', value: data.number_BGA_QFP },
+                    { label: 'Through Hole', value: data.throught_hole },
+                    { label: 'Board to Delivery', value: data.board_to_delivery },
+                    { label: 'Function Test', value: data.function_test },
+                    { label: 'Cable/Wire Harness Assembly', value: data.cable_wire_harness_assembly },
+                    { label: 'Detail Information', value: data.detail_information },
+                   ]
+                      .map((item, idx) => (
+                        <Typography key={idx} variant="body2">
+                          <strong>{item.label}: </strong> {item.value ? item.value : 'N/A'}
+                        </Typography>
+                      ))}
+                  </Box>
+                </div>
+              ))
+          ) : (
+            // Loading State
+            <Typography variant="body1"></Typography>
+          )}
+
+          {/* Tombol Penutup */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: '#54cbbb',
+                '&:hover': { backgroundColor: '#46b2a6' },
+              }}
+              onClick={handleCloseModal}
+            >
+              Close
+            </Button>
+          </Box>
+        </ModalContent>
+      </StyledModal>
     </Box>
   );
 };

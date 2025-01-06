@@ -19,6 +19,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import PrintIcon from '@mui/icons-material/Print';
 import { useAuth } from '../contexts/AuthContext';
+import { Modal } from '@mui/material';
 
 const showToast = (message, icon) => {
   Swal.fire({
@@ -72,10 +73,28 @@ const StyledButton = styled(Button)({
   },
 });
 
+
+const StyledModal = styled(Modal)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const ModalContent = styled(Box)(({ theme }) => ({
+  width: 500,
+  backgroundColor: 'white',
+  borderRadius: 8,
+  boxShadow: 24,
+  padding: theme.spacing(4),
+  outline: 'none',
+}));
+
 export default function CustomizedTables() {
   const { adminToken } = useAuth();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [idProductSelect, setIdProduct] = useState('');
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -107,7 +126,7 @@ export default function CustomizedTables() {
 
         if (!adminToken) {
           showToast('Kamu tidak terountetikasi, silahkan login kembali!');
-          
+
           return;
         }
         const response = await axios.delete(`http://localhost:5000/admin/product/${id}`, {
@@ -134,10 +153,19 @@ export default function CustomizedTables() {
     window.print();
   };
 
-  // Fungsi untuk menampilkan data atau teks acak jika tidak ada
   const displayValue = (value, randomText = 'Data tidak tersedia') =>
     value || randomText;
 
+
+  const handleOpenModal = (order) => {
+    setIdProduct(order)
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setIdProduct(null);
+  };
   return (
     <>
       <Box
@@ -181,10 +209,6 @@ export default function CustomizedTables() {
             ),
           }}
         />
-
-        <StyledButton variant="contained" onClick={handlePrint} startIcon={<PrintIcon />} sx={{ bgcolor: '#2f98cd', width: '90px' }}>
-          Print
-        </StyledButton>
       </Box>
 
       <StyledTableContainer component={Paper}>
@@ -248,7 +272,7 @@ export default function CustomizedTables() {
                   </Button>
                   <Button
                     variant="outlined"
-                    onClick={() => navigate(`./detail/${product._id}`)}
+                    onClick={() => handleOpenModal(product._id)}
                   >
                     Detail
                   </Button>
@@ -258,6 +282,74 @@ export default function CustomizedTables() {
           </TableBody>
         </Table>
       </StyledTableContainer>
+      <StyledModal open={openModal} onClose={handleCloseModal}>
+        <ModalContent>
+          <div style={{ maxHeight: "70vh", overflowY: "auto", padding: "1rem" }}>
+            {products && products.length > 0 ? (
+              products
+                .filter((data) => data._id === idProductSelect)
+                .map((data, idx) => (
+                  <div key={idx}>
+                    <div className="modal-header">
+                      <h2>Detail Produk</h2>
+                    </div>
+                    <div className="modal-body">
+                      <img
+                        src={`http://localhost:5000${data.picture_url}`}
+                        alt={data.product_name}
+                        style={{
+                          width: "100%",
+                          maxHeight: "300px",
+                          objectFit: "cover",
+                          marginBottom: "1rem",
+                        }}
+                      />
+                      <h3>{data.product_name}</h3>
+                      <p>{data.description}</p>
+                      <ul>
+                        <li>
+                          <strong>Kategori:</strong> {data.id_category.category_name}
+                        </li>
+                        <li>
+                          <strong>Stok:</strong> {data.stock}
+                        </li>
+                        <li>
+                          <strong>Berat:</strong> {data.weight} gram
+                        </li>
+                        <li>
+                          <strong>Harga:</strong> Rp{data.harga.toLocaleString()}
+                        </li>
+                      </ul>
+                      <p>
+                        <strong>Dibuat:</strong> {new Date(data.create_at).toLocaleString()}
+                      </p>
+                      <p>
+                        <strong>Diperbarui:</strong> {new Date(data.update_at).toLocaleString()}
+                      </p>
+                    </div>
+                    {/* Tombol Penutup */}
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                backgroundColor: '#54cbbb',
+                                '&:hover': { backgroundColor: '#46b2a6' },
+                            }}
+                            onClick={handleCloseModal}
+                        >
+                            Close
+                        </Button>
+                    </Box>
+                  </div>
+                ))
+            ) : (
+              <p>Produk tidak ditemukan.</p>
+            )}
+          </div>
+        </ModalContent>
+      </StyledModal>
+
+
     </>
   );
 }

@@ -7,7 +7,7 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { IconButton, Modal } from '@mui/material';
+import { IconButton, Modal, CardMedia } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -71,7 +71,7 @@ const ModalContent = styled(Box)(({ theme }) => ({
 }));
 
 export default function OrdersTable() {
-    const { adminToken } = useAuth(); 
+    const { adminToken } = useAuth();
     const navigate = useNavigate();
     const [requestPrototype, setRequestPrototype] = useState([]);
     const [requestAssembly, setRequestAssembly] = useState([]);
@@ -86,18 +86,18 @@ export default function OrdersTable() {
         const fetchData = async () => {
             try {
                 const currentStatus = searchParams.getAll("status");
-    
-                // Reset state
+
+                // Reset state 
                 setRequestPrototype([]);
                 setRequestAssembly([]);
                 setRequestCustom([]);
-    
+
                 if (currentStatus.length > 0) {
                     const [prototypeData, assemblyData] = await Promise.allSettled([
                         getRequestPrototypeByParams(currentStatus),
                         getRequestAssemblyByParams(currentStatus),
                     ]);
-    
+
                     // Validasi data hasil API
                     const resolvedPrototypeData =
                         prototypeData.status === "fulfilled" && Array.isArray(prototypeData.value)
@@ -107,38 +107,38 @@ export default function OrdersTable() {
                         assemblyData.status === "fulfilled" && Array.isArray(assemblyData.value)
                             ? assemblyData.value
                             : [];
-    
+
                     // Gabungkan data
                     let combinedData = [...resolvedPrototypeData, ...resolvedAssemblyData];
-    
+
                     combinedData = combinedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
                     const totalDataCount = combinedData.length;
                     setTotalRequestCostom(totalDataCount);
 
-    
+
                     // Update state
                     setRequestPrototype(resolvedPrototypeData);
                     setRequestAssembly(resolvedAssemblyData);
                     setRequestCustom(combinedData);
-                } 
+                }
             } catch (error) {
                 console.error("Failed to load products", error);
             }
         };
-    
+
         fetchData();
     }, [searchParams]);
-    
-    
-    
+
+
+
 
     const handleApprove = async (orderId, orderType) => {
         const result = await Dialog.fire({
             title: 'Anda yakin?',
             text: 'Ingin Menyetujui Pesanan?',
         });
-    
+
         if (result.isConfirmed) {
             try {
                 if (!adminToken) {
@@ -152,15 +152,15 @@ export default function OrdersTable() {
                     orderType === 'Costom Prototype'
                         ? `http://localhost:5000/admin/request-custom-prototype/${orderId}/approve`
                         : `http://localhost:5000/admin/request-custom-assembly/${orderId}/approve`;
-    
-                        const response = await axios.put(url, {}, {
-                            headers: {
-                                'Authorization': `Bearer ${adminToken}`,
-                            },
-                        });
-    
+
+                const response = await axios.put(url, {}, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`,
+                    },
+                });
+
                 if (response.status === 200) {
-                    
+
                     if (orderType === 'Costom Prototype') {
                         setRequestCustom((prev) =>
                             prev.filter((order) => order._id !== orderId)
@@ -170,7 +170,7 @@ export default function OrdersTable() {
                             prev.filter((order) => order._id !== orderId)
                         );
                     }
-    
+
                     // Tampilkan pesan sukses
                     Toast.fire({
                         icon: 'success',
@@ -201,7 +201,7 @@ export default function OrdersTable() {
                 }
             },
         });
-    
+
         if (reason) {
             try {
                 // Tentukan URL berdasarkan tipe order
@@ -209,13 +209,13 @@ export default function OrdersTable() {
                     orderType === 'Costom Prototype'
                         ? `http://localhost:5000/admin/request-custom-prototype/${orderId}/reject`
                         : `http://localhost:5000/admin/request-custom-assembly/${orderId}/reject`;
-    
+
                 const response = await axios.put(url, { reason }, {
                     headers: {
-                        'Authorization': `Bearer ${adminToken}`, 
+                        'Authorization': `Bearer ${adminToken}`,
                     },
                 });
-    
+
                 if (response.status === 200) {
                     // Perbarui data sesuai dengan tipe order
                     if (orderType === 'Costom Prototype') {
@@ -227,7 +227,7 @@ export default function OrdersTable() {
                             prev.filter((order) => order._id !== orderId)
                         );
                     }
-    
+
                     // Tampilkan pesan sukses
                     Toast.fire({
                         icon: 'success',
@@ -243,7 +243,7 @@ export default function OrdersTable() {
             }
         }
     };
-    
+
 
     const handleOpenModal = (order) => {
         setselectedIdPrototype(order);
@@ -380,7 +380,7 @@ export default function OrdersTable() {
                                         <strong>No Order:</strong> {data._id}
                                     </Typography>
                                     <Typography variant="body1">
-                                        <strong>Nama:</strong> {data.name}
+                                        <strong>Type Custom:</strong> {data.name}
                                     </Typography>
                                     <Typography variant="body1">
                                         <strong>Tanggal:</strong> {formatDate(data.createdAt)}
@@ -395,30 +395,44 @@ export default function OrdersTable() {
                                             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                                             .join(' ')}
                                     </Typography>
+                                    <Typography variant="body1">
+                                        <strong>Design:</strong>{' '}
+                                        <a
+                                            href={`http://localhost:5000/download/prototype-design/${data.design_file.split('/').pop()}`}
+                                            download={data.design_file.split('/').pop()}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ color: '#007bff', textDecoration: 'none', fontWeight: 'bold' }}
+                                        >
+                                            Download
+                                        </a>
+                                    </Typography>
 
                                     {/* Spesifikasi */}
                                     <Typography variant="body1" sx={{ marginTop: 2, fontWeight: 'bold', marginBottom: 1 }}>
                                         Spesifikasi :
                                     </Typography>
                                     <Box>
-                                        {[{ label: 'X Out', value: data.x_out },
-                                        { label: 'Route Process', value: data.route_process },
-                                        { label: 'Design in Panel', value: data.design_in_panel },
-                                        { label: 'Size', value: `${data.length} X ${data.width}` },
-                                        { label: 'Quantity', value: data.quantity },
-                                        { label: 'Layer', value: data.layer },
-                                        { label: 'Copper Layer', value: data.copper_layer },
-                                        { label: 'Solder Mask Position', value: data.solder_mask_position },
-                                        { label: 'Material', value: data.material },
-                                        { label: 'Thickness', value: data.thickness },
-                                        { label: 'Min Track', value: data.min_track },
-                                        { label: 'Min Hole', value: data.min_hole },
-                                        { label: 'Solder Mask', value: data.solder_mask },
-                                        { label: 'Silkscreen', value: data.silkscreen },
-                                        { label: 'UV Printing', value: data.uv_printing },
-                                        { label: 'Surface Finish', value: data.surface_finish },
-                                        { label: 'Finish Copper', value: data.finish_copper },
-                                        { label: 'Remove Product No', value: data.remove_product_no }]
+                                        {[
+                                            { label: 'Board Type', value: data.board_type },
+                                            { label: 'X Out', value: data.x_out },
+                                            { label: 'Route Process', value: data.route_process },
+                                            { label: 'Design in Panel', value: data.design_in_panel },
+                                            { label: 'Size', value: `${data.length} X ${data.width}` },
+                                            { label: 'Quantity', value: data.quantity },
+                                            { label: 'Layer', value: data.layer },
+                                            { label: 'Copper Layer', value: data.copper_layer },
+                                            { label: 'Solder Mask Position', value: data.solder_mask_position },
+                                            { label: 'Material', value: data.material },
+                                            { label: 'Thickness', value: data.thickness },
+                                            { label: 'Min Track', value: data.min_track },
+                                            { label: 'Min Hole', value: data.min_hole },
+                                            { label: 'Solder Mask', value: data.solder_mask },
+                                            { label: 'Silkscreen', value: data.silkscreen },
+                                            { label: 'UV Printing', value: data.uv_printing },
+                                            { label: 'Surface Finish', value: data.surface_finish },
+                                            { label: 'Finish Copper', value: data.finish_copper },
+                                        ]
                                             .map((item, idx) => (
                                                 <Typography key={idx} variant="body2">
                                                     <strong>{item.label}: </strong> {item.value}
@@ -429,7 +443,7 @@ export default function OrdersTable() {
                             ))
                     ) : (
                         // Loading State
-                        <Typography variant="body1">Loading Prototype Data...</Typography>
+                        <Typography variant="body1"></Typography>
                     )}
 
                     {/* Detail untuk Assembly */}
@@ -448,7 +462,7 @@ export default function OrdersTable() {
                                         <strong>No Order:</strong> {data._id}
                                     </Typography>
                                     <Typography variant="body1">
-                                        <strong>Nama:</strong> {data.name}
+                                        <strong>Type Custom:</strong> {data.name}
                                     </Typography>
                                     <Typography variant="body1">
                                         <strong>Tanggal:</strong> {formatDate(data.createdAt)}
@@ -457,12 +471,26 @@ export default function OrdersTable() {
                                         <strong>Harga:</strong> Rp.{Number(data.total_cost).toLocaleString('id-ID')}
                                     </Typography>
 
+
                                     <Typography variant="body1">
                                         <strong>Status:</strong> {data.status
                                             .split('-')
                                             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                                             .join(' ')}
                                     </Typography>
+                                    <Typography variant="body1">
+                                        <strong>Design:</strong>{' '}
+                                        <a
+                                            href={`http://localhost:5000/download/assembly-design/${data.design_file.split('/').pop()}`}
+                                            download={data.design_file.split('/').pop()}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ color: '#007bff', textDecoration: 'none', fontWeight: 'bold' }}
+                                        >
+                                            Download
+                                        </a>
+                                    </Typography>
+                                
 
                                     {/* Spesifikasi untuk Assembly */}
                                     <Typography variant="body1" sx={{ marginTop: 2, fontWeight: 'bold', marginBottom: 1 }}>
@@ -483,7 +511,7 @@ export default function OrdersTable() {
                                         { label: 'Function Test', value: data.function_test },
                                         { label: 'Cable/Wire Harness Assembly', value: data.cable_wire_harness_assembly },
                                         { label: 'Detail Information', value: data.detail_information },
-                                        { label: 'Design File', value: data.design_file }]
+                                        ]
                                             .map((item, idx) => (
                                                 <Typography key={idx} variant="body2">
                                                     <strong>{item.label}: </strong> {item.value ? item.value : 'N/A'}
@@ -494,7 +522,7 @@ export default function OrdersTable() {
                             ))
                     ) : (
                         // Loading State
-                        <Typography variant="body1">Loading Assembly Data...</Typography>
+                        <Typography variant="body1"></Typography>
                     )}
 
                     {/* Tombol Penutup */}
