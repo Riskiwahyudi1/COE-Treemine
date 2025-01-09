@@ -251,7 +251,9 @@ export default function CustomizedTables() {
                   )}
                 </StyledTableCell>
                 <StyledTableCell align="right">
-                  {displayValue(product.description, 'Deskripsi kosong')}
+                  {product.description && product.description.length > 25
+                    ? `${product.description.substring(0, 25)}...` 
+                    : product.description}
                 </StyledTableCell>
                 <StyledTableCell align="right">
                   <Button
@@ -329,16 +331,16 @@ export default function CustomizedTables() {
                     </div>
                     {/* Tombol Penutup */}
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                backgroundColor: '#54cbbb',
-                                '&:hover': { backgroundColor: '#46b2a6' },
-                            }}
-                            onClick={handleCloseModal}
-                        >
-                            Close
-                        </Button>
+                      <Button
+                        variant="contained"
+                        sx={{
+                          backgroundColor: '#54cbbb',
+                          '&:hover': { backgroundColor: '#46b2a6' },
+                        }}
+                        onClick={handleCloseModal}
+                      >
+                        Close
+                      </Button>
                     </Box>
                   </div>
                 ))

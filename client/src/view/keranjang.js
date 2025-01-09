@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import getProductsInCart from '../api/cartApi';
+import Toast from '../utils/Toast'
 
 const showToast = (message, icon) => {
     Swal.fire({
@@ -46,9 +47,18 @@ const ShoppingCartItem = ({
     isChecked,
     onSelect,
     onView,
+    stock
 }) => {
     const handleIncrement = () => {
-        onQuantityChange(id, quantity + 1);
+        if (quantity < stock) {
+            onQuantityChange(id, quantity + 1);
+        }
+        if (quantity == stock) {
+            Toast.fire({
+                icon: 'info',
+                title: 'Tidak bisa menambah melebihi stok!',
+            });
+        }
     };
 
     const handleDecrement = () => {
@@ -70,10 +80,12 @@ const ShoppingCartItem = ({
                 borderRadius: 3,
             }}
         >
+            
             <Checkbox
                 checked={isChecked}
                 onChange={(e) => onSelect(id, e.target.checked)}
                 sx={{ marginRight: { sm: 2, xs: 0 }, mb: { xs: 1, sm: 0 } }}
+                disabled={stock === 0}
             />
             <CardMedia
                 component="img"
@@ -90,6 +102,11 @@ const ShoppingCartItem = ({
             />
             <CardContent sx={{ flex: 1, ml: { sm: 2, xs: 0 }, textAlign: { xs: 'center', sm: 'left' } }}>
                 <Typography variant="h6">{name}</Typography>
+                <Typography
+                    color={stock > 10 ? "#00A63F" : stock > 0 ? "warning" : "#FF0000"}
+                >
+                    {stock > 0 ? `Stok: ${stock}` : "Stok: Habis"}
+                </Typography>
                 <Typography color="text.secondary">{`Rp. ${price.toLocaleString()} x ${quantity}`}</Typography>
                 <Typography fontWeight="bold" color="primary">
                     {`Rp. ${(price * quantity).toLocaleString()}`}
@@ -288,6 +305,7 @@ const ShoppingCart = () => {
                             quantity={product.quantity || 1}
                             price={product.id_product?.harga || 0}
                             image={product.id_product?.picture_url || ''}
+                            stock={product.id_product?.stock}
                             onDelete={handleDelete}
                             onQuantityChange={handleQuantityChange}
                             isChecked={selectedItems[product._id]}

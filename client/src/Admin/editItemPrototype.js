@@ -76,7 +76,7 @@ const UpdateBoardTypePage = () => {
     }
   
     const costValue = parseFloat(formData.cost);
-    if (isNaN(costValue) || costValue <= 0) {
+    if (isNaN(costValue)) {
       alert('Cost must be a positive number');
       return;
     }

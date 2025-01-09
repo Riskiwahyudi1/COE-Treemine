@@ -53,7 +53,6 @@ const checkShippingCost = async (req, res) => {
         const courier = req.query.couriers;
         const product = req.query.product; 
 
-
         
         const productTypes = ['standart', 'costom_prototype', 'costom_assembly'];
 
@@ -64,27 +63,24 @@ const checkShippingCost = async (req, res) => {
                     const id = entry.id_product || entry.id_request_costom;
                     const quantity = entry.quantity || 1;
                     if (id) {
-                        productQuantities[id] = (productQuantities[id] || 0) + quantity; // Simpan jumlah kuantitas per ID
+                        productQuantities[id] = (productQuantities[id] || 0) + quantity;
                     }
                 });
             });
         });
 
-
+        // menghitung berat masing masing produk
         const validIds = Object.keys(productQuantities);
-        // Mengambil data dari database berdasarkan ID yang valid
         const requestCustomAssemblies = await RequestCustomAssembly.find({
-            _id: { $in: validIds } // MongoDB query untuk mencari beberapa ID
+            _id: { $in: validIds } 
         });
         const requestPrototypes = await RequestCustomPrototype.find({
-            _id: { $in: validIds } // MongoDB query untuk mencari beberapa ID
+            _id: { $in: validIds } 
         });
         const standartProduct = await Product.find({
-            _id: { $in: validIds } // MongoDB query untuk mencari beberapa ID
+            _id: { $in: validIds } 
         });
 
-
-        // Menghitung total berat untuk setiap kategori
         const totalWeightStandartProduct = standartProduct.reduce((total, product) => {
             const quantity = productQuantities[product._id] || 1;
             const weight = parseInt(product.weight) || 0;

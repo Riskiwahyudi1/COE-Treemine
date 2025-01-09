@@ -17,9 +17,14 @@ const ProductPage = () => {
     const handleBack = () => {
         navigate(-1);
     };
-    const handleBuy = () => {
-        navigate('/checkout');
-    };
+    // const handleCheckout = () => {
+    //     navigate("/checkout", {
+    //         state: {
+    //             product,
+
+    //         }
+    //     });
+    // };
 
     useEffect(() => {
         const fetchProductById = async () => {
@@ -161,20 +166,23 @@ const ProductPage = () => {
                             {product.product_name}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                            <Typography>Quantity : </Typography>
-                            <Typography sx={{ ml: 1 }}>{product.stock} available</Typography>
+                            <Typography
+                                color={product.stock > 10 ? "#00A63F" : product.stock > 0 ? "warning" : "#FF0000"}
+                            >
+                                {product.stock > 0 ? `Stok: ${product.stock}` : "Stok: Habis"}
+                            </Typography>
                         </Box>
                         <Typography variant="h6" sx={{ mt: 2, fontWeight: 'bold' }}>
                             Price: Rp. {product.harga.toLocaleString()}
                         </Typography>
 
                         <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-                            <Button variant="contained" onClick={handleSubmitCart} sx={{ backgroundColor: '#00A63F', color: '#fff' }} >
-                                {loading ? <CircularProgress sx={6} /> :  <ShoppingCartIcon />}
+                            <Button variant="contained" disabled={product.stock === 0} onClick={handleSubmitCart} sx={{ backgroundColor: '#00A63F', color: '#fff' }} >
+                                {loading ? <CircularProgress sx={6} /> : <ShoppingCartIcon />}
                             </Button>
-                            <Button variant="contained" onClick={handleBuy} sx={{ backgroundColor: '#00A63F', color: '#fff' }}>
+                            {/* <Button variant="contained" onClick={handleCheckout} sx={{ backgroundColor: '#00A63F', color: '#fff' }}>
                                 Beli Sekarang
-                            </Button>
+                            </Button> */}
                         </Box>
                     </Box>
                 </Box>

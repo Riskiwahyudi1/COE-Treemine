@@ -109,7 +109,7 @@ const CustomPrototype = (part) => {
         if (formData.layer) {
             setSelectedLayer(formData.layer)
         }
-        
+
     }, [formData.board_type, formData.material, formData.layer]);
 
 
@@ -199,21 +199,45 @@ const CustomPrototype = (part) => {
 
         // Validasi Input
         const requiredFields = [
-            'board_type', 'x_out', 'panel_Requirement', 'notes', 'route_process',
-            'design_in_panel', 'width', 'length', 'quantity', 'layer', 'copper_layer',
-            'solder_mask_position', 'silkscreen_position', 'material', 'thickness',
-            'min_track', 'min_hole', 'solder_mask', 'silkscreen', 'uv_printing',
-            'edge_conector', 'surface_finish', 'finish_copper', 'remove_product_no'
+            'board_type', 'design_in_panel', 'width', 'length', 'quantity', 'layer',
+             'material',
+            'thickness', 'min_track', 'min_hole', 'solder_mask', 'silkscreen',
+            'uv_printing', 'surface_finish', 'finish_copper',
+            
         ];
+
+        if (selectedBoardType !== 'Panel by Customer' && selectedBoardType !== 'Single Piece') {
+            requiredFields.unshift('panel_Requirement', 'notes', 'route_process', 'x_out');
+        }
+        if (selectedBoardType !== 'Panel by Polibatam' && selectedBoardType !== 'Single Piece') {
+            requiredFields.unshift('x_out');
+        }
+        if (selectedLayer === '1 Layer') {
+            requiredFields.unshift('copper_layer','solder_mask_position', 'silkscreen_position' );
+        }
+    
+      
+        // Periksa apakah ada field yang kosong
+        const missingFields = requiredFields.filter((field) => !formData[field] || formData[field].trim() === '');
+
+        if (missingFields.length > 0) {
+            const formattedMissingFields = missingFields.map(field => field.replace(/_/g, ' '));
+            Toast.fire({
+                icon: 'error',
+                title: `Mohon pilih "${formattedMissingFields[0] }"!`,
+            });
+            setLoading(false);
+            return;
+        }
 
         try {
             const token = localStorage.getItem('token');
 
             if (!token) {
-                setError('Unauthorized access. Please log in first.');
+                setError('Akses tidak diizinkan. Silakan login terlebih dahulu.');
                 Toast.fire({
                     icon: 'error',
-                    title: 'Please log in first',
+                    title: 'Silakan login terlebih dahulu',
                 });
                 return;
             }
@@ -238,11 +262,11 @@ const CustomPrototype = (part) => {
             if (response.status === 201) {
                 Toast.fire({
                     icon: 'success',
-                    title: 'Data submitted successfully',
+                    title: 'Data berhasil dikirim',
                 });
                 navigate('../keranjang/costom-product', { state: { showToast: true } });
             } else {
-                setError(response.data?.message || 'Failed to submit data. Please try again!');
+                setError(response.data?.message || 'Gagal mengirim data. Silakan coba lagi!');
             }
 
         } catch (error) {
@@ -250,13 +274,14 @@ const CustomPrototype = (part) => {
                 error.response?.data?.errors?.[0]?.msg ||
                 error.response?.data?.message ||
                 (error.response?.status >= 500
-                    ? 'Server error. Please try again later.'
-                    : 'Failed to submit data. Please check your connection.');
+                    ? 'Terjadi kesalahan server. Silakan coba lagi nanti.'
+                    : 'Gagal mengirim data. Periksa koneksi Anda.');
             setError(message);
         } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <form onSubmit={handleSubmit}>
@@ -323,7 +348,7 @@ const CustomPrototype = (part) => {
                                     );
                                 }
 
-                                if (selectedBoardType === 'panel by customer' && part.type === 'X Out') {
+                                if (selectedBoardType === 'Panel by Customer' && part.type === 'X Out') {
                                     return (
                                         <Grid item xs={12} key={index}>
                                             <Typography variant="body2" sx={{ mb: 1 }}>
@@ -351,7 +376,7 @@ const CustomPrototype = (part) => {
                                     );
                                 }
 
-                                if (selectedBoardType === 'panel by polibatam' && part.type === 'Panel Requirement') {
+                                if (selectedBoardType === 'Panel by Polibatam' && part.type === 'Panel Requirement') {
                                     return (
                                         <React.Fragment key={index}>
                                             <Grid item xs={12}>
@@ -388,7 +413,7 @@ const CustomPrototype = (part) => {
                                     );
                                 }
 
-                                if (selectedBoardType === 'panel by polibatam' && part.type === 'Route Process') {
+                                if (selectedBoardType === 'Panel by Polibatam' && part.type === 'Route Process') {
                                     return (
                                         <React.Fragment key={index}>
                                             <Grid item xs={12}>
@@ -557,8 +582,8 @@ const CustomPrototype = (part) => {
                                                 row
                                                 name="layer"
                                                 value={JSON.stringify(formData.quantity.type)}
-                                                    label="Select Quantity"
-                                                    onChange={handleChange}
+                                                label="Select Quantity"
+                                                onChange={handleChange}
                                             >
                                                 {part.data.map((obj) => (
                                                     <FormControlLabel
@@ -687,7 +712,7 @@ const CustomPrototype = (part) => {
                                                     {/* Material Options */}
                                                     <Box flex={1}>
                                                         <Typography variant="body2" sx={{ mb: 1 }}>
-                                                             Options
+                                                            Options
                                                         </Typography>
                                                         <FormControl fullWidth variant="outlined">
                                                             <InputLabel>Select Option</InputLabel>

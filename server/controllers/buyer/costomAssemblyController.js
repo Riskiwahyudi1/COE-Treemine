@@ -27,7 +27,7 @@ const requestCostomAssembly = async (req, res) => {
     const id_user = user.id;
     try {
         const { 
-            name,
+            
             flexible_option,
             board_type,
             assembly_side,
@@ -47,7 +47,7 @@ const requestCostomAssembly = async (req, res) => {
 
         const newProduct = {
             id_user,
-            name,
+            name : 'Costom Assembly',
             flexible_option,
             board_type,
             assembly_side,

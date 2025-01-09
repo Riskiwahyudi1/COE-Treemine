@@ -29,7 +29,7 @@ const CustomAssembly = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
-        name: 'Costom Assembly',
+        
         flexible_option: '',
         board_type: '',
         assembly_side: '',
@@ -106,6 +106,7 @@ const CustomAssembly = () => {
                     [name]: parseFloat(parsedValue.cost) || 0,
                 };
 
+                // total harga X jumlah pemesanan
                 const total = Object.values(updatedCost).reduce((acc, val) => acc + val, 0);
                 setTotalCost(total);
 
@@ -120,12 +121,12 @@ const CustomAssembly = () => {
         }
     };
     useEffect(() => {
-            setFormData((prevData) => ({
-                ...prevData,
-                total_cost: totalCost,
-            }));
-        }, [totalCost]);
-    
+        setFormData((prevData) => ({
+            ...prevData,
+            total_cost: totalCost,
+        }));
+    }, [totalCost]);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -133,9 +134,37 @@ const CustomAssembly = () => {
         setLoading(true);
 
         // Validasi Input
+        // Validasi Input
         const requiredFields = [
-
+            'flexible_option',
+            'board_type',
+            'assembly_side',
+            'quantity',
+            'pay_attention',
+            'notes',
+            'number_unik_part',
+            'number_SMD_part',
+            'number_BGA_QFP',
+            'throught_hole',
+            'board_to_delivery',
+            'function_test',
+            'cable_wire_harness_assembly',
+            'detail_information'
         ];
+
+        const missingFields = requiredFields.filter((field) => {
+            const fieldValue = formData[field];
+            return typeof fieldValue === 'string' && fieldValue.trim() === '';
+        });
+        if (missingFields.length > 0) {
+            const formattedMissingFields = missingFields.map(field => field.replace(/_/g, ' '));
+            Toast.fire({
+                icon: 'error',
+                title: `Mohon pilih "${formattedMissingFields[0] }"!`,
+            });
+            setLoading(false);
+            return;
+        }
 
         try {
             const token = localStorage.getItem('token');
@@ -526,7 +555,7 @@ const CustomAssembly = () => {
                                 <Typography>Harga PCB:</Typography>
                                 <Typography>Rp. {totalCost}</Typography>
                             </Box>
-                            
+
                         </Box>
 
                         <Button type="submit" variant="contained" onClick={handleSubmit} fullWidth sx={{ mb: 2, backgroundColor: '#00A63F', color: '#fff' }}>

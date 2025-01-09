@@ -19,7 +19,7 @@ const Products = mongoose.model('Products', {
         required: true
     },
     stock: {
-        type: String,
+        type: Number,
         required: true
     },
     weight: {

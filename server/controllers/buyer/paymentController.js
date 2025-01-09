@@ -1,6 +1,7 @@
 const { verifyWebhook, createTransaction } = require('../../services/midtransService');
 const Payment = require('../../models/payment')
 const Transaction = require('../../models/transaction')
+const Products = require('../../models/product')
 
 const createPayment = async (req, res) => {
     try {
@@ -20,15 +21,16 @@ const createPayment = async (req, res) => {
             )
             .populate('product.costom_assembly.id_request_costom',
                 'name flexible_option board_type assembly_side quantity pay_attention notes number_unik_part number_SMD_part number_BGA_QFP throught_hole board_to_delivery function_test cable_wire_harness_assembly detail_information status total_cost design_file reject_reason')
-            .populate('product.standart.id_product', 'product_name harga picture_url');;
+            .populate('product.standart.id_product', 'product_name harga picture_url, stock');
         if (!transaction) {
             return res.status(404).json({ error: 'Transaction not found' });
         }
 
+
         const totalPayment = transaction.total_payment;
 
         let itemDetails = [];
-        const productData = transaction.product?.[0] || {}; 
+        const productData = transaction.product?.[0] || {};
 
         if (productData.standart?.length > 0) {
             itemDetails = productData.standart.map((product) => ({
@@ -42,7 +44,7 @@ const createPayment = async (req, res) => {
             itemDetails = productData.costom_prototype.map((product) => ({
                 id: product.id_request_costom._id.toString(),
                 name: product.id_request_costom.name || 'Produk Custom Prototype',
-                price: Number(product.id_request_costom.total_cost ) || 0,
+                price: Number(product.id_request_costom.total_cost) || 0,
                 quantity: Number(product.quantity),
                 url: product.id_request_costom.design_file || 'https://default.url/custom-product',
             }));
@@ -50,7 +52,7 @@ const createPayment = async (req, res) => {
             itemDetails = productData.costom_assembly.map((product) => ({
                 id: product.id_request_costom._id.toString(),
                 name: product.id_request_costom.name || 'Produk Custom Assembly',
-                price: Number(product.id_request_costom.total_cost ) || 0,
+                price: Number(product.id_request_costom.total_cost) || 0,
                 quantity: Number(product.quantity),
                 url: product.id_request_costom.design_file || 'https://default.url/custom-product',
             }));
@@ -61,15 +63,15 @@ const createPayment = async (req, res) => {
         // menambah ongkir
         if (transaction.expedition?.[0]?.shipping_cost) {
             itemDetails.push({
-                id: "SHIPPING_COST", 
+                id: "SHIPPING_COST",
                 name: "Ongkos Kirim",
                 price: Number(transaction.expedition[0].shipping_cost) || 0,
-                quantity: 1, 
+                quantity: 1,
             });
         }
 
 
-        
+
         // Periksa pembayaran untuk transaksi ini
         const existingPayment = await Payment.findOne({ transaction_id: transactionId });
         if (existingPayment) {
@@ -151,9 +153,7 @@ const createPayment = async (req, res) => {
     }
 };
 
-
-
-
+// notifikasi dari midtranss
 const handleMidtransNotification = async (req, res) => {
     try {
         const notification = req.body;
@@ -182,6 +182,37 @@ const handleMidtransNotification = async (req, res) => {
                 { status: 'sudah-bayar' },
                 { new: true }
             );
+
+            // kurangi stok produk standart
+            const transaction = await Transaction.findById(payment.transaction_id)
+                .populate('id_user', 'username email phone address')
+                .populate('product.standart.id_product', 'product_name harga picture_url, stock');
+            if (!transaction) {
+                return res.status(404).json({ error: 'Transaction not found' });
+            }
+
+            const standartProducts = transaction.product?.[0]?.standart || [];
+
+            if (standartProducts.length > 0) {
+                for (const item of standartProducts) {
+                    const productId = item.id_product?._id;
+                    const quantity = item.quantity;
+
+                    if (!productId) {
+                        console.log(`Invalid product ID for item:`, item);
+                        return res.status(400).json({ error: 'Invalid product ID in the transaction data' });
+                    }
+
+                    const product = await Products.findById(productId);
+                    if (!product) {
+                        return res.status(404).json({ error: `Product with ID ${productId} not found` });
+                    }
+
+                    product.stock -= quantity;
+                    await product.save();
+                }
+            }
+
         } else if (notification.transaction_status === 'pending') {
             await Transaction.findByIdAndUpdate(
                 payment.transaction_id,
@@ -223,7 +254,7 @@ const continuePayment = async (req, res) => {
     try {
         const { transactionId } = req.body;
 
-        // Cari Snap token dari database
+        
         const payment = await Payment.findOne({ transaction_id: transactionId });
         if (!payment) {
             return res.status(404).json({ error: 'Data pembayaran tidak ditemukan' });
