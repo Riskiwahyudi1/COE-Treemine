@@ -34,6 +34,7 @@ import EngineeringIcon from '@mui/icons-material/Engineering';
 import PaymentIcon from '@mui/icons-material/Payment';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { Link } from 'react-router-dom';
 import Logoweb from '../assets/images/logo.png';
@@ -189,6 +190,11 @@ export default function MiniDrawer() {
           text: 'Disetujui',
           icon: <CheckCircleIcon />,
           path: 'request-custom?status=disetujui'
+        },
+        {
+          text: 'Dicheckout',
+          icon: <ShoppingCartCheckoutIcon />,
+          path: 'request-custom?status=sudah-checkout'
         },
         {
           text: 'Ditolak',

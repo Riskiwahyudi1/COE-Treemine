@@ -3,7 +3,7 @@ const router = express.Router();
 const verifyTokenAdm = require("../../middlewares/autenticateTokenAdmin")
 const { body, validationResult } = require('express-validator');
 const Categories = require('../../models/categories');
-const { addProduct, showProduct, deleteProduct, updateProduct, getProductById ,upload } = require('../../controllers/admin/standartProductController');
+const { addProduct, showProduct, deleteProduct, updateProduct, getProductById ,upload, searchProduct } = require('../../controllers/standartProductController');
 
 // validasi foto
 const imageValidation = (req, res, next) => {
@@ -56,6 +56,7 @@ const validateRequest = (req, res, next) => {
   };
 
 router.get('/', showProduct);
+router.get('/search', searchProduct);
 router.get('/:id', getProductById);
 router.post('/',verifyTokenAdm, upload.single('image'), productValidation, imageValidation, validateRequest, addProduct );
 router.delete('/:id', verifyTokenAdm, deleteProduct);

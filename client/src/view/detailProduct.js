@@ -29,7 +29,7 @@ const ProductPage = () => {
     useEffect(() => {
         const fetchProductById = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/admin/product/${id}`);
+                const response = await axios.get(`http://localhost:5000/product/${id}`);
                 setProduct(response.data);
                 setImagePreview(response.data.image_url);
             } catch (error) {
@@ -194,10 +194,14 @@ const ProductPage = () => {
                 <Typography variant="h6" fontWeight="bold">
                     Description
                 </Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}>
+                <Typography
+                    variant="body2"
+                    sx={{ mt: 1, whiteSpace: 'pre-line' }} 
+                >
                     {product?.description}
                 </Typography>
             </Box>
+
         </Box>
     );
 };

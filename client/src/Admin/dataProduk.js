@@ -92,9 +92,42 @@ const ModalContent = styled(Box)(({ theme }) => ({
 export default function CustomizedTables() {
   const { adminToken } = useAuth();
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [idProductSelect, setIdProduct] = useState('');
+  const [products, setProducts] = useState([]);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+
+
+  // Debouncing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (query.trim() !== "") {
+        handleSearch();
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/admin/product/search", {
+        params: { query },
+        headers: {
+          'Authorization': `Bearer ${adminToken}`,
+        },
+      });
+      setResults(response.data);
+    } catch (error) {
+      console.error("Error searching:", error.message);
+    }
+  };
+
+  const handleChange = (event) => {
+    const { value } = event.target;
+    setQuery(value);
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -166,6 +199,9 @@ export default function CustomizedTables() {
     setOpenModal(false);
     setIdProduct(null);
   };
+
+
+  const displayedProducts = query.trim() === "" ? products : results;
   return (
     <>
       <Box
@@ -192,9 +228,12 @@ export default function CustomizedTables() {
         </StyledButton>
 
         {/* Search Produk Field */}
+
         <TextField
           variant="outlined"
           placeholder="Search Produk"
+          onChange={handleChange}
+          value={query}
           sx={{
             width: '250px',
             '& .MuiOutlinedInput-root': {
@@ -225,62 +264,70 @@ export default function CustomizedTables() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.map((product) => (
-              <StyledTableRow key={product._id}>
-                <StyledTableCell component="th" scope="row">
-                  {displayValue(product.product_name, 'Nama produk tidak ada')}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {displayValue(product.id_category?.category_name, 'Kategori tidak ada')}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  Rp. {displayValue(product.harga.toLocaleString('id-ID'), 'Harga tidak ada')}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {displayValue(product.stock, 'Stok tidak diketahui')}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {product.picture_url ? (
-                    <img
-                      src={`http://localhost:5000${product.picture_url}`}
-                      alt={product.product_name}
-                      style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                    />
-                  ) : (
-                    '-'
-                  )}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {product.description && product.description.length > 25
-                    ? `${product.description.substring(0, 25)}...` 
-                    : product.description}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => navigate(`./updateProduct/${product._id}`)}
-                    sx={{ marginRight: 1 }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => handleDelete(product._id)}
-                    sx={{ marginRight: 1 }}
-                  >
-                    Delete
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={() => handleOpenModal(product._id)}
-                  >
-                    Detail
-                  </Button>
+            {displayedProducts.length > 0 ? (
+              displayedProducts.map((product) => (
+                <StyledTableRow key={product._id}>
+                  <StyledTableCell component="th" scope="row">
+                    {displayValue(product.product_name, 'Nama produk tidak ada')}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {displayValue(product.id_category?.category_name, 'Kategori tidak ada')}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    Rp. {displayValue(product.harga.toLocaleString('id-ID'), 'Harga tidak ada')}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {displayValue(product.stock, 'Stok tidak diketahui')}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {product.picture_url ? (
+                      <img
+                        src={`http://localhost:5000${product.picture_url}`}
+                        alt={product.product_name}
+                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      '-'
+                    )}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {product.description && product.description.length > 25
+                      ? `${product.description.substring(0, 25)}...`
+                      : product.description}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => navigate(`./updateProduct/${product._id}`)}
+                      sx={{ marginRight: 1 }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => handleDelete(product._id)}
+                      sx={{ marginRight: 1 }}
+                    >
+                      Delete
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => handleOpenModal(product._id)}
+                    >
+                      Detail
+                    </Button>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))
+            ) : (
+              <StyledTableRow>
+                <StyledTableCell colSpan={7} align="center">
+                  No products found
                 </StyledTableCell>
               </StyledTableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </StyledTableContainer>

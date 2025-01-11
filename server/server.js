@@ -35,6 +35,7 @@ const cart = require('./routes/buyer/cart');
 const costomPrototypeBuyer = require('./routes/buyer/costomPrototype');
 const costomAssemblyBuyer = require('./routes/buyer/costomAssembly');
 const Transactions = require('./routes/buyer/transactions');
+const buyerProduct = require('./routes/buyer/product');
 const SettingPassword = require('./routes/buyer/auth/settingPassword')
 
 // service
@@ -141,6 +142,7 @@ app.use('/account', account)
 app.use('/cart', cart);
 app.use('/costom-prototype', costomPrototypeBuyer);
 app.use('/costom-assembly', costomAssemblyBuyer);
+app.use('/product', buyerProduct);
 app.use('/password', SettingPassword);
 
 // service

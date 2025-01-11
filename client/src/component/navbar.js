@@ -94,6 +94,15 @@ const Navbar = () => {
     const [value, setValue] = useState(0);
     const [anchorEl, setAnchorEl] = useState(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [query, setQuery] = useState('');
+
+
+    const handleSearch = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            navigate(`/product?search=${query}`);
+        }
+    };
 
     const menuItems = [
         { text: 'Home', icon: <HomeIcon sx={{ color: '#00A63F' }} />, path: '/' },
@@ -208,12 +217,15 @@ const Navbar = () => {
 
                     {!isMobile && (
                         <Search>
-                            <SearchIconWrapper>
+                            <SearchIconWrapper onClick={handleSearch}>
                                 <SearchIcon />
                             </SearchIconWrapper>
                             <StyledInputBase
-                                placeholder="Search in site"
+                                placeholder="Cari produk.."
                                 inputProps={{ 'aria-label': 'search' }}
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                onKeyDown={handleSearch} 
                             />
                         </Search>
                     )}

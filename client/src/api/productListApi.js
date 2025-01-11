@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = 'http://localhost:5000/admin/product';
+const API_URL = 'http://localhost:5000/product';
 
 const getProducts = async () => {
     try {

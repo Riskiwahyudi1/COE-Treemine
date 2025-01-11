@@ -1,4 +1,4 @@
-const Product = require('../../models/product')
+const Product = require('../models/product')
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
@@ -154,6 +154,25 @@ const getProductById = async (req, res) => {
     }
 };
 
+const searchProduct = async (req, res) => {
+    const { query } = req.query;
+
+    if (!query) {
+        return res.status(400).json({ message: "Query is required" });
+    }
+
+    try {
+        
+        const results = await Product.find({
+            product_name: { $regex: query, $options: 'i' } 
+        }).populate('id_category', 'category_name');
+
+        res.json(results);
+    } catch (error) {
+        res.status(500).json({ message: "Error searching products", error });
+    }
+}
+
 
 module.exports = {
     addProduct,
@@ -161,5 +180,6 @@ module.exports = {
     deleteProduct, 
     updateProduct,
     getProductById,
+    searchProduct,
     upload
 };

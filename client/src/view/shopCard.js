@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Container, CardContent, CardActions, Typography, Button, Box, Grid, Rating } from '@mui/material';
 import getProducts from '../api/productListApi';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
@@ -38,6 +38,7 @@ const ProductCard = ({ product_id, product_name, harga, description, stock, pict
                 },
             }}
         >
+
             <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                     <img
@@ -115,9 +116,29 @@ const ProductCard = ({ product_id, product_name, harga, description, stock, pict
 };
 
 const App = () => {
-
+    const [searchParams] = useSearchParams();
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState([]);
+    const [results, setResults] = useState([]);
+    const query = searchParams.get('search') || '';
+
+    const displayedProducts = query.trim() === "" ? products : results;
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/product/search', {
+                    params: { query },
+                });
+                setResults(response.data);
+            } catch (error) {
+                console.error('Error fetching products:', error.message);
+            }
+        };
+
+        fetchProducts();
+    }, [query]);
+
     const handleAddToCart = async (id) => {
         try {
             setLoading(true)
@@ -212,6 +233,30 @@ const App = () => {
         fetchProducts();
     }, []);
 
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            if (query.trim() === "") return;
+            try {
+                const response = await axios.get('http://localhost:5000/admin/product/search', {
+                    params: { query },
+                });
+                setResults(response.data);
+
+                if (response.data.length === 0) {
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'No products found for your search.',
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching products:', error.message);
+            }
+        };
+
+        fetchProducts();
+    }, [query]);
+
     return (
         <Box
             sx={{
@@ -225,6 +270,7 @@ const App = () => {
             }}
         >
             <Container>
+            {displayedProducts.length > 0 && (
                 <Typography
                     variant="h3"
                     component="h1"
@@ -238,8 +284,21 @@ const App = () => {
                 >
                     Produk Kami
                 </Typography>
+            )}
+                {displayedProducts.length === 0 && (
+                    <Typography
+                        variant="h6"
+                        align="center"
+                        sx={{
+                            color: '#FF0000',
+                            marginTop: '-150px',
+                        }}
+                    >
+                        Maaf, produk tidak ditemukan. Silakan coba kata kunci lain.
+                    </Typography>
+                )}
                 <Grid container spacing={3} justifyContent="center">
-                    {products.map((product) => (
+                    {displayedProducts.map((product) => (
                         <Grid item key={product._id} xs={12} sm={6} md={4} lg={3}>
                             <ProductCard
                                 product_id={product._id}
@@ -249,6 +308,7 @@ const App = () => {
                                 stock={product.stock}
                                 picture_url={product.picture_url}
                                 onAddToCart={handleAddToCart}
+
                             />
                         </Grid>
                     ))}

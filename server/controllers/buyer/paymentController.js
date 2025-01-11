@@ -26,7 +26,20 @@ const createPayment = async (req, res) => {
             return res.status(404).json({ error: 'Transaction not found' });
         }
 
-
+        // pending----------------
+        
+        // for (const product of transaction.product) {
+            //     for (const standart of product.standart) {
+                //         if (!standart.id_product || standart.id_product.stock === 0) {
+                    //             return res.status(404).json({ 
+                        //                 error: `Stok produk ${standart.id_product?.product_name} habis`
+                        //             });
+                        //         }
+                        //     }
+                        // }
+                        
+            // pending----------------
+            
         const totalPayment = transaction.total_payment;
 
         let itemDetails = [];
@@ -199,7 +212,6 @@ const handleMidtransNotification = async (req, res) => {
                     const quantity = item.quantity;
 
                     if (!productId) {
-                        console.log(`Invalid product ID for item:`, item);
                         return res.status(400).json({ error: 'Invalid product ID in the transaction data' });
                     }
 
@@ -254,7 +266,6 @@ const continuePayment = async (req, res) => {
     try {
         const { transactionId } = req.body;
 
-        
         const payment = await Payment.findOne({ transaction_id: transactionId });
         if (!payment) {
             return res.status(404).json({ error: 'Data pembayaran tidak ditemukan' });
