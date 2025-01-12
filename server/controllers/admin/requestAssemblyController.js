@@ -3,9 +3,11 @@ const RequestCustomAssembly = require('../../models/request-costom-assembly')
 const approvedAssembly = async (req, res) => {
     try {
         const { id } = req.params;
-
+        const { weight } = req.body;
+        
         const updateProduct = await RequestCustomAssembly.findByIdAndUpdate(id, {
-            status : 'disetujui'           
+            status : 'disetujui',
+            weight           
         }, { new: true });
 
         if (!updateProduct) {

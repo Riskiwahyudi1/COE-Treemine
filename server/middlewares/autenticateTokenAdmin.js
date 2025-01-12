@@ -25,7 +25,8 @@ const verifyTokenAdm = (req, res, next) => {
         if (error.name === 'TokenExpiredError') {
             return res.status(401).json({
                 message: 'Unauthorized: Token expired',
-                redirect: '/login' // Tambahkan path untuk redirect ke halaman login
+                redirect: '/login',
+                role: 'admin'
             });
         }
         

@@ -2,10 +2,9 @@ import axios from "axios";
 
 const API_URL = 'http://localhost:5000/raja-ongkir';
 
-const token = localStorage.getItem('token');
 
 // semua provinsi
-export const getProvinces = async () => {
+export const getProvinces = async (token) => {
     try {
         const respon = await axios.get(`${API_URL}/provinces`, {
             headers: {
@@ -33,8 +32,8 @@ export const getCities = async (provinceId) => {
 };
 
 // biaya pengiriman
-export const getCost = async (couriers, product) => {
-    console.log(product)
+export const getCost = async (couriers, product, token) => {
+    
     try {
        
         const response = await axios.get(`${API_URL}/calculate-cost`, {

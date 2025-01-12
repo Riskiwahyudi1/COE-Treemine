@@ -4,7 +4,7 @@ const API_URL_ADMIN = 'http://localhost:5000/admin/transaction';
 const token = localStorage.getItem('token');
 
 
-export const getCostomPrototypeData = async (data) => {
+export const getCostomPrototypeData = async (data, token) => {
     try {
         const respon = await axios.post(`${API_URL}`, data ,{
             headers: {
@@ -17,7 +17,7 @@ export const getCostomPrototypeData = async (data) => {
         throw error;
     }
 };
-export const cancelTransaction = async (data) => {
+export const cancelTransaction = async (data, token) => {
     try {
         const respon = await axios.put(`${API_URL}/cancel`, data ,{
             headers: {
@@ -30,7 +30,7 @@ export const cancelTransaction = async (data) => {
         throw error;
     }
 };
-export const doneTransaction = async (data) => {
+export const doneTransaction = async (data, token) => {
     try {
         const respon = await axios.put(`${API_URL}/done`, data ,{
             headers: {
@@ -44,7 +44,7 @@ export const doneTransaction = async (data) => {
     }
 };
 
-export const getTransaction = async (status) => {
+export const getTransaction = async (status, token) => {
     try {
         const response = await axios.get(`${API_URL}`, {
             params: { status }, 

@@ -7,16 +7,15 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const JWT_SECRET = process.env.JWT_SECRET;
 
-
-const loginRateLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, 
-    max: 5, 
-    message: {
-        message: "Terlalu banyak percobaan login. Silakan coba lagi setelah 15 menit.",
-    },
-    standardHeaders: true, 
-    legacyHeaders: false,  
-});
+// const loginRateLimiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, 
+//     max: 5, 
+//     message: {
+//         message: "Terlalu banyak percobaan login. Silakan coba lagi setelah 15 menit.",
+//     },
+//     standardHeaders: true, 
+//     legacyHeaders: false,  
+// });
 
 const login = async (req, res) => {
     const { email, password } = req.body;
@@ -50,13 +49,21 @@ const login = async (req, res) => {
             { expiresIn: '7d' }
         );
 
-        
-        // Kirim respons sukses dengan token
+        // Set token as HTTP-only cookie
+        res.cookie('buyerToken', token, {
+            // httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
+            // secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+            sameSite: 'Lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000, 
+            secure:false
+        });
+
+       
         res.status(200).json({
-            token,
             user: {
                 id: user._id,
                 username: user.username,
+                token: token
             },
             message: "Login berhasil!",
         });
@@ -69,5 +76,5 @@ const login = async (req, res) => {
 
 module.exports = {
     login,
-    loginRateLimiter
-}
+    // loginRateLimiter
+};

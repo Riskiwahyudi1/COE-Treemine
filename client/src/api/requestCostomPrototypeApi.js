@@ -3,9 +3,8 @@ import axios from "axios";
 const API_URL = 'http://localhost:5000/admin/request-custom-prototype';
 const API_URL_BUYER = 'http://localhost:5000/costom-prototype';
 
-const token = localStorage.getItem('token');
 
-export const getCostomPrototypeData = async () => {
+export const getCostomPrototypeData = async (token) => {
     try {
         const respon = await axios.get(`${API_URL_BUYER}/api/transaksi`,{
             headers: {

@@ -24,10 +24,12 @@ import { getCostomPrototypeData } from "../api/transaksiApi";
 import { getDataAccount } from "../api/auth/dataAccount";
 import { getProvinces, getCities } from "../api/service/rajaOngkirApi";
 import Toast from "../utils/Toast";
+import { useAuth } from '../contexts/AuthContext';
 
 const PaymentPage = () => {
     const navigate = useNavigate(); 
     const location = useLocation();
+    const { userToken } = useAuth(); 
     const [costList, setCost] = useState([])
     const [costShipping, setcostShipping] = useState(0)
     const [estimasionDay, setEstimasionDay] = useState('')
@@ -131,7 +133,7 @@ const PaymentPage = () => {
     useEffect(() => {
         const fetchDataAccount = async () => {
           try {
-            const data = await getDataAccount();
+            const data = await getDataAccount(userToken);
             setDataAccount(data);
           } catch (error) {
           }
@@ -143,7 +145,7 @@ const PaymentPage = () => {
     useEffect(() => {
         const fetchProvince = async () => {
         try {
-            const dataProvinces = await getProvinces();
+            const dataProvinces = await getProvinces(userToken);
             if (dataProvinces?.data) {
             const province = dataProvinces.data.find(
                 (prov) => prov.province_id === dataAccount?.address?.province
@@ -197,7 +199,7 @@ const PaymentPage = () => {
 
             if (!selectedCourier) return;
             try {
-                const data = await getCost(selectedCourier, product); 
+                const data = await getCost(selectedCourier, product, userToken); 
                 setCost(data);  
             } catch (error) {
                 console.error("Error fetching cost:", error);
@@ -281,7 +283,7 @@ const PaymentPage = () => {
         }
         
         try {
-            const response = await getCostomPrototypeData(data);
+            const response = await getCostomPrototypeData(data, userToken);
             if (response.status === 201) {
                 Toast.fire({
                     icon: 'success',

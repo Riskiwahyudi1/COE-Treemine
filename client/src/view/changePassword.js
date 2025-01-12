@@ -24,7 +24,7 @@ export default function ChangePassword() {
         newPassword: false,
         confirmPassword: false,
     });
- const { logoutUser } = useAuth(); 
+ const { userToken,logoutUser } = useAuth(); 
     const navigate = useNavigate();
 
     // State untuk input password
@@ -61,7 +61,7 @@ export default function ChangePassword() {
     // Fungsi untuk menyimpan perubahan password
     const handleChangePassword = async () => {
         const { oldPassword, newPassword, confirmPassword } = passwordData;
-        const token = localStorage.getItem('token')
+        
 
         if (newPassword !== confirmPassword) {
             Toast.fire({
@@ -77,7 +77,7 @@ export default function ChangePassword() {
                 newPassword,
             }, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${userToken}`,
                     'Content-Type': 'application/json',
                 },
             });

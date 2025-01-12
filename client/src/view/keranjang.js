@@ -19,6 +19,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import getProductsInCart from '../api/cartApi';
 import Toast from '../utils/Toast'
+import { useAuth } from '../contexts/AuthContext';
 
 const showToast = (message, icon) => {
     Swal.fire({
@@ -153,6 +154,7 @@ const ShoppingCartItem = ({
 
 const ShoppingCart = () => {
     const navigate = useNavigate();
+    const { userToken } = useAuth(); 
     const [productListInCart, setCartList] = useState([]);
     const [selectedItems, setSelectedItems] = useState({});
 
@@ -174,7 +176,7 @@ const ShoppingCart = () => {
     useEffect(() => {
         const fetchCartList = async () => {
             try {
-                const data = await getProductsInCart();
+                const data = await getProductsInCart(userToken);
                 const initialSelected = {};
                 data.forEach((product) => {
                     initialSelected[product._id] = false;
@@ -201,11 +203,11 @@ const ShoppingCart = () => {
         });
 
         if (result.isConfirmed) {
-            const token = localStorage.getItem('token');
+            
             try {
                 const response = await axios.delete(`http://localhost:5000/cart/delete/${id}`, {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        Authorization: `Bearer ${userToken}`,
                     },
                 });
                 setCartList((prevList) => prevList.filter((product) => product._id !== id));

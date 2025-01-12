@@ -3,9 +3,7 @@ import axios from "axios";
 const API_URL = 'http://localhost:5000/admin/request-custom-assembly';
 const API_URL_BUYER = 'http://localhost:5000/costom-assembly';
 
-const token = localStorage.getItem('token');
-
-export const getCostomAssemblyData = async () => {
+export const getCostomAssemblyData = async (token) => {
     try {
         const respon = await axios.get(`${API_URL_BUYER}/api/transaksi`,{
             headers: {

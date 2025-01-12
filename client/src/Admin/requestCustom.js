@@ -134,12 +134,25 @@ export default function OrdersTable() {
 
 
     const handleApprove = async (orderId, orderType) => {
-        const result = await Dialog.fire({
+        const { value: weight } = await Dialog.fire({
             title: 'Anda yakin?',
-            text: 'Ingin Menyetujui Pesanan?',
+            text: 'Ingin menyetujui Request? Masukan perkiraan berat dalam satuan gram!',
+            input: 'number',
+            inputAttributes: {
+                min: 0, 
+                step: 1  
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Approve',
+            cancelButtonText: 'Batal',
+            inputValidator: (value) => {
+                if (!value || value <= 0) {
+                    return 'Berat produk harus lebih besar dari 0!';
+                }
+            },
         });
 
-        if (result.isConfirmed) {
+        if (weight) {
             try {
                 if (!adminToken) {
                     Toast.fire({
@@ -153,7 +166,7 @@ export default function OrdersTable() {
                         ? `http://localhost:5000/admin/request-custom-prototype/${orderId}/approve`
                         : `http://localhost:5000/admin/request-custom-assembly/${orderId}/approve`;
 
-                const response = await axios.put(url, {}, {
+                const response = await axios.put(url, { weight }, {
                     headers: {
                         'Authorization': `Bearer ${adminToken}`,
                     },
@@ -490,7 +503,7 @@ export default function OrdersTable() {
                                             Download
                                         </a>
                                     </Typography>
-                                
+
 
                                     {/* Spesifikasi untuk Assembly */}
                                     <Typography variant="body1" sx={{ marginTop: 2, fontWeight: 'bold', marginBottom: 1 }}>

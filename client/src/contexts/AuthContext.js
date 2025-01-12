@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
@@ -9,43 +8,25 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-    const [isUserAuthenticated, setIsUserAuthenticated] = useState(!!localStorage.getItem('token'));
-
+    const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
     const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
-
     const [isAuthChecked, setIsAuthChecked] = useState(false);
-
+    const [userToken, setUserToken] = useState(null);
     const [adminToken, setAdminToken] = useState(null);
 
-    
-
-    const loginUser = (token) => {
-        localStorage.setItem('token', token); 
-        setIsUserAuthenticated(true);
+    const setCookie = (name, value, maxAge) => {
+        document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax`;
     };
 
-   
-    const logoutUser = () => {
-        localStorage.removeItem('token'); 
-        setIsUserAuthenticated(false);
-    };
-
-    const loginAdmin = (cookieToken) => {
-        document.cookie = `adminToken=${cookieToken}; path=/; max-age=3600; SameSite=Lax`;
-        setIsAdminAuthenticated(true);
-    };
-
-    const logoutAdmin = () => {
-        document.cookie = 'adminToken=; Max-Age=0; path=/'; 
-        setIsAdminAuthenticated(false);
+    const removeCookie = (name) => {
+        document.cookie = `${name}=; Max-Age=0; path=/`;
     };
 
     const getCookie = (name) => {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) {
-            const cookieValue = parts.pop().split(';').shift();
-            return cookieValue;
+            return parts.pop().split(';').shift();
         }
         return null;
     };
@@ -61,18 +42,48 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const loginUser = (token) => {
+        setCookie('userToken', token, 7 * 24 * 60 * 60 * 1000); 
+        setUserToken(token);
+        setIsUserAuthenticated(true);
+    };
+
+    const logoutUser = () => {
+        setCookie('authUserMessage', 'Sesi Anda telah berakhir. Silakan login kembali.', 10);
+        removeCookie('userToken');
+        setUserToken(null);
+        setIsUserAuthenticated(false);
+    };
+
+    const loginAdmin = (token) => {
+        setCookie('adminToken', token, 7 * 24 * 60 * 60 * 1000); 
+        setAdminToken(token);
+        setIsAdminAuthenticated(true);
+    };
+
+    const logoutAdmin = () => {
+        setCookie('authAdminMessage', 'Sesi Anda telah berakhir. Silakan login kembali.', 10);
+        removeCookie('adminToken'); 
+        setIsAdminAuthenticated(false);
+    };
+
     useEffect(() => {
-        const userToken = localStorage.getItem('token'); 
+        const userToken = getCookie('userToken');
         const adminToken = getCookie('adminToken');
-    
+
+        // Validasi token user
         if (userToken) {
-            setIsUserAuthenticated(true);
+            if (checkTokenExpiration(userToken)) {
+                logoutUser();
+            } else {
+                setIsUserAuthenticated(true);
+                setUserToken(userToken);
+            }
         }
 
+        // Validasi token admin
         if (adminToken) {
             if (checkTokenExpiration(adminToken)) {
-                window.alert('Token Anda telah kedaluwarsa. Silakan login kembali.');
-                setIsAdminAuthenticated(false);
                 logoutAdmin();
             } else {
                 setIsAdminAuthenticated(true);
@@ -80,18 +91,23 @@ export const AuthProvider = ({ children }) => {
             }
         }
 
-        
         setIsAuthChecked(true);
 
+       
         const interceptor = axios.interceptors.response.use(
             (response) => response,
+            
             (error) => {
                 if (error.response && error.response.status === 401) {
-                    
-                    const isTokenExpired = error.response.data?.message === "Token expired";
-        
+                    const isTokenExpired = error.response.data?.message === 'Unauthorized: Token expired';
+                    const role = error.response.data?.role; 
+
                     if (isTokenExpired) {
-                        logoutUser(); 
+                        if (role === 'user') {
+                            logoutUser();
+                        } else if (role === 'admin') {
+                            logoutAdmin();
+                        }
                     }
                 }
                 return Promise.reject(error);
@@ -99,24 +115,22 @@ export const AuthProvider = ({ children }) => {
         );
 
         return () => {
-            // Hapus interceptor saat komponen unmount
-            axios.interceptors.response.eject(interceptor);
+            axios.interceptors.response.eject(interceptor); 
         };
-
     }, []);
 
     return (
         <AuthContext.Provider
             value={{
-                isAdminAuthenticated,
-                loginAdmin,
-                logoutAdmin,
                 isUserAuthenticated,
                 loginUser,
                 logoutUser,
+                isAdminAuthenticated,
+                loginAdmin,
+                logoutAdmin,
                 isAuthChecked,
-                adminToken
-                 
+                userToken,
+                adminToken,
             }}
         >
             {children}

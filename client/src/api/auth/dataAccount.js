@@ -2,9 +2,7 @@ import axios from "axios";
 
 const API_URL = 'http://localhost:5000/account';
 
-const token = localStorage.getItem('token');
-
-export const getDataAccount = async () => {
+export const getDataAccount = async (token) => {
     try {
         const respon = await axios.get(`${API_URL}`, {
             headers: {

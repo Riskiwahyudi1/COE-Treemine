@@ -19,6 +19,7 @@ import Dialog from "../utils/Dialog";
 import { useNavigate } from 'react-router-dom';
 import { getProvinces, getCities } from '../api/service/rajaOngkirApi'
 import axios from 'axios'
+import { useAuth } from '../contexts/AuthContext';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -69,6 +70,7 @@ const ModalContent = styled(Box)(({ theme }) => ({
 
 export default function OrdersTable() {
     const navigate = useNavigate();
+    const { userToken } = useAuth(); 
     const [transaction, setTransaction] = useState([]);
     const [searchParams] = useSearchParams();
     const [openModal, setOpenModal] = useState(false);
@@ -89,7 +91,7 @@ export default function OrdersTable() {
                 setTransaction([]);
 
                 if (currentStatus) {
-                    const data = await getTransaction(currentStatus);
+                    const data = await getTransaction(currentStatus, userToken);
                     setTransaction(data);
                 }
             } catch (error) {
@@ -111,7 +113,7 @@ export default function OrdersTable() {
         }
         if (result.isConfirmed) {
             try {
-                const response = await cancelTransaction(data);
+                const response = await cancelTransaction(data, userToken);
                 if (response.status === 200) {
                     Toast.fire({
                         icon: 'success',
@@ -139,7 +141,7 @@ export default function OrdersTable() {
         }
         if (result.isConfirmed) {
             try {
-                const response = await doneTransaction(data);
+                const response = await doneTransaction(data, userToken);
                 if (response.status === 200) {
                     Toast.fire({
                         icon: 'success',
@@ -215,16 +217,22 @@ export default function OrdersTable() {
     const handlePayment = async (transactionId) => {
         try {
 
+            if (!userToken) {
+
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Please log in first',
+                });
+                return;
+            }
             setLoadingButtonId(transactionId);
             setError(null);
             const config = {
                 headers: {
-                    'Content-Type': 'application/json',  // Tentukan jenis konten yang dikirim
-                    // 'Authorization': `Bearer ${yourAuthToken}`, // Jika perlu token otentikasi
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${userToken}`,
                 }
             };
-
-            // Kirim permintaan ke backend dengan headers
             const response = await axios.post('http://localhost:5000/payments/create-payment',
                 { transactionId },
                 config
@@ -309,7 +317,21 @@ export default function OrdersTable() {
     const continuePayment = async (transactionId) => {
         setLoadingButtonId(transactionId);
         try {
-            const response = await axios.post('http://localhost:5000/payments/continue-payment', { transactionId });
+            if (!userToken) {
+
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Please log in first',
+                });
+                return;
+            }
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${userToken}`,
+                }
+            };
+            const response = await axios.post('http://localhost:5000/payments/continue-payment', { transactionId }, config);
 
             const { token } = response.data;
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
     Box,
@@ -11,35 +11,67 @@ import {
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import Videocontoh from "../assets/images/logo 2.png";
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from "../contexts/AuthContext";
+
+const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+        return parts.pop().split(";").shift();
+    }
+    return null;
+};
+
+const removeCookie = (name) => {
+    document.cookie = `${name}=; Max-Age=0; path=/`;
+};
 
 const LoginFormCard = () => {
-
-    const { loginAdmin } = useAuth(); // Gunakan loginAdmin dari AuthContext
+    const { loginAdmin } = useAuth(); 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [expiredMessage, setExpiredMessage] = useState(""); 
 
+    console.log(expiredMessage)
+    
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        if (name === "email") setEmail(value);
+        if (name === "password") setPassword(value);
+    };
+
+    // Handle login admin
     const handleLogin = async (e) => {
         e.preventDefault();
+        setError(""); 
 
         try {
             const response = await axios.post(
-                "http://localhost:5000/admin/login/protected", // Endpoint login admin
+                "http://localhost:5000/admin/login/protected", 
                 { email, password },
-                { withCredentials: true } // Pastikan cookie dikirim
+                { withCredentials: true }
             );
 
-            console.log(response.data)
+           
             if (response.status === 200) {
-                const { token } = response.data; // Asumsikan server mengirim token
-                loginAdmin(token); // Simpan token di cookies dan set autentikasi admin
-                window.location.href = "/admin/dashboard"; // Redirect setelah login sukses
+                const { token } = response.data; 
+                loginAdmin(token); 
+                window.location.href = "/admin/dashboard"; 
             }
         } catch (err) {
             setError(err.response?.data?.message || "Login failed");
         }
     };
+
+    
+    useEffect(() => {
+        const authAdminMessage = getCookie("authAdminMessage");
+        if (authAdminMessage) {
+            setExpiredMessage(authAdminMessage);
+            removeCookie("authAdminMessage"); 
+        }
+    }, []);
 
     return (
         <Box
@@ -93,6 +125,11 @@ const LoginFormCard = () => {
                         <Typography variant="h5" mb={2} color="#00A63F">
                             Login to Admin
                         </Typography>
+                        {expiredMessage && (
+                             <Typography variant="body2" color="error" mb={2}>
+                             {expiredMessage}
+                         </Typography>
+                        )}
                         {error && (
                             <Typography variant="body2" color="error" mb={2}>
                                 {error}

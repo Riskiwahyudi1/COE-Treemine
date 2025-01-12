@@ -4,8 +4,11 @@ const RequestCustomPrototype = require('../../models/request-costom-prototype')
 const approvedPrototype = async (req, res) => {
     try {
         const { id } = req.params;
+        const { weight } = req.body;
+
         const updateProduct = await RequestCustomPrototype.findByIdAndUpdate(id, {
-            status : 'disetujui'           
+            status : 'disetujui',
+            weight           
         }, { new: true });
 
         if (!updateProduct) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     AppBar,
     Toolbar,
@@ -27,10 +27,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
 import ShopIcon from '@mui/icons-material/Shop';
 import BuildIcon from '@mui/icons-material/Build';
-import CategoryIcon from '@mui/icons-material/Category';
 import { useNavigate } from 'react-router-dom';
 import Logoweb from '../assets/images/logo9.png';
 import { useAuth } from '../contexts/AuthContext';
+import getProductsInCart from '../api/cartApi';
 
 const theme = createTheme({
     palette: {
@@ -88,14 +88,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const Navbar = () => {
+    const { userToken } = useAuth(); 
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const navigate = useNavigate();
     const { isUserAuthenticated, logoutUser } = useAuth();
     const [value, setValue] = useState(0);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [productListInCart, setCartList] = useState([]);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [query, setQuery] = useState('');
-
 
     const handleSearch = (e) => {
         if (e.key === 'Enter') {
@@ -107,7 +108,6 @@ const Navbar = () => {
     const menuItems = [
         { text: 'Home', icon: <HomeIcon sx={{ color: '#00A63F' }} />, path: '/' },
         { text: 'Product', icon: <ShopIcon sx={{ color: '#00A63F' }} />, path: '/product' },
-        // { text: 'Category Product', icon: <CategoryIcon sx={{ color: '#00A63F' }} />, path: '/category-product' },
         { text: 'Custom Product', icon: <BuildIcon sx={{ color: '#00A63F' }} />, path: '/custom' },
     ];
 
@@ -143,6 +143,18 @@ const Navbar = () => {
     const handleTransaksiPage = () => {
         navigate('/transaksi?status=menunggu-pembayaran');
     };
+
+    useEffect(() => {
+        const fetchCartList = async () => {
+            try {
+                const data = await getProductsInCart(userToken);
+                setCartList(data);
+            } catch (error) {
+                console.error('Failed to load products', error);
+            }
+        };
+        fetchCartList();
+    }, [userToken]);
 
     const renderMobileDrawer = () => (
         <Drawer
@@ -225,7 +237,7 @@ const Navbar = () => {
                                 inputProps={{ 'aria-label': 'search' }}
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                onKeyDown={handleSearch} 
+                                onKeyDown={handleSearch}
                             />
                         </Search>
                     )}
@@ -249,10 +261,10 @@ const Navbar = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Box onClick={handleKeranjang}>
                                 <IconButton
-                                    size={isMobile ? 'small' : 'medium'}
+                                    size="medium" 
                                     sx={{ color: '#00A63F' }}
                                 >
-                                    <Badge>
+                                    <Badge badgeContent={productListInCart.length} color="error">
                                         <ShoppingCartIcon />
                                     </Badge>
                                 </IconButton>
@@ -337,3 +349,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+ 

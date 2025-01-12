@@ -24,8 +24,10 @@ import getPartCostomPrototype from '../api/costomPrototypePartApi';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Toast from "../utils/Toast";
 import axios from "axios";
+import { useAuth } from '../contexts/AuthContext';
 
 const CustomPrototype = (part) => {
+    const { userToken } = useAuth(); 
     const [partList, setPartList] = useState([]);
     const [selectedMaterial, setSelectedMaterial] = useState("");
     const [selectedSubtype, setSelectedSubtype] = useState("");
@@ -231,9 +233,8 @@ const CustomPrototype = (part) => {
         }
 
         try {
-            const token = localStorage.getItem('token');
 
-            if (!token) {
+            if (!userToken) {
                 setError('Akses tidak diizinkan. Silakan login terlebih dahulu.');
                 Toast.fire({
                     icon: 'error',
@@ -252,7 +253,7 @@ const CustomPrototype = (part) => {
                 data,
                 {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': `Bearer ${userToken}`,
                         'Content-Type': 'application/json',
                     },
                     timeout: 10000,

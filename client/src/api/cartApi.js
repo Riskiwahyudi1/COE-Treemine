@@ -1,10 +1,9 @@
 import axios from "axios";
 
+
 const API_URL = 'http://localhost:5000/cart';
 
-const token = localStorage.getItem('token');
-
-const getProductsInCart = async () => {
+const getProductsInCart = async (token) => {
     try {
         const respon = await axios.get(API_URL, {
             headers: {

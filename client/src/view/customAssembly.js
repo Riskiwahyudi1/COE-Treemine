@@ -22,9 +22,11 @@ import { useNavigate } from 'react-router-dom';
 import { getAssemblyItem } from '../api/costomAssemblyApi';
 import Toast from '../utils/Toast';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 
 const CustomAssembly = () => {
     const navigate = useNavigate();
+    const { userToken } = useAuth(); 
     const [partList, setPartList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -167,9 +169,9 @@ const CustomAssembly = () => {
         }
 
         try {
-            const token = localStorage.getItem('token');
+            
 
-            if (!token) {
+            if (!userToken) {
                 setError('Unauthorized access. Please log in first.');
                 Toast.fire({
                     icon: 'error',
@@ -188,7 +190,7 @@ const CustomAssembly = () => {
                 data,
                 {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': `Bearer ${userToken}`,
                         'Content-Type': 'application/json',
                     },
                     timeout: 10000,

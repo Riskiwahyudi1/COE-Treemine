@@ -100,7 +100,7 @@ const requestCostomPrototype = async (req, res) => {
             surface_finish,
             finish_copper,
             remove_product_no,
-            weight: 1000,
+            weight: 0,
             design_file,
             status: 'menunggu-pengajuan',
             total_cost,

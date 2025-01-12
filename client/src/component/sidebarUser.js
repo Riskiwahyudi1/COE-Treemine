@@ -38,6 +38,7 @@ import Logoweb from '../assets/images/logo.png';
 import { jwtDecode } from 'jwt-decode';
 import { useAuth } from '../contexts/AuthContext';
 
+
 const drawerWidth = 240;
 
 // Add these styled components
@@ -113,7 +114,7 @@ export default function MiniDrawer() {
     const [open, setOpen] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [menuStates, setMenuStates] = React.useState({});
-    const { isAuthenticated, logout } = useAuth();
+    const { userToken, logoutUser } = useAuth();
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -208,13 +209,13 @@ export default function MiniDrawer() {
         width: 'auto',
         objectFit: 'contain',
     });
-    const token = localStorage.getItem('token');
+    
 
     let username = '';
 
-    if (token) {
+    if (userToken) {
         try {
-            const decoded = jwtDecode(token);
+            const decoded = jwtDecode(userToken);
             username = decoded.username;
         } catch (error) {
             console.error("Failed to decode JWT:", error);
@@ -270,7 +271,7 @@ export default function MiniDrawer() {
                         onClose={handleCloseMenu}
                     >
                         <MenuItem onClick={() => {
-                            logout();
+                            logoutUser();
                             handleCloseMenu();
                         }}>Logout</MenuItem>
                     </Menu>

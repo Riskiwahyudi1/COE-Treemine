@@ -5,7 +5,7 @@ const User = require('../../../models/users');
 
 const generateToken = (user) => {
     return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-        expiresIn: '1h', 
+        expiresIn: '1d', 
     });
 };
 
@@ -32,7 +32,7 @@ const loginAdmin = async (req, res) => {
             // httpOnly: true,
             // secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict',
-            maxAge: 3600000,
+            maxAge: 1 * 24 * 60 * 60 * 1000,
             secure: false,
         });
         

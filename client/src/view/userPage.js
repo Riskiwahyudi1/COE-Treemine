@@ -3,9 +3,11 @@ import { Box, Typography, Avatar, Button, TextField, Grid, Paper } from "@mui/ma
 import { getProvinces, getCities } from "../api/service/rajaOngkirApi"
 import { getDataAccount } from "../api/auth/dataAccount"
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 
 export default function ProfileSettings() {
+  const { userToken } = useAuth(); 
   const navigate = useNavigate();
   const [profilePhoto, setProfilePhoto] = useState("");
   const [provinces, setProvinces] = useState('');
@@ -37,7 +39,7 @@ export default function ProfileSettings() {
   useEffect(() => {
     const fetchDataAccount = async () => {
       try {
-        const data = await getDataAccount();
+        const data = await getDataAccount(userToken);
         setDataAccount(data);
 
         setFormData({

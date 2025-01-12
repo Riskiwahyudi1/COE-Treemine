@@ -3,8 +3,10 @@ import { Card, Container, CardContent, CardActions, Typography, Button, Box, Gri
 import getProducts from '../api/productListApi';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+
 
 const Toast = Swal.mixin({
     toast: true,
@@ -95,7 +97,7 @@ const ProductCard = ({ product_id, product_name, harga, description, stock, pict
                 </Button>
                 <Button
                     variant="outlined"
-                    disabled={stock === 0}
+                    disabled={stock == 0}
                     onClick={() => onAddToCart(product_id)}
                     sx={{
                         borderColor: '#00A63F',
@@ -116,6 +118,7 @@ const ProductCard = ({ product_id, product_name, harga, description, stock, pict
 };
 
 const App = () => {
+    const { userToken } = useAuth(); 
     const [searchParams] = useSearchParams();
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState([]);
@@ -142,9 +145,9 @@ const App = () => {
     const handleAddToCart = async (id) => {
         try {
             setLoading(true)
-            const token = localStorage.getItem('token');
+            
 
-            if (!token) {
+            if (!userToken) {
 
                 Toast.fire({
                     icon: 'error',
@@ -160,7 +163,7 @@ const App = () => {
                 data,
                 {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': `Bearer ${userToken}`,
                         'Content-Type': 'application/json',
                     },
                     timeout: 10000,
@@ -240,6 +243,10 @@ const App = () => {
             try {
                 const response = await axios.get('http://localhost:5000/admin/product/search', {
                     params: { query },
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`,
+                    },
+                    timeout: 10000,
                 });
                 setResults(response.data);
 

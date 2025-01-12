@@ -23,6 +23,7 @@ import Toast from '../utils/Toast';
 import Dialog from '../utils/Dialog';
 import { formatDate } from '../utils/isoDate';
 import { styled } from '@mui/material/styles';
+import { useAuth } from '../contexts/AuthContext';
 
 
 
@@ -272,6 +273,7 @@ const ModalContent = styled(Box)(({ theme }) => ({
 
 const ShoppingCart = () => {
   const navigate = useNavigate();
+  const { userToken } = useAuth(); 
   const [requestPrototype, setRequestPrototype] = useState([]);
   const [requestAssembly, setRequestAssembly] = useState([]);
   const [requestCustom, setRequestCustom] = useState([]);
@@ -280,9 +282,6 @@ const ShoppingCart = () => {
   const [checkoutPrototype, setCheckoutPrototype] = useState([]);
   const [shouldNavigate, setShouldNavigate] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-
-console.log(requestAssembly)
-console.log('selectedId', selectedId)
 
   const singleProductCostom = requestCustom.filter(
     (product) => product._id === selectedId
@@ -322,8 +321,8 @@ console.log('selectedId', selectedId)
     const fetchData = async () => {
       try {
         const [prototypeData, assemblyData] = await Promise.allSettled([
-          getCostomPrototypeData(),
-          getCostomAssemblyData()
+          getCostomPrototypeData(userToken),
+          getCostomAssemblyData(userToken)
         ]);
 
         // Handle resolved or rejected promises
@@ -371,7 +370,13 @@ console.log('selectedId', selectedId)
         if (type === 'Costom Prototype') {
           response = await axios.put(
             `http://localhost:5000/costom-prototype/${id}/send-review`,
-            formData
+            formData,{
+              headers: {
+                  'Authorization': `Bearer ${userToken}`,
+                  
+              },
+              timeout: 10000,
+          }
           );
           if (response.status === 200) {
             setRequestCustom((prevList) =>
@@ -383,7 +388,13 @@ console.log('selectedId', selectedId)
         } else if (type === 'Costom Assembly') {
           response = await axios.put(
             `http://localhost:5000/costom-assembly/${id}/send-review`,
-            formData
+            formData,{
+              headers: {
+                  'Authorization': `Bearer ${userToken}`,
+                  
+              },
+              timeout: 10000,
+          }
           );
           if (response.status === 200) {
             setRequestCustom((prevList) =>
@@ -423,7 +434,15 @@ console.log('selectedId', selectedId)
           ? `http://localhost:5000/costom-prototype/${id}/delete`
           : `http://localhost:5000/costom-assembly/${id}/delete`;
 
-        await axios.delete(apiUrl);
+        await axios.delete(apiUrl,
+          {
+            headers: {
+                'Authorization': `Bearer ${userToken}`,
+               
+            },
+            timeout: 10000,
+        }
+        );
 
         if (type === 'Costom Prototype') {
           setRequestCustom((prevList) =>
@@ -462,7 +481,13 @@ console.log('selectedId', selectedId)
             ? `http://localhost:5000/costom-prototype/${id}/cancel`
             : `http://localhost:5000/costom-assembly/${id}/cancel`;
 
-        const response = await axios.put(endpoint);
+        const response = await axios.put(endpoint,{
+          headers: {
+              'Authorization': `Bearer ${userToken}`,
+             
+          },
+          timeout: 10000,
+      });
 
         if (response.status === 200) {
 

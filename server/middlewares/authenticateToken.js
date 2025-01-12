@@ -15,8 +15,17 @@ const authenticateToken = (req, res, next) => {
         req.user = decoded;
         next();
     } catch (error) {
-        console.error("Token validation error:", error);
-        res.status(403).json({ message: "Token tidak valid atau kadaluwarsa" });
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({
+                message: 'Unauthorized: Token expired',
+                redirect: '/login',
+                role: 'user'
+            });
+        }
+        
+        console.error('Token verification failed:', error);
+        return res.status(401).json({ message: 'Unauthorized: Token tidak valid' });
+    
     }
 }
 

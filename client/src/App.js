@@ -2,6 +2,7 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
 import ResponsiveAppBar from './component/navbar';
 import Footer from './component/footer';
 import LoginPage from './component/login';
@@ -22,9 +23,6 @@ import ChangePassword from './view/changePassword';
 import ForgotPassword from './view/forgotPassword';
 import ResetPassword from './view/resetPassword';
 import UserPage from './view/userPage';
-import Proses from './view/proses';
-import Finish from './view/finish';
-import Cancle from './view/cancle';
 import Transaksi from './view/transaksi';
 import Review from './view/review';
 import Checkout from './view/checkout';
@@ -36,10 +34,12 @@ import ProfileSettings from './view/setingProfile';
 function App() {
   return (
     <Router>
-      <AuthProvider>
+    <AuthProvider>
+      <CartProvider>
         <AppContent />
-      </AuthProvider>
-    </Router>
+      </CartProvider>
+    </AuthProvider>
+  </Router>
   );
 }
 
@@ -109,9 +109,6 @@ function AppContent() {
                 <Route path="/user" element={<UserPage />} />
                 <Route path="/user/profileSettings" element={<ProfileSettings />} />
                 <Route path="/change-password" element={<ChangePassword />} />
-                <Route path="/proses" element={<Proses />} />
-                <Route path="/finish" element={<Finish />} />
-                <Route path="/cancle" element={<Cancle />} />
                 <Route path="/transaksi" element={<Transaksi />} />
                 <Route path="/review" element={<Review />} />
               </Route>

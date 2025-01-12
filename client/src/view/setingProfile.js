@@ -6,11 +6,13 @@ import Toast from "../utils/Toast";
 import Dialog from "../utils/Dialog";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 
 
 export default function ProfileSettings() {
     const navigate = useNavigate();
+    const { userToken } = useAuth(); 
     const [profilePhoto, setProfilePhoto] = useState("");
     const [provinces, setProvinces] = useState([]);
     const [cities, setCities] = useState([]);
@@ -89,7 +91,7 @@ export default function ProfileSettings() {
         if (result.isConfirmed) {
             setLoading(true);
             try {
-                const token = localStorage.getItem('token');
+                
                 const data = new FormData();
 
                 data.append('name', formData.name);
@@ -112,7 +114,7 @@ export default function ProfileSettings() {
                     data,
                     {
                         headers: {
-                            'Authorization': `Bearer ${token}`,
+                            'Authorization': `Bearer ${userToken}`,
                         },
                     }
                 );
@@ -156,7 +158,7 @@ export default function ProfileSettings() {
     useEffect(() => {
         const fetchDataAccount = async () => {
             try {
-                const data = await getDataAccount();
+                const data = await getDataAccount(userToken);
                 setDataAccount(data);
 
                 setFormData({
@@ -182,7 +184,7 @@ export default function ProfileSettings() {
     useEffect(() => {
         const fetchProvinces = async () => {
             try {
-                const data = await getProvinces();
+                const data = await getProvinces(userToken);
                 setProvinces(data);
             } catch (error) {
 

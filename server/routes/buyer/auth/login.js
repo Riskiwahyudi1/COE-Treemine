@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const validateRequest = require('../../../middlewares/handleValidationErrors');
-const { login, loginRateLimiter } = require('../../../controllers/buyer/auth/loginController');
+const { login } = require('../../../controllers/buyer/auth/loginController');
 
-router.post('/', loginRateLimiter, validateRequest([
+router.post('/', validateRequest([
     body('email')
         .isEmail()
         .withMessage('Email tidak valid.')

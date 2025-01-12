@@ -3,11 +3,13 @@ import { Box, Typography, Button, TextField, IconButton, CircularProgress } from
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
 const ProductPage = () => {
     const navigate = useNavigate();
+    const { userToken } = useAuth(); 
     const { id } = useParams();
     const [error, setError] = useState('');
     const [imagePreview, setImagePreview] = useState(null);
@@ -57,9 +59,9 @@ const ProductPage = () => {
 
         try {
             setLoading(true)
-            const token = localStorage.getItem('token');
+            
 
-            if (!token) {
+            if (!userToken) {
                 setError('Unauthorized access. Please log in first.');
                 Toast.fire({
                     icon: 'error',
@@ -75,7 +77,7 @@ const ProductPage = () => {
                 data,
                 {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': `Bearer ${userToken}`,
                         'Content-Type': 'application/json',
                     },
                     timeout: 10000,

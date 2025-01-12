@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -18,12 +18,27 @@ import { useAuth } from '../contexts/AuthContext';
 import Videocontoh from "../assets/images/logo 2.png";
 import Toast from '../utils/Toast';
 
+
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    return parts.pop().split(';').shift();
+  }
+  return null;
+};
+
+const removeCookie = (name) => {
+  document.cookie = `${name}=; Max-Age=0; path=/`;
+};
+
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { loginUser } = useAuth(); // Menggunakan hook useAuth
+  const { loginUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [expiredMessage, setExpiredMessage] = useState('');
 
   // Handle perubahan input form
   const handleChange = (e) => {
@@ -31,9 +46,10 @@ const LoginPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  // Redirect ke halaman lupa password
   const handleForgotPassword = () => {
-    navigate('/forgot-password')
-  }
+    navigate('/forgot-password');
+  };
 
   // Handle submit form login
   const handleSubmit = async (e) => {
@@ -49,13 +65,17 @@ const LoginPage = () => {
 
     try {
       const response = await axios.post('http://localhost:5000/login/buyer', formData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
       });
 
-      if (response.status === 200 && response.data.token) {
-        loginUser(response.data.token);
+      console.log('Response:', response);
+
+      // Akses token dari lokasi yang benar
+      const token = response.data.user.token;
+
+      if (token) {
+        loginUser(token);
         Toast.fire({
           icon: 'success',
           title: 'Login successful',
@@ -65,10 +85,10 @@ const LoginPage = () => {
         setError('Failed to login. No token received.');
       }
     } catch (error) {
+      
       if (error.response) {
         const { errors } = error.response.data;
         if (errors && Array.isArray(errors)) {
-
           const errorMessage = errors.map((err) => err.msg).join(' | ');
           setError(errorMessage);
         } else {
@@ -81,6 +101,15 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+
+
+  useEffect(() => {
+    const authUserMessage = getCookie('authUserMessage');
+    if (authUserMessage) {
+      setExpiredMessage(authUserMessage);
+      removeCookie('authUserMessage');
+    }
+  }, []);
 
   return (
     <Grid container component="main" sx={{ height: '100vh', borderRadius: '50%' }}>
@@ -200,6 +229,9 @@ const LoginPage = () => {
                 },
               }}
             />
+            {expiredMessage && (
+              <Alert severity="error">{expiredMessage}</Alert>
+            )}
             {error && <Alert severity="error">{error}</Alert>}
             <Button
               type="submit"
