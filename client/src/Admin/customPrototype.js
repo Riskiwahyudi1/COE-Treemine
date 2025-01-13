@@ -190,7 +190,7 @@ const BoardTypePage = () => {
           onClick={handleAddBoard}
           startIcon={<AddIcon />}
           sx={{
-            backgroundColor: '#54cbbb',
+            backgroundColor: '#00A63F',
             color: '#ffffff',
             textTransform: 'none',
             '&:hover': {
@@ -262,7 +262,7 @@ const BoardTypePage = () => {
                     <Button
                       variant="contained"
                       sx={{
-                        backgroundColor: '#54cbbb',
+                        backgroundColor: '#00A63F',
                         color: '#ffffff',
                         textTransform: 'none',
                         marginRight: 1,

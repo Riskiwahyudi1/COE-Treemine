@@ -61,17 +61,62 @@ const StyledModal = styled(Modal)(({ theme }) => ({
     justifyContent: 'center',
 }));
 
-const ModalContent = styled(Box)(({ theme }) => ({
-    width: 500,
+const ModalContent = styled(Box)(({ theme, transaction, idTransaction, buyerData }) => ({
+    width: '100%',
     backgroundColor: 'white',
     borderRadius: 8,
-    boxShadow: 24,
+    // boxShadow: 24,
     padding: theme.spacing(4),
     outline: 'none',
+    // Aturan media print
+    '@media print': {
+        width: '100%',
+        height: '100vh',
+        overflow: 'hidden',
+        margin: 0,
+        padding: theme.spacing(4),
+        img: {
+            maxWidth: '100%',
+            height: 'auto',
+        },
+        body: {
+            margin: '1cm',
+            padding: 0,
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '12pt',
+            color: '#000',
+        },
+        p: {
+            marginBottom: '1em',
+        },
+        h1: {
+            color: '#333',
+        },
+        h2: {
+            color: '#333',
+        },
+        h3: {
+            color: '#333',
+        },
+        '.no-print': {
+            display: 'none',
+        },
+        '@page': {
+            size: 'A4 portrait',
+            margin: '1cm',
+        },
+    },
 }));
 
+const handlePrint = () => {
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach((button) => button.style.display = 'none');
+    window.print();
+    buttons.forEach((button) => button.style.display = 'block');
+};
+
 export default function OrdersTable() {
-    const { adminToken } = useAuth(); 
+    const { adminToken } = useAuth();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [transaction, setTransaction] = useState([]);
@@ -278,28 +323,28 @@ export default function OrdersTable() {
                 padding: 4,
             }}
         >
-           <Box
-    sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: '10px',
-        backgroundColor: '#F5F5F5', // Warna latar opsional
-    }}
->
-    {/* Judul di tengah */}
-    <Typography
-        variant="h3"
-        sx={{
-            color: '#1B2D3F',
-            fontWeight: 'bold',
-            textAlign: 'center',
-        }}
-    >
-        Data Transaksi
-    </Typography>
-</Box>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginBottom: '10px',
+                    backgroundColor: '#F5F5F5', // Warna latar opsional
+                }}
+            >
+                {/* Judul di tengah */}
+                <Typography
+                    variant="h3"
+                    sx={{
+                        color: '#1B2D3F',
+                        fontWeight: 'bold',
+                        textAlign: 'center',
+                    }}
+                >
+                    Data Transaksi
+                </Typography>
+            </Box>
 
 
             <StyledTableContainer component={Paper}>
@@ -403,7 +448,7 @@ export default function OrdersTable() {
                                                     >
                                                         <CheckCircleIcon />
                                                     </IconButton>
-                                                   
+
                                                 </>
                                             )}
 
@@ -452,14 +497,15 @@ export default function OrdersTable() {
             <StyledModal open={openModal} onClose={handleCloseModal}>
                 <ModalContent
                     sx={{
-                        padding: 3,
+                        padding: 4,
                         borderRadius: 2,
-                        boxShadow: 24,
-                        maxWidth: 700,
-                        maxHeight: '90vh',
+                        // boxShadow: 24,
+                        maxWidth: '74%',
+                        maxHeight: '80vh',
                         margin: 'auto',
                         backgroundColor: '#ffffff',
                         overflowY: 'auto',
+                        marginLeft: '295px'
                     }}
                 >
                     {transaction && transaction.length > 0 ? (
@@ -852,16 +898,8 @@ export default function OrdersTable() {
                                                 )}
                                             </Box>
                                             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 3 }}>
-                                                <Button
-                                                    variant="contained"
-                                                    sx={{
-                                                        backgroundColor: '#54cbbb',
-                                                        '&:hover': { backgroundColor: '#46b2a6' },
-                                                    }}
-                                                    onClick={handleCloseModal}
-                                                >
-                                                    Tutup
-                                                </Button>
+                                                <Button variant="contained" sx={{ backgroundColor: '#54cbbb', '&:hover': { backgroundColor: '#46b2a6' } }} onClick={handleCloseModal} className="no-print"> Tutup </Button>
+                                                <Button variant="contained" sx={{ backgroundColor: '#00A63F', '&:hover': { backgroundColor: '#008941' } }} onClick={handlePrint} className="no-print"> Cetak </Button>
                                             </Box>
                                         </>
                                     )}

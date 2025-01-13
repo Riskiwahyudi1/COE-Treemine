@@ -10,7 +10,7 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Box } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import getProducts from '../api/productListApi';
 import Swal from 'sweetalert2';
@@ -18,6 +18,9 @@ import axios from 'axios';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import PrintIcon from '@mui/icons-material/Print';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import InfoIcon from '@mui/icons-material/Info';
 import { useAuth } from '../contexts/AuthContext';
 import { Modal } from '@mui/material';
 
@@ -296,28 +299,15 @@ export default function CustomizedTables() {
                       : product.description}
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => navigate(`./updateProduct/${product._id}`)}
-                      sx={{ marginRight: 1 }}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={() => handleDelete(product._id)}
-                      sx={{ marginRight: 1 }}
-                    >
-                      Delete
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      onClick={() => handleOpenModal(product._id)}
-                    >
-                      Detail
-                    </Button>
+                    <IconButton sx={{ color: "#00A63F" }} onClick={() => navigate(`./updateProduct/${product._id}`)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton sx={{ color: "#f44336" }} onClick={() => handleDelete(product._id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                    <IconButton sx={{ color: "#00A63F" }} onClick={() => setIdProduct(product._id)}>
+                      <InfoIcon />
+                    </IconButton>
                   </StyledTableCell>
                 </StyledTableRow>
               ))
