@@ -25,6 +25,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Toast from "../utils/Toast";
 import axios from "axios";
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 const CustomPrototype = (part) => {
     const { userToken } = useAuth(); 
@@ -249,7 +250,7 @@ const CustomPrototype = (part) => {
             });
 
             const response = await axios.post(
-                'http://localhost:5000/costom-prototype/request-costom',
+                `${apiConfig.baseURL}costom-prototype/request-costom`,
                 data,
                 {
                     headers: {

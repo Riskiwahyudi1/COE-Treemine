@@ -7,6 +7,7 @@ import Dialog from "../utils/Dialog";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 
 
@@ -35,7 +36,7 @@ export default function ProfileSettings() {
     })
     // state default
     useEffect(() => {
-        setProfilePhoto(`http://localhost:5000${dataAccount.profile_picture_url}`);
+        setProfilePhoto(`${apiConfig.baseURL}${dataAccount.profile_picture_url}`);
     }, [dataAccount]);
 
     useEffect(() => {
@@ -110,7 +111,7 @@ export default function ProfileSettings() {
                 data.append('profile_picture', formData.profile_picture);
 
                 const response = await axios.put(
-                    'http://localhost:5000/account/update-profile',
+                    `${apiConfig.baseURL}account/update-profile`,
                     data,
                     {
                         headers: {

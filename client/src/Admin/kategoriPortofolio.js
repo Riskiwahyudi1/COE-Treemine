@@ -17,6 +17,7 @@ import getCategories from './api/categoriesApi';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 const showToast = (message, icon) => {
   Swal.fire({
@@ -78,7 +79,7 @@ const KategoriPortfolioPage = () => {
           return;
         }
 
-        const response = await axios.delete(`http://localhost:5000/admin/product/categories/delete/${id}`, {
+        const response = await axios.delete(`${apiConfig.baseURL}admin/product/categories/delete/${id}`, {
           headers: {
             'Authorization': `Bearer ${adminToken}`,
           },
@@ -132,7 +133,7 @@ const KategoriPortfolioPage = () => {
                 <CardMedia
                   component="img"
                   height="140"
-                  src={`http://localhost:5000${category.picture_url}`}
+                  src={`${apiConfig.baseURL}${category.picture_url}`}
                   alt={category.category_name}
                 />
                 <CardContent>

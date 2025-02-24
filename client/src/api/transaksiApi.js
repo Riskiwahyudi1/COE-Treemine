@@ -1,8 +1,8 @@
 import axios from "axios";
-const API_URL = 'http://localhost:5000/transaction';
-const API_URL_ADMIN = 'http://localhost:5000/admin/transaction';
-const token = localStorage.getItem('token');
+import apiConfig from '../config/apiConfig';
 
+const API_URL = `${apiConfig.baseURL}transaction`;
+const API_URL_ADMIN = `${apiConfig.baseURL}admin/transaction`;
 
 export const getCostomPrototypeData = async (data, token) => {
     try {

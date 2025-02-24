@@ -20,6 +20,7 @@ import Toast from '../utils/Toast';
 import Dialog from '../utils/Dialog';
 import { formatDate } from '../utils/isoDate';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -163,8 +164,8 @@ export default function OrdersTable() {
                 }
                 const url =
                     orderType === 'Costom Prototype'
-                        ? `http://localhost:5000/admin/request-custom-prototype/${orderId}/approve`
-                        : `http://localhost:5000/admin/request-custom-assembly/${orderId}/approve`;
+                        ? `${apiConfig.baseURL}admin/request-custom-prototype/${orderId}/approve`
+                        : `${apiConfig.baseURL}admin/request-custom-assembly/${orderId}/approve`;
 
                 const response = await axios.put(url, { weight }, {
                     headers: {
@@ -220,8 +221,8 @@ export default function OrdersTable() {
                 // Tentukan URL berdasarkan tipe order
                 const url =
                     orderType === 'Costom Prototype'
-                        ? `http://localhost:5000/admin/request-custom-prototype/${orderId}/reject`
-                        : `http://localhost:5000/admin/request-custom-assembly/${orderId}/reject`;
+                        ? `${apiConfig.baseURL}admin/request-custom-prototype/${orderId}/reject`
+                        : `${apiConfig.baseURL}admin/request-custom-assembly/${orderId}/reject`;
 
                 const response = await axios.put(url, { reason }, {
                     headers: {
@@ -411,7 +412,7 @@ export default function OrdersTable() {
                                     <Typography variant="body1">
                                         <strong>Design:</strong>{' '}
                                         <a
-                                            href={`http://localhost:5000/download/prototype-design/${data.design_file.split('/').pop()}`}
+                                            href={`${apiConfig.baseURL}download/prototype-design/${data.design_file.split('/').pop()}`}
                                             download={data.design_file.split('/').pop()}
                                             target="_blank"
                                             rel="noopener noreferrer"
@@ -494,7 +495,7 @@ export default function OrdersTable() {
                                     <Typography variant="body1">
                                         <strong>Design:</strong>{' '}
                                         <a
-                                            href={`http://localhost:5000/download/assembly-design/${data.design_file.split('/').pop()}`}
+                                            href={`${apiConfig.baseURL}download/assembly-design/${data.design_file.split('/').pop()}`}
                                             download={data.design_file.split('/').pop()}
                                             target="_blank"
                                             rel="noopener noreferrer"

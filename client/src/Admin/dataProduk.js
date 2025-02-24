@@ -23,6 +23,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
 import { useAuth } from '../contexts/AuthContext';
 import { Modal } from '@mui/material';
+import apiConfig from '../config/apiConfig';
 
 const showToast = (message, icon) => {
   Swal.fire({
@@ -115,7 +116,7 @@ export default function CustomizedTables() {
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/admin/product/search", {
+      const response = await axios.get(`${apiConfig.baseURL}admin/product/search`, {
         params: { query },
         headers: {
           'Authorization': `Bearer ${adminToken}`,
@@ -165,7 +166,7 @@ export default function CustomizedTables() {
 
           return;
         }
-        const response = await axios.delete(`http://localhost:5000/admin/product/${id}`, {
+        const response = await axios.delete(`${apiConfig.baseURL}admin/product/${id}`, {
           headers: {
             'Authorization': `Bearer ${adminToken}`,
           },
@@ -285,7 +286,7 @@ export default function CustomizedTables() {
                   <StyledTableCell align="right">
                     {product.picture_url ? (
                       <img
-                        src={`http://localhost:5000${product.picture_url}`}
+                        src={`${apiConfig.baseURL}${product.picture_url}`}
                         alt={product.product_name}
                         style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                       />
@@ -305,7 +306,7 @@ export default function CustomizedTables() {
                     <IconButton sx={{ color: "#f44336" }} onClick={() => handleDelete(product._id)}>
                       <DeleteIcon />
                     </IconButton>
-                    <IconButton sx={{ color: "#00A63F" }} onClick={() => setIdProduct(product._id)}>
+                    <IconButton sx={{ color: "#00A63F" }} onClick={() => handleOpenModal(product._id)}>
                       <InfoIcon />
                     </IconButton>
                   </StyledTableCell>
@@ -334,7 +335,7 @@ export default function CustomizedTables() {
                     </div>
                     <div className="modal-body">
                       <img
-                        src={`http://localhost:5000${data.picture_url}`}
+                        src={`${apiConfig.baseURL}${data.picture_url}`}
                         alt={data.product_name}
                         style={{
                           width: "100%",

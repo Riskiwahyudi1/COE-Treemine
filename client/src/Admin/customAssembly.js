@@ -21,6 +21,7 @@ import Toast from '../utils/Toast';
 import Dialog from "../utils/Dialog";
 import { getAssemblyItem, getAssemblyById } from '../api/costomAssemblyApi';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -135,7 +136,7 @@ const CustomAssemblyPage = () => {
             return;
           }
           const response = await axios.delete(
-            `http://localhost:5000/admin/costom-assembly/${typeId}/item/${itemId}`,{
+            `${apiConfig.baseURL}admin/costom-assembly/${typeId}/item/${itemId}`,{
               headers: {
                 'Authorization': `Bearer ${adminToken}`, 
             },

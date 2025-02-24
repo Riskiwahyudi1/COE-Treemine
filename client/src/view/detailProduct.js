@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import apiConfig from '../config/apiConfig';
 
 const ProductPage = () => {
     const navigate = useNavigate();
@@ -31,7 +32,7 @@ const ProductPage = () => {
     useEffect(() => {
         const fetchProductById = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/product/${id}`);
+                const response = await axios.get(`${apiConfig.baseURL}product/${id}`);
                 setProduct(response.data);
                 setImagePreview(response.data.image_url);
             } catch (error) {
@@ -73,7 +74,7 @@ const ProductPage = () => {
             const data = { id_product: id };
 
             const response = await axios.post(
-                'http://localhost:5000/cart/add-product',
+                `${apiConfig.baseURL}cart/add-product`,
                 data,
                 {
                     headers: {
@@ -158,7 +159,7 @@ const ProductPage = () => {
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 4 }}>
                     <Box
                         component="img"
-                        src={`http://localhost:5000${product.picture_url}`}
+                        src={`${apiConfig.baseURL}${product.picture_url}`}
                         alt="Product"
                         sx={{ width: 300, height: 200, objectFit: 'cover' }}
                     />

@@ -23,6 +23,7 @@ import { getAssemblyItem } from '../api/costomAssemblyApi';
 import Toast from '../utils/Toast';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 const CustomAssembly = () => {
     const navigate = useNavigate();
@@ -186,7 +187,7 @@ const CustomAssembly = () => {
             });
 
             const response = await axios.post(
-                'http://localhost:5000/costom-assembly/request-costom',
+                `${apiConfig.baseURL}costom-assembly/request-costom`,
                 data,
                 {
                     headers: {

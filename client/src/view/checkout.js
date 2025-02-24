@@ -25,6 +25,7 @@ import { getDataAccount } from "../api/auth/dataAccount";
 import { getProvinces, getCities } from "../api/service/rajaOngkirApi";
 import Toast from "../utils/Toast";
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 const PaymentPage = () => {
     const navigate = useNavigate(); 
@@ -456,7 +457,7 @@ const PaymentPage = () => {
                                 {/* Gambar produk */}
                                 <CardMedia
                                 component="img"
-                                image={`http://localhost:5000${product.id_product?.picture_url || ''}`}
+                                image={`${apiConfig.baseURL}${product.id_product?.picture_url || ''}`}
                                 alt={product.id_product?.product_name || 'Unnamed Product'}
                                 sx={{
                                     width: 100,

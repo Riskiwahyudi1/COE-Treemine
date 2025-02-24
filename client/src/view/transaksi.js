@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import { getProvinces, getCities } from '../api/service/rajaOngkirApi'
 import axios from 'axios'
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -82,6 +83,11 @@ export default function OrdersTable() {
     const [loadingButtonId, setLoadingButtonId] = useState(null);
     const [error, setError] = useState(null);
     // transaksi berdasarkan quesry status
+
+
+    const handleReview = () => {
+        navigate('/review')
+    };
 
     useEffect(() => {
         const fetchTransaction = async () => {
@@ -233,7 +239,7 @@ export default function OrdersTable() {
                     'Authorization': `Bearer ${userToken}`,
                 }
             };
-            const response = await axios.post('http://localhost:5000/payments/create-payment',
+            const response = await axios.post(`${apiConfig.baseURL}payments/create-payment`,
                 { transactionId },
                 config
             );
@@ -331,7 +337,7 @@ export default function OrdersTable() {
                     'Authorization': `Bearer ${userToken}`,
                 }
             };
-            const response = await axios.post('http://localhost:5000/payments/continue-payment', { transactionId }, config);
+            const response = await axios.post(`${apiConfig.baseURL}payments/continue-payment`, { transactionId }, config);
 
             const { token } = response.data;
 
@@ -577,6 +583,22 @@ export default function OrdersTable() {
                                                     Terima
                                                 </Button>
                                             )}
+                                            {order.status === 'selesai' && (
+                                                <Button
+                                                    variant="contained"
+                                                    onClick={() => handleReview(order._id)}
+                                                    sx={{
+                                                        backgroundColor: '#008CBA', // Biru
+                                                        color: '#ffffff',
+                                                        textTransform: 'none',
+                                                        '&:hover': {
+                                                            backgroundColor: '#005F8A', // Warna hover
+                                                        },
+                                                    }}
+                                                >
+                                                    Review
+                                                </Button>
+                                            )}
                                         </Box>
                                     </StyledTableCell>
 
@@ -725,7 +747,7 @@ export default function OrdersTable() {
                                                                             }}
                                                                         >
                                                                             <img
-                                                                                src={`http://localhost:5000${std.id_product.picture_url}`}
+                                                                                src={`${apiConfig.baseURL}${std.id_product.picture_url}`}
                                                                                 alt="Standart Product"
                                                                                 style={{
                                                                                     width: 80,

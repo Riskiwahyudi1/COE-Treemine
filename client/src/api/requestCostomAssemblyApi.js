@@ -1,7 +1,8 @@
 import axios from "axios";
+import apiConfig from '../config/apiConfig';
 
-const API_URL = 'http://localhost:5000/admin/request-custom-assembly';
-const API_URL_BUYER = 'http://localhost:5000/costom-assembly';
+const API_URL = `${apiConfig.baseURL}admin/request-custom-assembly`;
+const API_URL_BUYER = `${apiConfig.baseURL}costom-assembly`;
 
 export const getCostomAssemblyData = async (token) => {
     try {

@@ -14,6 +14,7 @@ import axios from "axios";
 import Toast from '../utils/Toast';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 export default function ForgotPassword() {
     
@@ -47,7 +48,7 @@ export default function ForgotPassword() {
         setLoading(true);
     
         try {
-            const response = await axios.post("http://localhost:5000/password/forgot-password", { email });
+            const response = await axios.post(`${apiConfig.baseURL}password/forgot-password`, { email });
     
             if (response.status === 200) {
                 Toast.fire({

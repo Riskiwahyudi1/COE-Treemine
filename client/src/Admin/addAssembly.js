@@ -14,6 +14,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import axios from 'axios';
 import Toast from '../utils/Toast';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 const UpdateBoardTypePage = () => {
   const { adminToken } = useAuth(); 
@@ -56,7 +57,7 @@ const UpdateBoardTypePage = () => {
         return;
     }
       const response = await axios.post(
-        `http://localhost:5000/admin/costom-assembly/add-component/${id}`,
+        `${apiConfig.baseURL}admin/costom-assembly/add-component/${id}`,
         {
           type: boardName, 
           cost: price, 

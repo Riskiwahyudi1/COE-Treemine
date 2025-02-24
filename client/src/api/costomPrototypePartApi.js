@@ -1,6 +1,7 @@
 import axios from "axios";
+import apiConfig from '../config/apiConfig';
 
-const API_URL = 'http://localhost:5000/costom-prototype';
+const API_URL = `${apiConfig.baseURL}costom-prototype`;
 
 const getPartCostomPrototype = async () => {
     try {

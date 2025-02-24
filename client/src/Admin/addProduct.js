@@ -19,6 +19,7 @@ import getCategories from './api/categoriesApi';
 import Toast from '../utils/Toast';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 export default function ProductForm() {
     const { adminToken } = useAuth(); 
@@ -104,7 +105,7 @@ export default function ProductForm() {
                 return;
             }
             const response = await axios.post(
-                'http://localhost:5000/admin/product',
+                `${apiConfig.baseURL}admin/product`,
                 data,
                 {
                     headers: {

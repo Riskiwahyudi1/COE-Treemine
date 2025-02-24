@@ -24,6 +24,7 @@ import Dialog from '../utils/Dialog';
 import { formatDate } from '../utils/isoDate';
 import { styled } from '@mui/material/styles';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 
 
@@ -288,7 +289,7 @@ const ShoppingCart = () => {
   );
 
   useEffect(() => {
-    if (selectedId && requestPrototype.length > 0) {
+    if (selectedId) {
       setCheckoutPrototype(singleProductCostom);
 
       if (shouldNavigate) {
@@ -369,7 +370,7 @@ const ShoppingCart = () => {
         let response;
         if (type === 'Costom Prototype') {
           response = await axios.put(
-            `http://localhost:5000/costom-prototype/${id}/send-review`,
+            `${apiConfig.baseURL}costom-prototype/${id}/send-review`,
             formData,{
               headers: {
                   'Authorization': `Bearer ${userToken}`,
@@ -387,7 +388,7 @@ const ShoppingCart = () => {
           }
         } else if (type === 'Costom Assembly') {
           response = await axios.put(
-            `http://localhost:5000/costom-assembly/${id}/send-review`,
+            `${apiConfig.baseURL}costom-assembly/${id}/send-review`,
             formData,{
               headers: {
                   'Authorization': `Bearer ${userToken}`,
@@ -431,8 +432,8 @@ const ShoppingCart = () => {
     if (result.isConfirmed) {
       try {
         const apiUrl = type === 'Costom Prototype'
-          ? `http://localhost:5000/costom-prototype/${id}/delete`
-          : `http://localhost:5000/costom-assembly/${id}/delete`;
+          ? `${apiConfig.baseURL}costom-prototype/${id}/delete`
+          : `${apiConfig.baseURL}costom-assembly/${id}/delete`;
 
         await axios.delete(apiUrl,
           {
@@ -478,8 +479,8 @@ const ShoppingCart = () => {
 
         const endpoint =
           type === 'Costom Prototype'
-            ? `http://localhost:5000/costom-prototype/${id}/cancel`
-            : `http://localhost:5000/costom-assembly/${id}/cancel`;
+            ? `${apiConfig.baseURL}costom-prototype/${id}/cancel`
+            : `${apiConfig.baseURL}costom-assembly/${id}/cancel`;
 
         const response = await axios.put(endpoint,{
           headers: {

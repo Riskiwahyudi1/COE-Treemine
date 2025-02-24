@@ -4,6 +4,7 @@ import { getProvinces, getCities } from "../api/service/rajaOngkirApi"
 import { getDataAccount } from "../api/auth/dataAccount"
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 
 export default function ProfileSettings() {
@@ -27,7 +28,7 @@ export default function ProfileSettings() {
   })
   // state default
   useEffect(() => {
-    setProfilePhoto(`http://localhost:5000${dataAccount.profile_picture_url}`);
+    setProfilePhoto(`${apiConfig.baseURL}${dataAccount.profile_picture_url}`);
   }, [dataAccount]);
 
   // handle update profile

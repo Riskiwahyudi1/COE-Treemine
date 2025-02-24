@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Toast from '../utils/Toast';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 const UpdateCategoryPage = () => {
     const { adminToken } = useAuth(); 
@@ -76,7 +77,7 @@ const UpdateCategoryPage = () => {
             }
        
             const response = await axios.post(
-                'http://localhost:5000/admin/product/categories/add',
+                `${apiConfig.baseURL}admin/product/categories/add`,
                 data,
                 {
                      headers: {

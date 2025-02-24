@@ -1,6 +1,7 @@
 import axios from "axios";
+import apiConfig from '../../config/apiConfig';
 
-const API_URL = 'http://localhost:5000/admin/dashboard';
+const API_URL = `${apiConfig.baseURL}admin/dashboard`;
 
 export const getPayments = async () => {
     try {

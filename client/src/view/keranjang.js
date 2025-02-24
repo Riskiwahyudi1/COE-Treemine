@@ -20,6 +20,7 @@ import Swal from 'sweetalert2';
 import getProductsInCart from '../api/cartApi';
 import Toast from '../utils/Toast'
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 const showToast = (message, icon) => {
     Swal.fire({
@@ -90,7 +91,7 @@ const ShoppingCartItem = ({
             />
             <CardMedia
                 component="img"
-                image={`http://localhost:5000${image}`}
+                image={`${apiConfig.baseURL}${image}`}
                 alt={name}
                 sx={{
                     width: { xs: '100%', sm: 120 },
@@ -205,7 +206,7 @@ const ShoppingCart = () => {
         if (result.isConfirmed) {
             
             try {
-                const response = await axios.delete(`http://localhost:5000/cart/delete/${id}`, {
+                const response = await axios.delete(`${apiConfig.baseURL}cart/delete/${id}`, {
                     headers: {
                         Authorization: `Bearer ${userToken}`,
                     },

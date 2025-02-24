@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import apiConfig from '../config/apiConfig';
 
 
 const Toast = Swal.mixin({
@@ -44,7 +45,7 @@ const ProductCard = ({ product_id, product_name, harga, description, stock, pict
             <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                     <img
-                        src={`http://localhost:5000${picture_url}`}
+                        src={`${apiConfig.baseURL}${picture_url}`}
                         alt={product_name}
                         style={{
                             width: '150px',
@@ -130,7 +131,7 @@ const App = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/product/search', {
+                const response = await axios.get(`${apiConfig.baseURL}product/search`, {
                     params: { query },
                 });
                 setResults(response.data);
@@ -159,7 +160,7 @@ const App = () => {
             const data = { id_product: id };
 
             const response = await axios.post(
-                'http://localhost:5000/cart/add-product',
+                `${apiConfig.baseURL}cart/add-product`,
                 data,
                 {
                     headers: {
@@ -241,7 +242,7 @@ const App = () => {
         const fetchProducts = async () => {
             if (query.trim() === "") return;
             try {
-                const response = await axios.get('http://localhost:5000/admin/product/search', {
+                const response = await axios.get(`${apiConfig.baseURL}admin/product/search`, {
                     params: { query },
                     headers: {
                         'Authorization': `Bearer ${userToken}`,

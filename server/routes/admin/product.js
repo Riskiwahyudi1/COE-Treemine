@@ -15,6 +15,7 @@ const imageValidation = (req, res, next) => {
         if (!['image/jpeg', 'image/png', 'image/jpg'].includes(fileMime)) {
             return res.status(400).json({ errors: [{ msg: 'Only JPEG, JPG, and PNG images are allowed!' }] });
         }
+        
     }
     next();
 };

@@ -1,6 +1,8 @@
 import axios from "axios";
+import apiConfig from '../../config/apiConfig';
 
-const API_URL = 'http://localhost:5000/raja-ongkir';
+
+const API_URL = `${apiConfig.baseURL}raja-ongkir`;
 
 
 // semua provinsi

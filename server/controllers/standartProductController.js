@@ -31,7 +31,7 @@ const addProduct = async (req, res) => {
             stock,
             weight,
             description,
-            picture_url: `/product-picture/${image.filename}`,
+            picture_url: `product-picture/${image.filename}`,
         };
 
         // Simpan data produk ke MongoDB

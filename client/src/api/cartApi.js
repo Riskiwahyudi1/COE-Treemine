@@ -1,7 +1,7 @@
 import axios from "axios";
+import apiConfig from '../config/apiConfig';
 
-
-const API_URL = 'http://localhost:5000/cart';
+const API_URL = `${apiConfig.baseURL}cart`;
 
 const getProductsInCart = async (token) => {
     try {

@@ -44,7 +44,8 @@ const paymentService = require('./routes/services/payment')
 
 
 const app = express();
-const port = 5000;
+const baseUrl = process.env.BASE_URL_SERVER;
+const port = process.env.PORT_SERVER;
 
 
 mongoose.connect('mongodb://localhost:27017/COE_Treemine', {
@@ -176,6 +177,6 @@ app.get('/download/prototype-design/:fileName', (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`App running at http://localhost:${port}`);
+    console.log(`App running at ${baseUrl}`);
 });
 

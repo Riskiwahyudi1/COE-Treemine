@@ -14,6 +14,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import axios from 'axios';
 import Toast from '../utils/Toast';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 const UpdateBoardTypePage = () => {
   const { adminToken } = useAuth(); 
@@ -31,7 +32,7 @@ const UpdateBoardTypePage = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/admin/costom-prototype/${typeId}/item/${itemId}`
+          `${apiConfig.baseURL}admin/costom-prototype/${typeId}/item/${itemId}`
         );
         setFormData(response.data); 
       } catch (error) {
@@ -90,7 +91,7 @@ const UpdateBoardTypePage = () => {
         return;
     }
       const response = await axios.put(
-        `http://localhost:5000/admin/costom-prototype/${typeId}/item/${itemId}`,
+        `${apiConfig.baseURL}admin/costom-prototype/${typeId}/item/${itemId}`,
         {
           type: formData.type, 
           cost: costValue, 

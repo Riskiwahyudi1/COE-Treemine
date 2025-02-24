@@ -16,6 +16,7 @@ import axios from "axios";
 import Toast from '../utils/Toast'
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 export default function ChangePassword() {
     // State untuk mengatur visibility password
@@ -72,7 +73,7 @@ export default function ChangePassword() {
         }
 
         try {
-            const response = await axios.post("http://localhost:5000/password/change-password", {
+            const response = await axios.post(`${apiConfig.baseURL}password/change-password`, {
                 oldPassword,
                 newPassword,
             }, {

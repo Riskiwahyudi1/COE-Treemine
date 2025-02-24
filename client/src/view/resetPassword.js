@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import Toast from "../utils/Toast";
 import { useNavigate, useParams } from "react-router-dom";
+import apiConfig from '../config/apiConfig';
 
 export default function ChangePassword() {
     const { token } = useParams();
@@ -54,7 +55,7 @@ export default function ChangePassword() {
 
         try {
             const response = await axios.post(
-                `http://localhost:5000/password/reset-password/${token}`,
+                `${apiConfig.baseURL}password/reset-password/${token}`,
                 { password }
             );
 

@@ -22,6 +22,7 @@ import axios from 'axios';
 import Toast from '../utils/Toast';
 import Swal from 'sweetalert2';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -140,7 +141,7 @@ const BoardTypePage = () => {
             return;
         }
           const response = await axios.delete(
-            `http://localhost:5000/admin/costom-prototype/${typeId}/item/${itemId}`, {
+            `${apiConfig.baseURL}admin/costom-prototype/${typeId}/item/${itemId}`, {
               headers: {
                 'Authorization': `Bearer ${adminToken}`, 
             },

@@ -15,6 +15,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Toast from '../utils/Toast';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 const UpdateCategoryPage = () => {
     const { adminToken } = useAuth(); 
@@ -31,7 +32,7 @@ const UpdateCategoryPage = () => {
     useEffect(() => {
         const fetchCategory = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/admin/product/categories/${id}`, {
+                const response = await axios.get(`${apiConfig.baseURL}admin/product/categories/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${adminToken}`,
                     },
@@ -100,7 +101,7 @@ const UpdateCategoryPage = () => {
             }
             
             const response = await axios.put(
-                `http://localhost:5000/admin/product/categories/edit/${id}`,
+                `${apiConfig.baseURL}admin/product/categories/edit/${id}`,
                 data,
                 {
                     headers: {

@@ -1,7 +1,8 @@
 import axios from "axios";
+import apiConfig from '../config/apiConfig';
 
-const API_URL = 'http://localhost:5000/admin/request-custom-prototype';
-const API_URL_BUYER = 'http://localhost:5000/costom-prototype';
+const API_URL = `${apiConfig.baseURL}admin/request-custom-prototype`;
+const API_URL_BUYER = `${apiConfig.baseURL}costom-prototype`;
 
 
 export const getCostomPrototypeData = async (token) => {

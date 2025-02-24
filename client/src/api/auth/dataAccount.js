@@ -1,6 +1,7 @@
 import axios from "axios";
+import apiConfig from '../../config/apiConfig';
 
-const API_URL = 'http://localhost:5000/account';
+const API_URL = `${apiConfig.baseURL}account`;
 
 export const getDataAccount = async (token) => {
     try {
