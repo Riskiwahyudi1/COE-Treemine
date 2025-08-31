@@ -8,6 +8,7 @@ const { getProvinces, getCities, calculateShippingCost } = require('../../servic
 const fetchProvinces = async (req, res) => {
     try {
         const provinces = await getProvinces();
+        console.log("tes",provinces)
         res.status(200).json({ success: true, data: provinces });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

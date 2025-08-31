@@ -34,6 +34,8 @@ export default function ProfileSettings() {
         profile_picture: null
 
     })
+    console.log("tesss",provinces)
+    console.log("dataakun",dataAccount)
     // state default
     useEffect(() => {
         setProfilePhoto(`${apiConfig.baseURL}${dataAccount.profile_picture_url}`);
@@ -161,7 +163,7 @@ export default function ProfileSettings() {
             try {
                 const data = await getDataAccount(userToken);
                 setDataAccount(data);
-
+                console.log('data', data)
                 setFormData({
                     ...formData,
                     name: data.name,
@@ -442,8 +444,8 @@ export default function ProfileSettings() {
                             helperText={!dataAccount.address.postal_code ? "Lengkapi Provinsi !" : ""}
                         >
                             {provinces?.data?.map((province) => (
-                                <MenuItem key={province.province_id} value={province.province_id}>
-                                    {province.province}
+                                <MenuItem key={province.id} value={province.id}>
+                                    {province.name}
                                 </MenuItem>
                             ))}
 
@@ -466,9 +468,9 @@ export default function ProfileSettings() {
                             <MenuItem value="">
                                 {selectedProvince ? "Pilih Kab/Kota" : "Silahkan pilih provinsi dahulu!"}
                             </MenuItem>
-                            {cities.map((city) => (
-                                <MenuItem key={city.city_id} value={city.city_id}>
-                                    {city.city_name}
+                            {cities?.map((city) => (
+                                <MenuItem key={city.id} value={city.id}>
+                                    {city.name}
                                 </MenuItem>
                             ))}
                         </TextField>

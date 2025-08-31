@@ -209,7 +209,7 @@ export default function MiniDrawer() {
         width: 'auto',
         objectFit: 'contain',
     });
-    
+
 
     let username = '';
 

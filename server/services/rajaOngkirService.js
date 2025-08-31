@@ -5,9 +5,9 @@ const getProvinces = async () => {
     try {
         const url = `${config.baseUrl}/province`;
         const headers = { key: config.apiKey };
-
         const response = await axios.get(url, { headers });
-        return response.data.rajaongkir.results; 
+       
+        return response.data.data; 
     } catch (error) {
         throw new Error(
             `Error fetching provinces: ${
@@ -19,11 +19,12 @@ const getProvinces = async () => {
 
 const getCities = async (province_id) => {
     try {
-        const url = `${config.baseUrl}/city?province=${province_id}`;
+        const url = `${config.baseUrl}/city/${province_id}`;
         const headers = { key: config.apiKey };
 
         const response = await axios.get(url, { headers });
-        return response.data.rajaongkir.results;
+         console.log(response)
+        return response.data.data;
     } catch (error) {
         throw new Error(`Error fetching cities: ${error.response?.data?.rajaongkir?.status?.description || error.message}`);
     }
