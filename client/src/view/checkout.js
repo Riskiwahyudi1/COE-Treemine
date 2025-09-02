@@ -32,6 +32,7 @@ const PaymentPage = () => {
     const location = useLocation();
     const { userToken } = useAuth(); 
     const [costList, setCost] = useState([])
+    console.log('costList', shipingOption)
     const [costShipping, setcostShipping] = useState(0)
     const [estimasionDay, setEstimasionDay] = useState('')
     const [selectedOption, setSelectedOption] = useState('')
@@ -42,7 +43,6 @@ const PaymentPage = () => {
     const [city, setCity] = useState('')
     const [totalPriceProduct, settotalPriceProduct] = useState(0);
     const [totalPayment, setTotalPayment] = useState(0);
-
     // id untuk checkout
     const [idProductStandart, setIdProductStandart] = useState([])
     const [idProdukPrototype, setIdProductProrotype] = useState([])
@@ -147,11 +147,11 @@ const PaymentPage = () => {
         const fetchProvince = async () => {
         try {
             const dataProvinces = await getProvinces(userToken);
-            if (dataProvinces?.data) {
+            if (dataProvinces) {
             const province = dataProvinces.data.find(
-                (prov) => prov.province_id === dataAccount?.address?.province
+                (prov) => prov?.id === Number(dataAccount?.address?.province)
             );
-            setProvince(province?.province);
+            setProvince(province?.name);
             }
         } catch (error) {
             setProvince("Gagal memuat data..");
@@ -169,11 +169,12 @@ const PaymentPage = () => {
           const fetchCities = async () => {
             try {
               const dataCity = await getCities(dataAccount?.address?.province);
+              console.log('dataCity',dataCity)
               if (dataCity) {
                 const city = dataCity.find(
-                  (cities) => cities.city_id === dataAccount?.address?.city
+                  (cities) => cities.id === Number(dataAccount?.address?.city)
                 );
-                setCity(city?.city_name || "Kota tidak ditemukan");
+                setCity(city?.name || "Kota tidak ditemukan");
               }
             } catch (error) {
               setCity('Gagal memuat data..'); 

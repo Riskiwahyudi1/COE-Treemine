@@ -51,13 +51,18 @@ const checkShippingCost = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const courier = req.query.couriers;
+        // ambil couriers & product dari query (sementara)
+        const couriers = req.query.couriers;  
         const product = req.query.product; 
 
-        
-        const productTypes = ['standart', 'costom_prototype', 'costom_assembly'];
+        if (!couriers) {
+            return res.status(400).json({ message: 'Couriers is required' });
+        }
 
+        // hitung berat produk (kode kamu sebelumnya sudah oke)
+        const productTypes = ['standart', 'costom_prototype', 'costom_assembly'];
         const productQuantities = {};
+
         productTypes.forEach(type => {
             product.forEach(item => {
                 item[type]?.forEach(entry => {
@@ -70,17 +75,11 @@ const checkShippingCost = async (req, res) => {
             });
         });
 
-        // menghitung berat masing masing produk
+        
         const validIds = Object.keys(productQuantities);
-        const requestCustomAssemblies = await RequestCustomAssembly.find({
-            _id: { $in: validIds } 
-        });
-        const requestPrototypes = await RequestCustomPrototype.find({
-            _id: { $in: validIds } 
-        });
-        const standartProduct = await Product.find({
-            _id: { $in: validIds } 
-        });
+        const requestCustomAssemblies = await RequestCustomAssembly.find({ _id: { $in: validIds } });
+        const requestPrototypes = await RequestCustomPrototype.find({ _id: { $in: validIds } });
+        const standartProduct = await Product.find({ _id: { $in: validIds } });
 
         const totalWeightStandartProduct = standartProduct.reduce((total, product) => {
             const quantity = productQuantities[product._id] || 1;
@@ -100,26 +99,23 @@ const checkShippingCost = async (req, res) => {
             return total + (quantity * weight);
         }, 0);
 
-        if (!courier) {
-            return res.status(400).json({ message: 'Courier is required' });
-        }
-
-        const origin = 48; // ID kota Batam
-        const destination = userData.address.city;;
-
         const weights = [totalWeightStandartProduct, weigthPrototype, weigthAssembly];
         const shippingWeight = weights.find(weight => weight > 0) ?? 1200;
 
+        // --- pakai district_id static
+        const origin = 1391;       // contoh: kecamatan Batam
+        const destination = 1376;   // contoh: kecamatan tujuan
 
-        const shippingCost = await calculateShippingCost(origin, destination, shippingWeight, courier);
-
+        // hitung ongkir via RajaOngkir
+        const shippingCost = await calculateShippingCost(origin, destination, shippingWeight, couriers);
         res.json(shippingCost);
 
     } catch (error) {
-        console.error(error);
+        console.error("Shipping error:", error.response?.data || error.message);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
 
 
 

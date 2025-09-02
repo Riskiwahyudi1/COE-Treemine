@@ -34,8 +34,8 @@ export default function ProfileSettings() {
         profile_picture: null
 
     })
-    console.log("tesss",provinces)
-    console.log("dataakun",dataAccount)
+    console.log("selectedCity",selectedCity)
+    console.log("dataAccount",dataAccount)
     // state default
     useEffect(() => {
         setProfilePhoto(`${apiConfig.baseURL}${dataAccount.profile_picture_url}`);
@@ -163,7 +163,6 @@ export default function ProfileSettings() {
             try {
                 const data = await getDataAccount(userToken);
                 setDataAccount(data);
-                console.log('data', data)
                 setFormData({
                     ...formData,
                     name: data.name,

@@ -26,7 +26,7 @@ export default function ProfileSettings() {
     profile_picture: null
 
   })
-  console.log('provinces', provinces)
+  console.log('formData', formData)
   // state default
   useEffect(() => {
     setProfilePhoto(`${apiConfig.baseURL}${dataAccount.profile_picture_url}`);
@@ -67,11 +67,11 @@ export default function ProfileSettings() {
   useEffect(() => {
     const fetchProvince = async () => {
       try {
-        const dataProvinces = await getProvinces();
-        console.log(dataProvinces)
-        if (dataProvinces?.data) {
+        const dataProvinces = await getProvinces(userToken);
+        console.log('data prov',dataProvinces)
+        if (dataProvinces) {
           const province = dataProvinces.data.find(
-            (prov) => prov.province_id === formData.province
+            (prov) => prov?.id === Number(formData.province)
           );
           setProvinces(province?.name || "Provinsi tidak ditemukan");
         }
@@ -93,9 +93,9 @@ export default function ProfileSettings() {
         const dataCity = await getCities(formData.province);
         if (dataCity) {
           const city = dataCity.find(
-            (cities) => cities.city_id === formData.city
+            (cities) => cities.id === Number(formData.city)
           );
-          setCities(city?.city_name || "Kota tidak ditemukan");
+          setCities(city?.name || "Kota tidak ditemukan");
         }
       } catch (error) {
         setCities('Gagal memuat data kota'); 
