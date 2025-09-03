@@ -7,7 +7,6 @@ const getProvinces = async () => {
         const url = `${config.baseUrl}/destination/province`;
         const headers = { key: config.apiKey };
         const response = await axios.get(url, { headers });
-       
         return response.data.data; 
     } catch (error) {
         throw new Error(
@@ -24,7 +23,6 @@ const getCities = async (province_id) => {
         const headers = { key: config.apiKey };
 
         const response = await axios.get(url, { headers });
-         console.log(response)
         return response.data.data;
     } catch (error) {
         throw new Error(`Error fetching cities: ${error.response?.data?.rajaongkir?.status?.description || error.message}`);
@@ -47,7 +45,6 @@ const calculateShippingCost = async (origin, destination, weight, couriers) => {
         });
 
         const response = await axios.post(url, data, { headers });
-        console.log(response.data)
         return response.data;
     } catch (error) {
         throw new Error(

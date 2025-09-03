@@ -28,16 +28,18 @@ import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
 
 const PaymentPage = () => {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const location = useLocation();
-    const { userToken } = useAuth(); 
+    const { userToken } = useAuth();
     const [costList, setCost] = useState([])
-    console.log('costList', shipingOption)
+    console.log('costList', costList)
+
     const [costShipping, setcostShipping] = useState(0)
     const [estimasionDay, setEstimasionDay] = useState('')
     const [selectedOption, setSelectedOption] = useState('')
     const [selectedCourier, setSelectedCourier] = useState('')
-    const [shipingOption, setShipingOption] = useState([])
+    const [shipingOption, setShipingOption] = useState('')
+    console.log('shipingOption', shipingOption)
     const [dataAccount, setDataAccount] = useState([])
     const [province, setProvince] = useState('')
     const [city, setCity] = useState('')
@@ -54,42 +56,42 @@ const PaymentPage = () => {
 
     const productsToCheckout = productListInCart.filter(product =>
         selectedProducts[product._id] === true
-        
-      );
+
+    );
     // get costom produk dari keranjang
     const costomProduct = location.state?.singleProductCostom || [];
-      
-   
-      // mengambil id produk standart
-      useEffect(() => {
+
+
+    // mengambil id produk standart
+    useEffect(() => {
         if (Array.isArray(productsToCheckout)) {
             const idProdukStandart = productsToCheckout.map((product) => ({
-                id_product: product?.id_product?._id, 
+                id_product: product?.id_product?._id,
                 quantity: product?.quantity || 1,
             }));
-    
-            setIdProductStandart(idProdukStandart); 
+
+            setIdProductStandart(idProdukStandart);
         }
     }, []);
 
     // cek produk costom atau assembly
     useEffect(() => {
         if (Array.isArray(costomProduct) && costomProduct.length > 0) {
-            
+
             const idProdukCostom = costomProduct.map((product) => ({
                 id_request_costom: product?._id,
                 name_request_costom: product?.name,
                 quantity: 1,
             }));
-    
+
             const prototypeItems = idProdukCostom.filter(
                 (item) => item.name_request_costom === "Costom Prototype"
             );
             const assemblyItems = idProdukCostom.filter(
                 (item) => item.name_request_costom === "Costom Assembly"
             );
-            
-            
+
+
             if (prototypeItems.length > 0) {
                 setIdProductProrotype(prototypeItems);
             }
@@ -98,14 +100,14 @@ const PaymentPage = () => {
             }
         }
     }, [costomProduct]);
-    
+
 
 
     // menghitung total harga produk
     useEffect(() => {
         let total = 0;
-    
-       if (costomProduct.length > 0) {
+
+        if (costomProduct.length > 0) {
             total = costomProduct.reduce((total, product) => {
                 const totalCost = Number(product.total_cost) || 0;
                 return total + totalCost;
@@ -117,76 +119,76 @@ const PaymentPage = () => {
                 return total + (price * quantity);
             }, 0);
         }
-    
+
         settotalPriceProduct(total);
     }, [productsToCheckout, costomProduct]);
-    
-  
+
+
     // menghitung total pembayaran
     useEffect(() => {
         const validTotalPrice = Number(totalPriceProduct) || 0;
         const validCostShipping = Number(costShipping) || 0;
-      
+
         setTotalPayment(validTotalPrice + validCostShipping);
-      }, [totalPriceProduct, costShipping]);
-      
+    }, [totalPriceProduct, costShipping]);
+
     //   data akun user
     useEffect(() => {
         const fetchDataAccount = async () => {
-          try {
-            const data = await getDataAccount(userToken);
-            setDataAccount(data);
-          } catch (error) {
-          }
+            try {
+                const data = await getDataAccount(userToken);
+                setDataAccount(data);
+            } catch (error) {
+            }
         };
         fetchDataAccount();
-      }, []);
+    }, []);
 
-      //  provinsi user
+    //  provinsi user
     useEffect(() => {
         const fetchProvince = async () => {
-        try {
-            const dataProvinces = await getProvinces(userToken);
-            if (dataProvinces) {
-            const province = dataProvinces.data.find(
-                (prov) => prov?.id === Number(dataAccount?.address?.province)
-            );
-            setProvince(province?.name);
+            try {
+                const dataProvinces = await getProvinces(userToken);
+                if (dataProvinces) {
+                    const province = dataProvinces.data.find(
+                        (prov) => prov?.id === Number(dataAccount?.address?.province)
+                    );
+                    setProvince(province?.name);
+                }
+            } catch (error) {
+                setProvince("Gagal memuat data..");
             }
-        } catch (error) {
-            setProvince("Gagal memuat data..");
-        }
         };
-    
+
         if (dataAccount?.address?.province) {
-        fetchProvince();
+            fetchProvince();
         }
     }, [dataAccount]);
-      
-        // kota berdasarkan profinsi
-        useEffect(() => {
+
+    // kota berdasarkan profinsi
+    useEffect(() => {
         if (dataAccount?.address?.province) {
-          const fetchCities = async () => {
-            try {
-              const dataCity = await getCities(dataAccount?.address?.province);
-              console.log('dataCity',dataCity)
-              if (dataCity) {
-                const city = dataCity.find(
-                  (cities) => cities.id === Number(dataAccount?.address?.city)
-                );
-                setCity(city?.name || "Kota tidak ditemukan");
-              }
-            } catch (error) {
-              setCity('Gagal memuat data..'); 
-            }
-          };
-          fetchCities();
+            const fetchCities = async () => {
+                try {
+                    const dataCity = await getCities(dataAccount?.address?.province);
+
+                    if (dataCity) {
+                        const city = dataCity.find(
+                            (cities) => cities.id === Number(dataAccount?.address?.city)
+                        );
+                        setCity(city?.name || "Kota tidak ditemukan");
+                    }
+                } catch (error) {
+                    setCity('Gagal memuat data..');
+                }
+            };
+            fetchCities();
         } else {
-          setCity([]); 
+            setCity([]);
         }
-      }, [dataAccount]);
-      
-   
+    }, [dataAccount]);
+
+
     // memilih kurir
     useEffect(() => {
         const fetchCost = async () => {
@@ -195,58 +197,50 @@ const PaymentPage = () => {
                 {
                     standart: idProductStandart,
                     costom_prototype: idProdukPrototype,
-                    costom_assembly: idProdukAssembly 
+                    costom_assembly: idProdukAssembly
                 }
             ]
 
             if (!selectedCourier) return;
             try {
-                const data = await getCost(selectedCourier, product, userToken); 
-                setCost(data);  
+                const data = await getCost(selectedCourier, product, userToken);
+                setCost(data);
             } catch (error) {
                 console.error("Error fetching cost:", error);
             }
         };
 
-        fetchCost(); 
+        fetchCost();
     }, [selectedCourier]);
 
 
 
-    // get ingkir dan estimasi pengiriman
     useEffect(() => {
-        if (costList && Array.isArray(costList)) {
+        if (costList && Array.isArray(costList.data)) {
             const listServicesAndDescriptions = [];
             let costValue = '';
             let etd = '';
-           
-    
-            costList.forEach((courier) => {
-                if (courier.costs && Array.isArray(courier.costs)) {
-                    courier.costs.forEach((service) => {
-                        listServicesAndDescriptions.push({
-                            service: service.service,
-                            description: service.description,
-                        });
-                        
-                        if (service.service === selectedOption && Array.isArray(service.cost)) {
-                            const firstCost = service.cost[0]; 
-                            if (firstCost) {
-                                costValue = firstCost.value; 
-                                etd = firstCost.etd;
-                            }
-                        }
-                    });
+
+            costList.data.forEach((service) => {
+                listServicesAndDescriptions.push({
+                    service: service.service,
+                    description: service.description,
+                });
+
+                if (service.service === selectedOption) {
+                    costValue = service.cost;
+                    etd = service.etd;
                 }
             });
-    
+
             setShipingOption(listServicesAndDescriptions);
-            setcostShipping(costValue); 
-            setEstimasionDay(etd); 
+            setcostShipping(costValue);
+            setEstimasionDay(etd);
         }
-    }, [costList, selectedOption]);
-    
-    
+    }, [costList, selectedOption, shipingOption]);
+
+
+
     // handle list
     const handleSelectShippingOptions = (event) => {
         setSelectedOption(event.target.value);
@@ -255,7 +249,7 @@ const PaymentPage = () => {
         setSelectedCourier(event.target.value);
     };
     const handleBack = () => {
-        navigate(-1); 
+        navigate(-1);
     };
 
     const handleEditAlamat = () => {
@@ -264,26 +258,26 @@ const PaymentPage = () => {
 
     const handleCheckout = async () => {
         const data = {
-            id_user : dataAccount._id,
+            id_user: dataAccount._id,
             product: [
                 {
                     standart: idProductStandart,
                     costom_prototype: idProdukPrototype,
-                    costom_assembly: idProdukAssembly 
+                    costom_assembly: idProdukAssembly
                 }
             ],
             expedition: [
                 {
                     courier: selectedCourier,
                     shipping_option: selectedOption,
-                    shipping_cost: costShipping, 
+                    shipping_cost: costShipping,
                 },
             ],
             total_payment: totalPayment,
             estimated_delivery: estimasionDay,
 
         }
-        
+
         try {
             const response = await getCostomPrototypeData(data, userToken);
             if (response.status === 201) {
@@ -297,21 +291,21 @@ const PaymentPage = () => {
             alert('Failed to fetch data. Please try again.');
         }
     };
-    
- 
+
+
     return (
         <Box
             sx={{
                 padding: 4,
                 bgcolor: "#f0f0f0",
-                minHeight: "100vh", 
+                minHeight: "100vh",
             }}
         >
             <Paper
                 sx={{
                     padding: 4,
                     maxWidth: "1000px",
-                    margin: "40px auto", 
+                    margin: "40px auto",
                     bgcolor: "#f9f9f9",
                     borderRadius: 2,
                     boxShadow: 3,
@@ -353,7 +347,7 @@ const PaymentPage = () => {
                             InputLabelProps={{
                                 shrink: true,
                             }}
-                                        />
+                        />
                         <TextField
                             fullWidth
                             label="Detail Alamat"
@@ -363,163 +357,169 @@ const PaymentPage = () => {
                             rows={3}
                             sx={{ mb: 2 }}
                             InputLabelProps={{
-                            shrink: true,
+                                shrink: true,
                             }}
                             InputProps={{
-                            readOnly: true,
+                                readOnly: true,
                             }}
                         />
-                    <Button
-                                type="submit"
-                                onClick={handleEditAlamat}
-                                variant="contained"
-                                sx={{ backgroundColor: "#00A63F", textTransform: "none", color: "#fff" }}
-                                
-                              >Edit Alamat
-                              </Button>
+                        <Button
+                            type="submit"
+                            onClick={handleEditAlamat}
+                            variant="contained"
+                            sx={{ backgroundColor: "#00A63F", textTransform: "none", color: "#fff" }}
+
+                        >Edit Alamat
+                        </Button>
                     </CardContent>
                 </Card>
 
                 {
                     productsToCheckout.length > 0 && costomProduct.length > 0 ? (
                         <Typography variant="body1" color="text.secondary">
-                        Error: Tidak bisa menampilkan kedua jenis produk bersamaan!
+                            Error: Tidak bisa menampilkan kedua jenis produk bersamaan!
                         </Typography>
                     ) : costomProduct.length > 0 ? (
                         // Render produk khusus (costomProduct)
                         <Grid container spacing={2} sx={{ mb: 2 }}>
-                        {costomProduct.map((product) => (
-                            <Grid item xs={12} key={product._id}>
-                            <Box
-                                display="flex"
-                                alignItems="center"
-                                gap={2}
-                                sx={{ padding: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}
-                            >
-                                {/* Gambar produk */}
-                               
-                                {product.name === 'Costom Prototype' ? (
-                                <CardMedia
-                                component="img"
-                                image={CostomPrototypeImg}
-                                alt={product.name}
-                                
-                                sx={{
-                                    width: 100,
-                                    height: 100,
-                                    objectFit: 'cover',
-                                    borderRadius: 2,
-                                    border: "1px solid #00A63F",
-                                    borderColor: "primary.main",
-                                }}
-                                />
-                            ) : (
-                                <CardMedia
-                                component="img"
-                                image={CostomAssemblyImg}
-                                alt={product.name}
-                                
-                                sx={{
-                                    width: 100,
-                                    height: 100,
-                                    objectFit: 'cover',
-                                    borderRadius: 2,
-                                    border: "1px solid #00A63F",
-                                    borderColor: "primary.main",
-                                }}
-                                />
-                            )}
-                                {/* Informasi produk */}
-                                <Box>
-                                <Typography variant="subtitle1" fontWeight="bold">
-                                    {product.name || 'Unnamed Product'}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Harga: Rp.{Number(product.total_cost).toLocaleString()}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Qty: 1
-                                </Typography>
-                                </Box>
-                            </Box>
-                            </Grid>
-                        ))}
+                            {costomProduct.map((product) => (
+                                <Grid item xs={12} key={product._id}>
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        gap={2}
+                                        sx={{ padding: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}
+                                    >
+                                        {/* Gambar produk */}
+
+                                        {product.name === 'Costom Prototype' ? (
+                                            <CardMedia
+                                                component="img"
+                                                image={CostomPrototypeImg}
+                                                alt={product.name}
+
+                                                sx={{
+                                                    width: 100,
+                                                    height: 100,
+                                                    objectFit: 'cover',
+                                                    borderRadius: 2,
+                                                    border: "1px solid #00A63F",
+                                                    borderColor: "primary.main",
+                                                }}
+                                            />
+                                        ) : (
+                                            <CardMedia
+                                                component="img"
+                                                image={CostomAssemblyImg}
+                                                alt={product.name}
+
+                                                sx={{
+                                                    width: 100,
+                                                    height: 100,
+                                                    objectFit: 'cover',
+                                                    borderRadius: 2,
+                                                    border: "1px solid #00A63F",
+                                                    borderColor: "primary.main",
+                                                }}
+                                            />
+                                        )}
+                                        {/* Informasi produk */}
+                                        <Box>
+                                            <Typography variant="subtitle1" fontWeight="bold">
+                                                {product.name || 'Unnamed Product'}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Harga: Rp.{Number(product.total_cost).toLocaleString()}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Qty: 1
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </Grid>
+                            ))}
                         </Grid>
                     ) : productsToCheckout.length > 0 ? (
                         <Grid container spacing={2} sx={{ mb: 2 }}>
-                        {productsToCheckout.map((product) => (
-                            <Grid item xs={12} key={product._id}>
-                            <Box
-                                display="flex"
-                                alignItems="center"
-                                gap={2}
-                                sx={{ padding: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}
-                            >
-                                {/* Gambar produk */}
-                                <CardMedia
-                                component="img"
-                                image={`${apiConfig.baseURL}${product.id_product?.picture_url || ''}`}
-                                alt={product.id_product?.product_name || 'Unnamed Product'}
-                                sx={{
-                                    width: 100,
-                                    height: 100,
-                                    objectFit: 'cover',
-                                    borderRadius: 2,
-                                    border: "1px solid #00A63F",
-                                    borderColor: "primary.main",
-                                }}
-                                />
+                            {productsToCheckout.map((product) => (
+                                <Grid item xs={12} key={product._id}>
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        gap={2}
+                                        sx={{ padding: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}
+                                    >
+                                        {/* Gambar produk */}
+                                        <CardMedia
+                                            component="img"
+                                            image={`${apiConfig.baseURL}${product.id_product?.picture_url || ''}`}
+                                            alt={product.id_product?.product_name || 'Unnamed Product'}
+                                            sx={{
+                                                width: 100,
+                                                height: 100,
+                                                objectFit: 'cover',
+                                                borderRadius: 2,
+                                                border: "1px solid #00A63F",
+                                                borderColor: "primary.main",
+                                            }}
+                                        />
 
-                                {/* Informasi produk */}
-                                <Box>
-                                <Typography variant="subtitle1" fontWeight="bold">
-                                    {product.id_product?.product_name || 'Unnamed Product'}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Harga: Rp. {product.id_product?.harga.toLocaleString()} /Pcs
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Qty: {product.quantity || 1}
-                                </Typography>
-                                </Box>
-                            </Box>
-                            </Grid>
-                        ))}
+                                        {/* Informasi produk */}
+                                        <Box>
+                                            <Typography variant="subtitle1" fontWeight="bold">
+                                                {product.id_product?.product_name || 'Unnamed Product'}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Harga: Rp. {product.id_product?.harga.toLocaleString()} /Pcs
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Qty: {product.quantity || 1}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </Grid>
+                            ))}
                         </Grid>
                     ) : (
                         <Typography variant="body1" color="text.secondary">
-                        No products selected for checkout!
+                            No products selected for checkout!
                         </Typography>
                     )
-                    }
+                }
 
-                <Grid container spacing={2}  sx={{ mb: 2 }}>
-                        <Grid item xs={6}> 
-                            <FormControl fullWidth variant="outlined">
-                                <InputLabel>Pilih Kurir</InputLabel>
-                                <Select
-                                    name="Pilih Kurir"
-                                    value={selectedCourier}
-                                    label="Pilih Kurir"
-                                    onChange={handleSelectCouriers}
-                                   
-                                >
-                                    
-                                        <MenuItem  value='jne'>
-                                            JNE Express
-                                        </MenuItem>
-                                        <MenuItem  value='pos'>
-                                            POS Indonesia
-                                        </MenuItem>
-                                        <MenuItem  value='tiki'>
-                                            TIKI
-                                        </MenuItem>
-                                 
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                    {shipingOption?.length > 0 &&(
-                        <Grid item xs={6}>  
+                <Grid container spacing={2} sx={{ mb: 2 }}>
+                    <Grid item xs={6}>
+                        <FormControl fullWidth variant="outlined">
+                            <InputLabel>Pilih Kurir</InputLabel>
+                            <Select
+                                name="Pilih Kurir"
+                                value={selectedCourier}
+                                label="Pilih Kurir"
+                                onChange={handleSelectCouriers}
+
+                            >
+
+                                <MenuItem value='jnt'>
+                                    J&T Express
+                                </MenuItem>
+                                <MenuItem value='sicepat'>
+                                    SiCepat Express
+                                </MenuItem>
+                                <MenuItem value='jne'>
+                                    JNE Express
+                                </MenuItem>
+                                <MenuItem value='lion'>
+                                    Lion Parcel
+                                </MenuItem>
+                                <MenuItem value='pos'>
+                                    POS Indonesia
+                                </MenuItem>
+
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    {shipingOption?.length > 0 && (
+                        <Grid item xs={6}>
                             <FormControl fullWidth variant="outlined">
                                 <InputLabel>Opsi Layanan</InputLabel>
                                 <Select
@@ -528,15 +528,22 @@ const PaymentPage = () => {
                                     label="Opsi Layanan"
                                     onChange={handleSelectShippingOptions}
                                 >
+                                    {/* Default option */}
+                                    <MenuItem value="">
+                                        ---Pilih Kurir---
+                                    </MenuItem>
+
+                                    {/* List dari JSON */}
                                     {shipingOption.map((obj) => (
                                         <MenuItem key={obj.service} value={obj.service}>
-                                            {obj.description}
+                                            {obj.service} - {obj.description}
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
                         </Grid>
                     )}
+
                 </Grid>
 
 
@@ -566,14 +573,14 @@ const PaymentPage = () => {
                     <Button
                         variant="outlined"
                         color="primary"
-                        onClick={handleBack} 
+                        onClick={handleBack}
                     >
                         Back
                     </Button>
-                    <Button 
-                        variant="contained" 
-                        color="#00A63F" 
-                        type="submit" 
+                    <Button
+                        variant="contained"
+                        color="#00A63F"
+                        type="submit"
                         sx={{
                             backgroundColor: "#00A63F",
                             color: "white",
