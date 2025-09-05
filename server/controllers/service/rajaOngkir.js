@@ -3,7 +3,7 @@ const RequestCustomPrototype = require('../../models/request-costom-prototype');
 const RequestCustomAssembly = require('../../models/request-costom-assembly');
 const Product = require('../../models/product');
 
-const { getProvinces, getCities, calculateShippingCost } = require('../../services/rajaOngkirService');
+const { getProvinces, getDistrict, getCities, getSubDistrict, calculateShippingCost } = require('../../services/rajaOngkirService');
 
 const fetchProvinces = async (req, res) => {
     try {
@@ -18,10 +18,35 @@ const fetchCitiesByProvince = async (req, res) => {
     try {
         const { province_id } = req.query;
         if (!province_id) {
-            return res.status(400).json({ success: false, message: 'province_id is required' });
+            return res.status(400).json({ success: false, message: 'province id is required' });
         }
         const cities = await getCities(province_id);
         res.status(200).json({ success: true, data: cities });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+const fetchDistrictByCity = async (req, res) => {
+    try {
+        const { city_id } = req.query;
+        if (!city_id) {
+            return res.status(400).json({ success: false, message: 'city id is required' });
+        }
+        const district = await getDistrict(city_id);
+        res.status(200).json({ success: true, data: district });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+const fetchSubDistrictByDistrict = async (req, res) => {
+    try {
+        const { district_id } = req.query;
+        if (!district_id) {
+            return res.status(400).json({ success: false, message: 'District id is required' });
+        }
+        const subDistrict = await getSubDistrict(district_id);
+        res.status(200).json({ success: true, data: subDistrict });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -119,4 +144,4 @@ const checkShippingCost = async (req, res) => {
 
 
 
-module.exports = { fetchProvinces, fetchCitiesByProvince, checkShippingCost, getAvailableCouriers };
+module.exports = { fetchProvinces, fetchCitiesByProvince, fetchDistrictByCity, fetchSubDistrictByDistrict, checkShippingCost, getAvailableCouriers };

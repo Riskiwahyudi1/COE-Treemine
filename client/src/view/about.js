@@ -40,7 +40,7 @@ const LandingPage = () => {
             >
                 {/* Bagian Fitur Produk */}
                 <Box sx={{ bgcolor: 'transparent' }}>
-                    <Container sx={{ pt: 5, pb: 5 }}>
+                    <Container sx={{ pb: 5 }}>
                         <Typography
                             variant="h4"
                             gutterBottom

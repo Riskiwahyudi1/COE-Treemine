@@ -40,7 +40,7 @@ router.put(
         .custom((value) => {
           try {
             const address = JSON.parse(value);
-            if (!address.detail_address || !address.city || !address.province || !address.postal_code) {
+            if (!address.detail_address || !address.city || !address.province) {
               throw new Error('Alamat tidak lengkap!');
             }
             return true;

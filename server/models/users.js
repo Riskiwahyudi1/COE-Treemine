@@ -49,15 +49,19 @@ const userSchema = new mongoose.Schema({
             type: String,
             default: null
         },
+        sub_district: {
+            type: String,
+            default: null
+        },
+        district: {
+            type: String,
+            default: null
+        },
         city: {
             type: String,
             default: null
         },
         province: {
-            type: String,
-            default: null
-        },
-        postal_code: {
             type: String,
             default: null
         },

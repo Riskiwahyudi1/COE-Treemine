@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Avatar, Button, TextField, Grid, Paper, MenuItem, Alert, CircularProgress } from "@mui/material";
-import { getProvinces, getCities } from "../api/service/rajaOngkirApi"
+import { getProvinces, getCities, getDistrict, getSubDistrict } from "../api/service/rajaOngkirApi"
 import { getDataAccount } from "../api/auth/dataAccount"
 import Toast from "../utils/Toast";
 import Dialog from "../utils/Dialog";
@@ -17,8 +17,12 @@ export default function ProfileSettings() {
     const [profilePhoto, setProfilePhoto] = useState("");
     const [provinces, setProvinces] = useState([]);
     const [cities, setCities] = useState([]);
+    const [district, setDistrict] = useState([]);
+    const [subDistrict, setSubDistrict] = useState([]);
     const [selectedProvince, setSelectedProvince] = useState("");
     const [selectedCity, setSelectedCity] = useState("");
+    const [selectedDistrict, setSelectedDistrict] = useState("");
+    const [selectedSubDistrict, setSelectedSubDistrict] = useState("");
     const [dataAccount, setDataAccount] = useState({ address: {} });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState('');
@@ -29,13 +33,12 @@ export default function ProfileSettings() {
         birthday: '',
         province: '',
         city: '',
-        postal_code: '',
+        district: '',
+        sub_district: '',
         detail_address: '',
         profile_picture: null
 
     })
-    console.log("selectedCity",selectedCity)
-    console.log("dataAccount",dataAccount)
     // state default
     useEffect(() => {
         setProfilePhoto(`${apiConfig.baseURL}${dataAccount.profile_picture_url}`);
@@ -47,6 +50,12 @@ export default function ProfileSettings() {
 
     useEffect(() => {
         setSelectedCity(`${dataAccount.address.city}`);
+    }, [dataAccount]);
+    useEffect(() => {
+        setSelectedDistrict(`${dataAccount.address.district}`);
+    }, [dataAccount]);
+    useEffect(() => {
+        setSelectedSubDistrict(`${dataAccount.address.sub_district}`);
     }, [dataAccount]);
 
     // handle foto profil
@@ -82,9 +91,10 @@ export default function ProfileSettings() {
             !formData.gender ||
             !formData.birthday ||
             !formData.detail_address ||
+            !formData.sub_district ||
+            !formData.district ||
             !formData.city ||
-            !formData.province ||
-            !formData.postal_code
+            !formData.province
         ) {
             setError('All fields are required.');
             setLoading(false);
@@ -105,9 +115,11 @@ export default function ProfileSettings() {
                     'address',
                     JSON.stringify({
                         detail_address: formData.detail_address,
+                        sub_district: formData.sub_district,
+                        district: formData.district,
                         city: formData.city,
                         province: formData.province,
-                        postal_code: formData.postal_code,
+                        
                     })
                 );
                 data.append('profile_picture', formData.profile_picture);
@@ -172,7 +184,8 @@ export default function ProfileSettings() {
                     birthday: data.birthday,
                     province: data.address.province,
                     city: data.address.city,
-                    postal_code: data.address.postal_code,
+                    district: data.address.district,
+                    sub_district: data.address.sub_district,
                     detail_address: data.address.detail_address,
                     profile_picture: data.profile_picture
                 });
@@ -200,7 +213,7 @@ export default function ProfileSettings() {
         if (selectedProvince) {
             const fetchCities = async () => {
                 try {
-                    const data = await getCities(selectedProvince);
+                    const data = await getCities(selectedProvince, userToken);
                     setCities(data);
                 } catch (error) {
                     console.error("Error fetching cities", error);
@@ -211,6 +224,40 @@ export default function ProfileSettings() {
             setCities([]);
         }
     }, [selectedProvince]);
+
+    // data kecamatan berdasarkan kota/kab
+    useEffect(() => {
+        if (selectedCity) {
+            const fetchDistrict = async () => {
+                try {
+                    const data = await getDistrict(selectedCity, userToken);
+                    setDistrict(data);
+                } catch (error) {
+                    console.error("Error fetching District", error);
+                }
+            };
+            fetchDistrict();
+        } else {
+            setDistrict([]);
+        }
+    }, [selectedCity, selectedProvince]);
+
+    // data kelurahan berdasarkan kecamatan
+    useEffect(() => {
+        if (selectedDistrict) {
+            const fetchSubDistrict = async () => {
+                try {
+                    const data = await getSubDistrict(selectedDistrict, userToken);
+                    setSubDistrict(data);
+                } catch (error) {
+                    console.error("Error fetching Sub District", error);
+                }
+            };
+            fetchSubDistrict();
+        } else {
+            setSubDistrict([]);
+        }
+    }, [selectedDistrict, selectedCity, selectedProvince]);
 
 
     // handle change input
@@ -238,6 +285,22 @@ export default function ProfileSettings() {
         }));
         setSelectedCity(e.target.value)
     }
+    const handleSelectDistrict = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+        setSelectedDistrict(e.target.value)
+    }
+    const handleSelectSubDistrict = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+        setSelectedSubDistrict(e.target.value)
+    }
 
     const handleMultipleChanges = (e) => {
         const { name } = e.target;
@@ -246,6 +309,10 @@ export default function ProfileSettings() {
             handleSelectProvince(e);
         } else if (name === "city") {
             handleSelectCity(e);
+        } else if (name === "district") {
+            handleSelectDistrict(e);
+        } else if (name === "sub_district") {
+            handleSelectSubDistrict(e);
         } else {
             handleChange(e);
         }
@@ -433,7 +500,7 @@ export default function ProfileSettings() {
                             fullWidth
                             select
                             name="province"
-                            label="Ubah Provinsi"
+                            label="Pilih Provinsi"
                             variant="outlined"
                             defaultValue=""
                             id="province"
@@ -455,7 +522,7 @@ export default function ProfileSettings() {
                             fullWidth
                             select
                             name="city"
-                            label="Ubah Kab/Kota"
+                            label="Pilih Kab/Kota"
                             variant="outlined"
                             id="city"
                             defaultValue={formData.province}
@@ -474,20 +541,54 @@ export default function ProfileSettings() {
                             ))}
                         </TextField>
                     </Grid>
-
                     <Grid item xs={12} sm={6}>
                         <TextField
                             fullWidth
-                            name="postal_code"
-                            label="Kode Pos"
+                            select
+                            name="district"
+                            label="Pilih Kecamatan"
                             variant="outlined"
-                            value={formData.postal_code || ''}
+                            id="district"
+                            defaultValue={formData.district}
+                            value={selectedDistrict}
                             onChange={handleMultipleChanges}
-                            error={!dataAccount?.address?.postal_code}
-                            helperText={!dataAccount?.address?.postal_code ? "Lengkapi kode pos!" : ""}
-                        />
+                            error={!dataAccount.address.district}
+                            helperText={!dataAccount.address.district ? "Lengkapi Kecamatan !" : ""}
+                        >
+                            <MenuItem value="">
+                                {selectedCity ? "Pilih Kecamatan" : "Silahkan pilih Kab/Kota dahulu!"}
+                            </MenuItem>
+                            {district?.map((dist) => (
+                                <MenuItem key={dist.id} value={dist.id}>
+                                    {dist.name}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                     </Grid>
-
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            fullWidth
+                            select
+                            name="sub_district"
+                            label="Pilih Kelurahan"
+                            variant="outlined"
+                            id="sub_district"
+                            defaultValue={formData.sub_district}
+                            value={selectedSubDistrict}
+                            onChange={handleMultipleChanges}
+                            error={!dataAccount.address.sub_district}
+                            helperText={!dataAccount.address.sub_district ? "Lengkapi District !" : ""}
+                        >
+                            <MenuItem value="">
+                                {selectedDistrict ? "Pilih district" : "Silahkan pilih Kab/Kota dahulu!"}
+                            </MenuItem>
+                            {subDistrict?.map((dist) => (
+                                <MenuItem key={dist.id} value={dist.id}>
+                                    {dist.name}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid>
                     {/* Alamat */}
                     <Grid item xs={12}>
                         <TextField

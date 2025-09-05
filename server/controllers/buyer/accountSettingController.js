@@ -39,7 +39,7 @@ const updateProfile = async (req, res) => {
         const { name, phone, gender, birthday, address } = req.body;
         const profile_picture = req.file; 
         let addressData = {};
-
+        console.log(addressData)
         if (address) {
             try {
                 addressData = JSON.parse(address); 

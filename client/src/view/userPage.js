@@ -285,7 +285,7 @@ export default function ProfileSettings() {
               fullWidth
               label="Detail Alamat"
               variant="outlined"
-              value={`${formData.detail_address || ''}, ${cities || ''}, ${provinces || ''}, ${formData.postal_code || ''}`}
+              value={`${formData.detail_address || ''}, ${cities || ''}, ${provinces || ''}`}
               multiline
               rows={3}
               InputLabelProps={{

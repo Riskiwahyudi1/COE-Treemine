@@ -286,8 +286,8 @@ const App = () => {
                         textAlign: 'center',
                         fontWeight: 'bold',
                         color: '#000000',
-                        marginBottom: '30px',
-                        marginTop: '-130px',
+                        // marginBottom: '30px',
+                        // marginTop: '-130px',
                     }}
                 >
                     Produk Kami

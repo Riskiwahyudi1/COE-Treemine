@@ -20,12 +20,42 @@ export const getProvinces = async (token) => {
     }
 };
 
-// detail provinsi user
-
 // semua kota berdasarkan profinsi
-export const getCities = async (provinceId) => {
+export const getCities = async (provinceId, token) => {
     try {
-        const response = await axios.get(`${API_URL}/cities?province_id=${provinceId}`);
+        const response = await axios.get(`${API_URL}/cities?province_id=${provinceId}`,{
+            headers: {
+                'Authorization': `Bearer ${token}`,  
+            }
+        });
+        return response.data.data; 
+    } catch (error) {
+        console.error("Error fetching cities:", error);
+        throw error;
+    }
+};
+// semua kecamatan berdasarkan kota
+export const getDistrict = async (cityId, token) => {
+    try {
+        const response = await axios.get(`${API_URL}/district?city_id=${cityId}`,{
+            headers: {
+                'Authorization': `Bearer ${token}`,  
+            }
+        });
+        return response.data.data; 
+    } catch (error) {
+        console.error("Error fetching cities:", error);
+        throw error;
+    }
+};
+// semua kelurahan berdasarkan kecamatan
+export const getSubDistrict = async (districtId, token) => {
+    try {
+        const response = await axios.get(`${API_URL}/sub-district?district_id=${districtId}`,{
+            headers: {
+                'Authorization': `Bearer ${token}`,  
+            }
+        });
         return response.data.data; 
     } catch (error) {
         console.error("Error fetching cities:", error);
