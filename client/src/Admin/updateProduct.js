@@ -11,7 +11,7 @@ import {
     Box,
     Card,
     Alert,
-    CircularProgress, 
+    CircularProgress,
 } from '@mui/material';
 import { CalendarToday as Calendar } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -19,9 +19,10 @@ import getCategories from './api/categoriesApi';
 import axios from 'axios';
 import Toast from '../utils/Toast';
 import { useAuth } from '../contexts/AuthContext';
+import apiConfig from '../config/apiConfig';
 
 export default function UpdateProductForm() {
-    const { adminToken } = useAuth(); 
+    const { adminToken } = useAuth();
     const [formData, setFormData] = useState({
         product_name: '',
         id_category: '',
@@ -34,7 +35,7 @@ export default function UpdateProductForm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [imagePreview, setImagePreview] = useState(null);
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const { id } = useParams();
     const [categories, setCategories] = useState([]);
 
@@ -47,10 +48,15 @@ export default function UpdateProductForm() {
                 setError('Failed to load categories');
             }
         };
-        
+
         const fetchProductData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/admin/product/${id}`);
+                const response = await axios.get(`${apiConfig.baseURL}admin/product/${id}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`,
+                    }
+                });
                 const product = response.data;
                 setFormData({
                     product_name: product.product_name,
@@ -59,7 +65,7 @@ export default function UpdateProductForm() {
                     weight: product.weight,
                     stock: product.stock,
                     description: product.description,
-                    image: '', 
+                    image: '',
                 });
                 setImagePreview(product.image_url);
             } catch (error) {
@@ -75,7 +81,7 @@ export default function UpdateProductForm() {
         const { name, value } = event.target;
         setFormData({
             ...formData,
-            [name]: value,  
+            [name]: value,
         });
     };
 
@@ -94,20 +100,20 @@ export default function UpdateProductForm() {
     };
 
     const handleBack = () => {
-        navigate('/admin/dataProduct'); 
+        navigate('/admin/dataProduct');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
-    
+
         if (!formData.product_name || !formData.id_category || !formData.harga || !formData.weight || !formData.stock || !formData.description) {
             setError('All fields are required.');
             setLoading(false);
             return;
         }
-    
+
         try {
             const data = new FormData();
             data.append('product_name', formData.product_name);
@@ -117,7 +123,7 @@ export default function UpdateProductForm() {
             data.append('weight', formData.weight);
             data.append('description', formData.description);
             if (formData.image) data.append('image', formData.image);
-        
+
             if (!adminToken) {
                 setError('Kamu tidak terountetikasi, silahkan login kembali!');
                 setLoading(false);
@@ -125,28 +131,28 @@ export default function UpdateProductForm() {
             }
 
             const response = await axios.put(
-                `http://localhost:5000/admin/product/${id}`, 
+                `${apiConfig.baseURL}admin/product/${id}`,
                 data,
                 {
-                     headers: {
+                    headers: {
                         'Content-Type': 'multipart/form-data',
-                        'Authorization': `Bearer ${adminToken}`, 
+                        'Authorization': `Bearer ${adminToken}`,
                     },
                 }
             );
-            
-            if (response.status === 200) { 
+
+            if (response.status === 200) {
                 Toast.fire({
                     icon: 'success',
                     title: 'Product updated successfully',
                 });
                 navigate('/admin/dataProduct', { state: { showToast: true } });
-                setLoading(false); 
+                setLoading(false);
             } else {
                 setError('Failed to update product. Please try again!');
-                setLoading(false); 
+                setLoading(false);
             }
-            
+
         } catch (error) {
             if (error.response) {
                 setError(`Failed: ${error.response.data.message || 'Unknown error'}`);
@@ -155,7 +161,7 @@ export default function UpdateProductForm() {
                 setError('Failed to update product. Please try again.');
             }
         } finally {
-            setLoading(false); 
+            setLoading(false);
         }
     };
 
@@ -205,7 +211,7 @@ export default function UpdateProductForm() {
                                 >
                                     {categories.map((cat) => (
                                         <MenuItem key={cat._id} value={cat._id}>
-                                            {cat.category_name} 
+                                            {cat.category_name}
                                         </MenuItem>
                                     ))}
                                 </Select>

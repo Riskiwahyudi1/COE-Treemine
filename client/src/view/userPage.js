@@ -13,6 +13,7 @@ export default function ProfileSettings() {
   const [profilePhoto, setProfilePhoto] = useState("");
   const [provinces, setProvinces] = useState('');
   const [cities, setCities] = useState();
+ 
   const [dataAccount, setDataAccount] = useState({ address: {} });
   const [formData, setFormData] = useState({
     name: '',
@@ -26,7 +27,6 @@ export default function ProfileSettings() {
     profile_picture: null
 
   })
-  console.log('formData', formData)
   // state default
   useEffect(() => {
     setProfilePhoto(`${apiConfig.baseURL}${dataAccount.profile_picture_url}`);
@@ -68,7 +68,6 @@ export default function ProfileSettings() {
     const fetchProvince = async () => {
       try {
         const dataProvinces = await getProvinces(userToken);
-        console.log('data prov',dataProvinces)
         if (dataProvinces) {
           const province = dataProvinces.data.find(
             (prov) => prov?.id === Number(formData.province)
@@ -85,27 +84,33 @@ export default function ProfileSettings() {
     }
   }, [formData.province]);
 
-  // kota berdasarkan profinsi
-  useEffect(() => {
+  // Kota berdasarkan provinsi
+useEffect(() => {
   if (formData.province) {
     const fetchCities = async () => {
       try {
-        const dataCity = await getCities(formData.province);
-        if (dataCity) {
+        const dataCity = await getCities(formData.province, userToken);
+        if (dataCity && Array.isArray(dataCity)) {
           const city = dataCity.find(
-            (cities) => cities.id === Number(formData.city)
+            (c) => c.id === Number(formData.city)
           );
           setCities(city?.name || "Kota tidak ditemukan");
+        } else {
+          setCities("Kota tidak ditemukan");
         }
       } catch (error) {
+        console.error(error);
         setCities('Gagal memuat data kota'); 
       }
     };
+
     fetchCities();
   } else {
-    setCities([]); 
+
+    setCities([]);
   }
-}, [formData.province]);
+}, [formData.province, formData.city]);
+
 
 
 

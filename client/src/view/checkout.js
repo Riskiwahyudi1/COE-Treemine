@@ -32,14 +32,11 @@ const PaymentPage = () => {
     const location = useLocation();
     const { userToken } = useAuth();
     const [costList, setCost] = useState([])
-    console.log('costList', costList)
-
     const [costShipping, setcostShipping] = useState(0)
     const [estimasionDay, setEstimasionDay] = useState('')
     const [selectedOption, setSelectedOption] = useState('')
     const [selectedCourier, setSelectedCourier] = useState('')
     const [shipingOption, setShipingOption] = useState('')
-    console.log('shipingOption', shipingOption)
     const [dataAccount, setDataAccount] = useState([])
     const [province, setProvince] = useState('')
     const [city, setCity] = useState('')
@@ -170,7 +167,7 @@ const PaymentPage = () => {
         if (dataAccount?.address?.province) {
             const fetchCities = async () => {
                 try {
-                    const dataCity = await getCities(dataAccount?.address?.province);
+                    const dataCity = await getCities(dataAccount?.address?.province, userToken);
 
                     if (dataCity) {
                         const city = dataCity.find(

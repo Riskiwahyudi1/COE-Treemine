@@ -12,6 +12,7 @@ import {
 import HomeIcon from "@mui/icons-material/Home";
 import Videocontoh from "../assets/images/logo 2.png";
 import { useAuth } from "../contexts/AuthContext";
+import apiConfig from '../config/apiConfig';
 
 const getCookie = (name) => {
     const value = `; ${document.cookie}`;
@@ -32,8 +33,6 @@ const LoginFormCard = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [expiredMessage, setExpiredMessage] = useState(""); 
-
-    console.log(expiredMessage)
     
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -48,7 +47,7 @@ const LoginFormCard = () => {
 
         try {
             const response = await axios.post(
-                "http://localhost:5000/admin/login/protected", 
+                `${apiConfig.baseURL}admin/login/protected`, 
                 { email, password },
                 { withCredentials: true }
             );

@@ -56,11 +56,11 @@ const validateRequest = (req, res, next) => {
     next();
   };
 
-router.get('/', showProduct);
-router.get('/search', searchProduct);
-router.get('/:id', getProductById);
-router.post('/',verifyTokenAdm, upload.single('image'), productValidation, imageValidation, validateRequest, addProduct );
-router.delete('/:id', verifyTokenAdm, deleteProduct);
-router.put('/:id',verifyTokenAdm, upload.single('image'), productValidation, imageValidation, validateRequest, updateProduct);
+router.get('/product',verifyTokenAdm, showProduct);
+router.get('/product/search',verifyTokenAdm, searchProduct);
+router.get('/product/:id',verifyTokenAdm, getProductById);
+router.post('/product',verifyTokenAdm, upload.single('image'), productValidation, imageValidation, validateRequest, addProduct );
+router.delete('/product/:id', verifyTokenAdm, deleteProduct);
+router.put('/product/:id',verifyTokenAdm, upload.single('image'), productValidation, imageValidation, validateRequest, updateProduct);
 
 module.exports = router;

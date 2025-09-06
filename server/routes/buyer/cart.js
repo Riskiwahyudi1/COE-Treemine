@@ -6,14 +6,14 @@ const validateObjectId = require('../../middlewares/validateObjectId');
 const validateRequest = require('../../middlewares/handleValidationErrors');
 const {  addProductToCart, showCart, deleteProductFromCart } = require('../../controllers/buyer/cartController');
 
-router.post('/add-product', validateRequest([
+router.post('/cart/add-product', validateRequest([
     check('id_product').notEmpty().withMessage('Product ID is required').isMongoId().withMessage('Invalid Product ID format'),
     ]), 
     authenticateToken,
     addProductToCart
 );
-router.get('/', authenticateToken, showCart);
-router.delete('/delete/:id', validateRequest([
+router.get('/cart', authenticateToken, showCart);
+router.delete('/cart/delete/:id', validateRequest([
     param('id').isMongoId().withMessage('Invalid id format'),
     ]),
     authenticateToken,

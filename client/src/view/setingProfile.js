@@ -506,8 +506,8 @@ export default function ProfileSettings() {
                             id="province"
                             value={selectedProvince}
                             onChange={handleMultipleChanges}
-                            error={!dataAccount.address.postal_code}
-                            helperText={!dataAccount.address.postal_code ? "Lengkapi Provinsi !" : ""}
+                            error={!dataAccount.address.province}
+                            helperText={!dataAccount.address.province ? "Lengkapi Provinsi !" : ""}
                         >
                             {provinces?.data?.map((province) => (
                                 <MenuItem key={province.id} value={province.id}>

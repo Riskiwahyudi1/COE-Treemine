@@ -13,16 +13,16 @@ const {
 } = require('../../controllers/costomAssemblyController');
 
 
-router.get('/', showCustomAssemblyData);
+router.get('/costom-assembly', showCustomAssemblyData);
 
 router.get(
-  '/:id',
+  '/costom-assembly/:id',
   validateRequest([param('id').isMongoId().withMessage('Invalid ID format')]),
   showCustomAssemblyDataById
 );
 
 router.get(
-  '/:typeId/item/:itemId',
+  '/costom-assembly/:typeId/item/:itemId',
   validateRequest([
     param('typeId').isMongoId().withMessage('Invalid typeId format'),
     param('itemId').isMongoId().withMessage('Invalid itemId format'),
@@ -31,7 +31,7 @@ router.get(
 );
 
 router.post(
-  '/add-component/:id',
+  '/costom-assembly/add-component/:id',
   verifyTokenAdm,
   validateRequest([
     param('id').isMongoId().withMessage('Invalid ID format'),
@@ -42,7 +42,7 @@ router.post(
 );
 
 router.put(
-  '/:typeId/item/:itemId',
+  '/costom-assembly/:typeId/item/:itemId',
   verifyTokenAdm,
   validateRequest([
     param('typeId').isMongoId().withMessage('Invalid typeId format'),
@@ -54,7 +54,7 @@ router.put(
 );
 
 router.delete(
-  '/:typeId/item/:itemId',
+  '/costom-assembly/:typeId/item/:itemId',
   verifyTokenAdm,
   validateRequest([
     param('typeId').isMongoId().withMessage('Invalid typeId format'),

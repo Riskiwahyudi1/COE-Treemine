@@ -82,7 +82,7 @@ export default function OrdersTable() {
     const [selectedIdPrototype, setselectedIdPrototype] = useState(null);
     const [selectedIdAssembly, setselectedIdAssembly] = useState(null);
     const [totalRequestCostom, setTotalRequestCostom] = useState(0);
-
+console.log(requestAssembly)
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -95,8 +95,8 @@ export default function OrdersTable() {
 
                 if (currentStatus.length > 0) {
                     const [prototypeData, assemblyData] = await Promise.allSettled([
-                        getRequestPrototypeByParams(currentStatus),
-                        getRequestAssemblyByParams(currentStatus),
+                        getRequestPrototypeByParams(currentStatus, adminToken),
+                        getRequestAssemblyByParams(currentStatus, adminToken),
                     ]);
 
                     // Validasi data hasil API

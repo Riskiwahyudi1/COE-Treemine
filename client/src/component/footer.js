@@ -1,21 +1,28 @@
 import React from "react";
-import { Box, Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid, Tooltip } from "@mui/material";
 import { Facebook, Twitter, LinkedIn, YouTube } from "@mui/icons-material";
 import Logoweb from "../assets/images/logo 2.png";
 
 const Footer = () => {
+  const anggota = `
+      -- Development Team --
+      3312311091 - Riski Wahyudi
+      3312311043 - Jesen Wijaya
+      3312311016 - Chelsea Anayah Maharani
+      3312311009 - Duta Pratama Alamsyah
+        `;
+
   return (
     <Box
       component="footer"
       sx={{
-        backgroundColor: "#00A63F", // Warna netral gelap
-        color: "#F5F5F5", // Teks abu-abu terang
+        backgroundColor: "#00A63F",
+        color: "#F5F5F5",
         padding: "40px 20px",
-        textAlign: "center", // Menengahkan teks di setiap grid
+        textAlign: "center",
       }}
     >
       <Grid container spacing={4} justifyContent="center" alignItems="center">
-        {/* Logo Section */}
         <Grid item xs={12} md={4}>
           <Box display="flex" justifyContent="center">
             <img
@@ -26,17 +33,17 @@ const Footer = () => {
           </Box>
         </Grid>
 
-        {/* Contact Section */}
         <Grid item xs={12} md={4}>
           <Typography variant="h6" gutterBottom>
             Toko PCB Online
           </Typography>
-          <Typography>Call Us: <strong>082268850986</strong></Typography>
+          <Typography>
+            Call Us: <strong>082268850986</strong>
+          </Typography>
           <Typography>Email: coetreemine@gmail.com</Typography>
           <Typography>Alamat: Politeknik Negeri Batam</Typography>
         </Grid>
 
-        {/* Social Media Section */}
         <Grid item xs={12} md={4}>
           <Typography variant="h6" gutterBottom>
             Contact with us
@@ -48,9 +55,11 @@ const Footer = () => {
             <YouTube />
           </Box>
           <Box mt={2}>
-            <Typography>
-              Copyright PBL IF029 2024
-            </Typography>
+            <Tooltip title={<pre>{anggota}</pre>} arrow placement="top">
+              <Typography sx={{ cursor: "pointer" }}>
+                 © PBL IF029 2024
+              </Typography>
+            </Tooltip>
           </Box>
         </Grid>
       </Grid>

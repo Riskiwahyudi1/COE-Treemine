@@ -18,6 +18,7 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import DescriptionIcon from '@mui/icons-material/Description';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { getPayments, getTransaksi, getTotalDataCosotom } from './api/dashboardApi'
+import { useAuth } from '../contexts/AuthContext';
 
 // Styled Components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -35,6 +36,7 @@ const StyledTableHead = styled(TableHead)(({ theme }) => ({
 }));
 
 const Dashboard = () => {
+    const { adminToken } = useAuth(); 
   const [payment, setPayment] = useState([])
   const [transaksi, setTransaksi] = useState([])
   const [totalPayment, setTotalPayment] = useState(0)
@@ -44,7 +46,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDataRequestCostom = async () => {
       try {
-        const data = await getTotalDataCosotom();
+        const data = await getTotalDataCosotom(adminToken);
         setJumlahRequest(data);
       } catch (error) {
         setError('Failed to load categories');
@@ -55,7 +57,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const data = await getPayments();
+        const data = await getPayments(adminToken);
         setPayment(data);
         if (Array.isArray(data) && data.length === 0) {
           setError('Categories is empty!');
@@ -69,7 +71,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchTransaksi = async () => {
       try {
-        const data = await getTransaksi();
+        const data = await getTransaksi(adminToken);
         if (data) {
           setTransaksi(data.transactions);
           setTotalPayment(data.totalPayment);

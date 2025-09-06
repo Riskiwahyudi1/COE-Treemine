@@ -239,7 +239,7 @@ export default function OrdersTable() {
                     'Authorization': `Bearer ${userToken}`,
                 }
             };
-            const response = await axios.post(`${apiConfig.baseURL}payments/create-payment`,
+            const response = await axios.post(`${apiConfig.baseURL}service/payments/create-payment`,
                 { transactionId },
                 config
             );
@@ -337,7 +337,7 @@ export default function OrdersTable() {
                     'Authorization': `Bearer ${userToken}`,
                 }
             };
-            const response = await axios.post(`${apiConfig.baseURL}payments/continue-payment`, { transactionId }, config);
+            const response = await axios.post(`${apiConfig.baseURL}service/payments/continue-payment`, { transactionId }, config);
 
             const { token } = response.data;
 

@@ -4,6 +4,6 @@ const { loginAdmin } = require('../../../controllers/admin/auth/login')
 
 const router = express.Router();
 
-router.post('/protected', loginAdmin, verifyTokenAdm);
+router.post('/login/protected', loginAdmin, verifyTokenAdm);
 
 module.exports = router;

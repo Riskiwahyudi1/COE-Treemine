@@ -17,6 +17,8 @@ import Swal from 'sweetalert2';
 import { useAuth } from '../contexts/AuthContext';
 import Videocontoh from "../assets/images/logo 2.png";
 import Toast from '../utils/Toast';
+import apiConfig from '../config/apiConfig';
+
 
 
 const getCookie = (name) => {
@@ -64,12 +66,10 @@ const LoginPage = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/login/buyer', formData, {
+      const response = await axios.post(`${apiConfig.baseURL}login/buyer`, formData, {
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
       });
-
-      console.log('Response:', response);
 
       // Akses token dari lokasi yang benar
       const token = response.data.user.token;

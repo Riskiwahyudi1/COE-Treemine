@@ -68,6 +68,7 @@ const getAvailableCouriers = async (req, res) => {
 const checkShippingCost = async (req, res) => {
     const user = req.user;
     const id_user = user.id;
+    const destination_id = user.destinationId;
 
     try {
         const userData = await User.findById(id_user);
@@ -83,7 +84,6 @@ const checkShippingCost = async (req, res) => {
             return res.status(400).json({ message: 'Couriers is required' });
         }
 
-        // hitung berat produk (kode kamu sebelumnya sudah oke)
         const productTypes = ['standart', 'costom_prototype', 'costom_assembly'];
         const productQuantities = {};
 
@@ -126,9 +126,9 @@ const checkShippingCost = async (req, res) => {
         const weights = [totalWeightStandartProduct, weigthPrototype, weigthAssembly];
         const shippingWeight = weights.find(weight => weight > 0) ?? 1200;
 
-        // --- pakai district_id static
-        const origin = 1391;       // contoh: kecamatan Batam
-        const destination = 1376;   // contoh: kecamatan tujuan
+      
+        const origin = 847; // kecamatan Batam
+        const destination = Number(destination_id);
 
         // hitung ongkir via RajaOngkir
         const shippingCost = await calculateShippingCost(origin, destination, shippingWeight, couriers);

@@ -5,9 +5,9 @@ const validateRequest = require('../../../middlewares/handleValidationErrors')
 const authenticateToken = require('../../../middlewares/authenticateToken');
 const { updateProfile, getUserData, upload } = require('../../../controllers/buyer/accountSettingController')
 
-router.get('/', authenticateToken, getUserData)
+router.get('/account', authenticateToken, getUserData)
 router.put(
-    '/update-profile',
+    '/account/update-profile',
     authenticateToken, 
     upload.single('profile_picture'), 
     validateRequest([ 

@@ -136,7 +136,7 @@ export default function OrdersTable() {
                 setTransaction([]);
 
                 if (currentStatus) {
-                    const data = await getTransactionAdmin(currentStatus);
+                    const data = await getTransactionAdmin(currentStatus, adminToken);
                     setTransaction(data);
                 }
             } catch (error) {

@@ -61,10 +61,13 @@ export const getTransaction = async (status, token) => {
 
 
 // admin
-export const getTransactionAdmin = async (status) => {
+export const getTransactionAdmin = async (status, tokenAdm) => {
     try {
         const response = await axios.get(`${API_URL_ADMIN}`, {
             params: { status }, 
+            headers: {
+                'Authorization': `Bearer ${tokenAdm}`, 
+            }
         });
         return response.data; 
     } catch (error) {

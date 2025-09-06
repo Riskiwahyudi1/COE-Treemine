@@ -4,9 +4,9 @@ const authenticateToken = require('../../middlewares/authenticateToken');
 const { handleMidtransNotification, createPayment, continuePayment } = require('../../controllers/buyer/paymentController');
 
 // Webhook untuk menerima notifikasi dari Midtrans
-router.post('/midtrans/notification', handleMidtransNotification);
-router.post('/create-payment',authenticateToken, createPayment);
-router.post('/continue-payment', authenticateToken, continuePayment);
+router.post('/payments/midtrans/notification', handleMidtransNotification);
+router.post('/payments/create-payment',authenticateToken, createPayment);
+router.post('/payments/continue-payment', authenticateToken, continuePayment);
 
 
 module.exports = router;

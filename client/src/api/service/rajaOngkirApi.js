@@ -2,7 +2,7 @@ import axios from "axios";
 import apiConfig from '../../config/apiConfig';
 
 
-const API_URL = `${apiConfig.baseURL}raja-ongkir`;
+const API_URL = `${apiConfig.baseURL}service/raja-ongkir`;
 
 
 // semua provinsi
@@ -22,6 +22,7 @@ export const getProvinces = async (token) => {
 
 // semua kota berdasarkan profinsi
 export const getCities = async (provinceId, token) => {
+    
     try {
         const response = await axios.get(`${API_URL}/cities?province_id=${provinceId}`,{
             headers: {
@@ -56,6 +57,7 @@ export const getSubDistrict = async (districtId, token) => {
                 'Authorization': `Bearer ${token}`,  
             }
         });
+        console.log(response)
         return response.data.data; 
     } catch (error) {
         console.error("Error fetching cities:", error);

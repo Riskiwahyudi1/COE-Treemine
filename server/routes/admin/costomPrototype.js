@@ -13,16 +13,16 @@ const {
 } = require('../../controllers/costomPrototypeController');
 
 
-router.get('/', showCustomPrototypeData);
+router.get('/costom-prototype', showCustomPrototypeData);
 
 router.get(
-  '/:id',
+  '/costom-prototype/:id',
   validateRequest([param('id').isMongoId().withMessage('Invalid ID format')]),
   showCustomPrototypeById
 );
 
 router.get(
-  '/:typeId/item/:itemId',
+  '/costom-prototype/:typeId/item/:itemId',
   validateRequest([
     param('typeId').isMongoId().withMessage('Invalid typeId format'),
     param('itemId').isMongoId().withMessage('Invalid itemId format'),
@@ -31,7 +31,7 @@ router.get(
 );
 
 router.post(
-  '/add-component/:id',
+  '/costom-prototype/add-component/:id',
   verifyTokenAdm,
   validateRequest([
     param('id').isMongoId().withMessage('Invalid ID format'),
@@ -42,7 +42,7 @@ router.post(
 );
 
 router.put(
-  '/:typeId/item/:itemId',
+  '/costom-prototype/:typeId/item/:itemId',
   verifyTokenAdm,
   validateRequest([
     param('typeId').isMongoId().withMessage('Invalid typeId format'),
@@ -54,7 +54,7 @@ router.put(
 );
 
 router.delete(
-  '/:typeId/item/:itemId',
+  '/costom-prototype/:typeId/item/:itemId',
   verifyTokenAdm,
   validateRequest([
     param('typeId').isMongoId().withMessage('Invalid typeId format'),

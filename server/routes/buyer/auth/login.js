@@ -4,7 +4,7 @@ const { body } = require('express-validator');
 const validateRequest = require('../../../middlewares/handleValidationErrors');
 const { login } = require('../../../controllers/buyer/auth/loginController');
 
-router.post('/', validateRequest([
+router.post('/login/buyer', validateRequest([
     body('email')
         .isEmail()
         .withMessage('Email tidak valid.')

@@ -9,7 +9,7 @@ import {
   CardActions,
   Checkbox,
   Paper,
-   Modal
+  Modal
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -28,18 +28,18 @@ import apiConfig from '../config/apiConfig';
 
 
 
-const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, handleCancel, handleCheckout , handleOpenModal}) => {
-  const [file, setFile] = useState(null); 
+const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, handleCancel, handleCheckout, handleOpenModal }) => {
+  const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
-    const maxFileSize = 2 * 1024 * 1024; 
+    const maxFileSize = 2 * 1024 * 1024;
 
     if (selectedFile) {
       // Validasi ekstensi file
-      const allowedExtensions = /\.(zip|rar)$/i; 
+      const allowedExtensions = /\.(zip|rar)$/i;
       if (!allowedExtensions.test(selectedFile.name)) {
         setError('Only .zip or .rar files are allowed.');
         return;
@@ -176,6 +176,7 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
         {/* Kondisi: Review By Admin */}
         {status === 'admin-review' ? (
           <>
+            {console.log(name)}
             <Button
               variant="contained"
               size="small"
@@ -218,7 +219,7 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
               variant="contained"
               color="error"
               size="small"
-              onClick={() => handleCancel(id)}
+              onClick={() => handleCancel(id, name)}
               sx={{
                 height: 32,
                 '&:hover': {
@@ -274,7 +275,7 @@ const ModalContent = styled(Box)(({ theme }) => ({
 
 const ShoppingCart = () => {
   const navigate = useNavigate();
-  const { userToken } = useAuth(); 
+  const { userToken } = useAuth();
   const [requestPrototype, setRequestPrototype] = useState([]);
   const [requestAssembly, setRequestAssembly] = useState([]);
   const [requestCustom, setRequestCustom] = useState([]);
@@ -371,12 +372,12 @@ const ShoppingCart = () => {
         if (type === 'Costom Prototype') {
           response = await axios.put(
             `${apiConfig.baseURL}costom-prototype/${id}/send-review`,
-            formData,{
-              headers: {
-                  'Authorization': `Bearer ${userToken}`,
-                  
-              },
-              timeout: 10000,
+            formData, {
+            headers: {
+              'Authorization': `Bearer ${userToken}`,
+
+            },
+            timeout: 10000,
           }
           );
           if (response.status === 200) {
@@ -389,12 +390,12 @@ const ShoppingCart = () => {
         } else if (type === 'Costom Assembly') {
           response = await axios.put(
             `${apiConfig.baseURL}costom-assembly/${id}/send-review`,
-            formData,{
-              headers: {
-                  'Authorization': `Bearer ${userToken}`,
-                  
-              },
-              timeout: 10000,
+            formData, {
+            headers: {
+              'Authorization': `Bearer ${userToken}`,
+
+            },
+            timeout: 10000,
           }
           );
           if (response.status === 200) {
@@ -438,11 +439,11 @@ const ShoppingCart = () => {
         await axios.delete(apiUrl,
           {
             headers: {
-                'Authorization': `Bearer ${userToken}`,
-               
+              'Authorization': `Bearer ${userToken}`,
+
             },
             timeout: 10000,
-        }
+          }
         );
 
         if (type === 'Costom Prototype') {
@@ -470,55 +471,56 @@ const ShoppingCart = () => {
 
 
   const handleCancel = async (id, type) => {
+    
     const result = await Dialog.fire({
-      title: 'Anda yakin?',
-      text: 'Ingin membatalkan pesanan?',
+      title: "Anda yakin?",
+      text: "Ingin membatalkan pesanan?",
     });
-    if (result.isConfirmed) {
-      try {
 
-        const endpoint =
-          type === 'Costom Prototype'
-            ? `${apiConfig.baseURL}costom-prototype/${id}/cancel`
-            : `${apiConfig.baseURL}costom-assembly/${id}/cancel`;
+    if (!result.isConfirmed) return;
+    console.log('ok')
+    try {
+      const endpoint =
+        type === "Costom Prototype"
+          ? `${apiConfig.baseURL}costom-prototype/${id}/cancel`
+          : `${apiConfig.baseURL}costom-assembly/${id}/cancel`;
 
-        const response = await axios.put(endpoint,{
+          console.log('type', type)
+             console.log("Endpoint:", endpoint);
+      const response = await axios.put(
+        endpoint,
+        {}, 
+        {
           headers: {
-              'Authorization': `Bearer ${userToken}`,
-             
+            Authorization: `Bearer ${userToken}`,
           },
           timeout: 10000,
-      });
-
-        if (response.status === 200) {
-
-          if (type === 'Costom Prototype') {
-            setRequestCustom((prevList) =>
-              prevList.map((request) =>
-                request._id === id ? { ...request, status: 'dibatalkan-pembeli' } : request
-              )
-            );
-          } else if (type === 'Costom Assembly') {
-            setRequestCustom((prevList) =>
-              prevList.map((request) =>
-                request._id === id ? { ...request, status: 'dibatalkan-pembeli' } : request
-              )
-            );
-          }
-
-          Toast.fire({
-            icon: 'success',
-            title: 'Request Dibatalkan',
-          });
         }
-      } catch (error) {
+      );
+
+      if (response.status === 200) {
+        setRequestCustom((prevList) =>
+          prevList.map((request) =>
+            request._id === id
+              ? { ...request, status: "dibatalkan-pembeli" }
+              : request
+          )
+        );
+
         Toast.fire({
-          icon: 'error',
-          title: 'Terjadi Kesalahan',
+          icon: "success",
+          title: "Request Dibatalkan",
         });
       }
+    } catch (error) {
+      console.error("Cancel error:", error);
+      Toast.fire({
+        icon: "error",
+        title: "Terjadi Kesalahan",
+      });
     }
   };
+
 
   const handleOpenModal = (order) => {
     setIdOpenModal(order);
@@ -609,7 +611,7 @@ const ShoppingCart = () => {
                   </Typography>
 
                   {/* Informasi Pesanan */}
-                 
+
                   <Typography variant="body1">
                     <strong>Type Custom:</strong> {data.name}
                   </Typography>
@@ -633,24 +635,24 @@ const ShoppingCart = () => {
                   </Typography>
                   <Box>
                     {[
-                    { label: 'Board Type', value: data.board_type },
-                    { label: 'X Out', value: data.x_out },
-                    { label: 'Route Process', value: data.route_process },
-                    { label: 'Design in Panel', value: data.design_in_panel },
-                    { label: 'Size', value: `${data.length} X ${data.width}` },
-                    { label: 'Quantity', value: data.quantity },
-                    { label: 'Layer', value: data.layer },
-                    { label: 'Copper Layer', value: data.copper_layer },
-                    { label: 'Solder Mask Position', value: data.solder_mask_position },
-                    { label: 'Material', value: data.material },
-                    { label: 'Thickness', value: data.thickness },
-                    { label: 'Min Track', value: data.min_track },
-                    { label: 'Min Hole', value: data.min_hole },
-                    { label: 'Solder Mask', value: data.solder_mask },
-                    { label: 'Silkscreen', value: data.silkscreen },
-                    { label: 'UV Printing', value: data.uv_printing },
-                    { label: 'Surface Finish', value: data.surface_finish },
-                    { label: 'Finish Copper', value: data.finish_copper },
+                      { label: 'Board Type', value: data.board_type },
+                      { label: 'X Out', value: data.x_out },
+                      { label: 'Route Process', value: data.route_process },
+                      { label: 'Design in Panel', value: data.design_in_panel },
+                      { label: 'Size', value: `${data.length} X ${data.width}` },
+                      { label: 'Quantity', value: data.quantity },
+                      { label: 'Layer', value: data.layer },
+                      { label: 'Copper Layer', value: data.copper_layer },
+                      { label: 'Solder Mask Position', value: data.solder_mask_position },
+                      { label: 'Material', value: data.material },
+                      { label: 'Thickness', value: data.thickness },
+                      { label: 'Min Track', value: data.min_track },
+                      { label: 'Min Hole', value: data.min_hole },
+                      { label: 'Solder Mask', value: data.solder_mask },
+                      { label: 'Silkscreen', value: data.silkscreen },
+                      { label: 'UV Printing', value: data.uv_printing },
+                      { label: 'Surface Finish', value: data.surface_finish },
+                      { label: 'Finish Copper', value: data.finish_copper },
                     ]
                       .map((item, idx) => (
                         <Typography key={idx} variant="body2">
@@ -676,7 +678,7 @@ const ShoppingCart = () => {
                   </Typography>
 
                   {/* Informasi Pesanan */}
-                
+
                   <Typography variant="body1">
                     <strong>Type Custom:</strong> {data.name}
                   </Typography>
@@ -713,7 +715,7 @@ const ShoppingCart = () => {
                     { label: 'Function Test', value: data.function_test },
                     { label: 'Cable/Wire Harness Assembly', value: data.cable_wire_harness_assembly },
                     { label: 'Detail Information', value: data.detail_information },
-                   ]
+                    ]
                       .map((item, idx) => (
                         <Typography key={idx} variant="body2">
                           <strong>{item.label}: </strong> {item.value ? item.value : 'N/A'}

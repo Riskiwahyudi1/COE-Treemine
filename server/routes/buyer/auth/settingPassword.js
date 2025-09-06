@@ -6,7 +6,7 @@ const validateRequest = require('../../../middlewares/handleValidationErrors');
 const { changePassword, forgotPassword, resetPassword } = require('../../../controllers/buyer/auth/settingPasswordController');
 
 router.post(
-  '/change-password',
+  '/password/change-password',
   authenticateToken, 
   validateRequest([
     check('newPassword')

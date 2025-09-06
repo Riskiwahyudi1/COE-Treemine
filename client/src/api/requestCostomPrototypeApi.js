@@ -55,13 +55,13 @@ export const getPrototypeHistory = async () => {
     }
 };
 
-export const getRequestPrototypeByParams = async (status) => {
+export const getRequestPrototypeByParams = async (status, token) => {
     try {
         const response = await axios.get(`${API_URL}`, {
             params: { status }, 
-            // headers: {
-            //     'Authorization': `Bearer ${token}`, 
-            // }
+            headers: {
+                'Authorization': `Bearer ${token}`, 
+            }
         });
         return response.data; 
     } catch (error) {

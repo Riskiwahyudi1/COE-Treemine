@@ -21,7 +21,7 @@ const register = async (req, res) => {
         const newUser = await User.create({ username, email, password });
 
         const token = jwt.sign({ id: newUser._id }, JWT_SECRET, { expiresIn: '1h' });
-        const verificationUrl = `http://localhost:5000/register/buyer/verify/${token}`;
+        const verificationUrl = `http://localhost:5000/api/register/buyer/verify/${token}`;
 
         await transporter.sendMail({
             from: '"COE Treemine" riskiwahyudi@gmail.com',

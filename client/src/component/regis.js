@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import Videocontoh from "../assets/images/logo 2.png";
 import Toast from '../utils/Toast';
 import HomeIcon from '@mui/icons-material/Home';
+import apiConfig from '../config/apiConfig';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const RegisterPage = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.post('http://localhost:5000/register/buyer', formData, {
+      const response = await axios.post(`${apiConfig.baseURL}register/buyer`, formData, {
         headers: {
           'Content-Type': 'application/json',
         },

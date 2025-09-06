@@ -39,11 +39,11 @@ const validateCategory = [
         .isLength({ min: 3 }).withMessage('Category name must be at least 3 characters long.'),
 ];
 
-router.get('/', showCategories);
-router.get('/:id', getCategoryById);
+router.get('/product/categories', showCategories);
+router.get('/product/categories/:id', getCategoryById);
 
 router.post(
-    '/add',
+    '/product/categories/add',
     verifyTokenAdm,
     upload.single('image'),
     validateCategory,
@@ -51,9 +51,9 @@ router.post(
     imageValidation,
     addCategories
 );
-router.delete('/delete/:id', verifyTokenAdm, deleteCategory);
+router.delete('/product/categories/delete/:id', verifyTokenAdm, deleteCategory);
 router.put(
-    '/edit/:id',
+    '/product/categories/edit/:id',
     verifyTokenAdm,
     upload.single('image'),
     validateCategory,

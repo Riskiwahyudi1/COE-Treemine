@@ -5,7 +5,7 @@ const validateRequest = require('../../../middlewares/handleValidationErrors');
 const { register, verifikasiEmail } = require('../../../controllers/buyer/auth/registerController');
 
 router.post(
-  '/',
+  '/register/buyer',
   validateRequest([
     body('username')
       .isLength({ min: 5, max: 30 })
@@ -27,7 +27,7 @@ router.post(
 );
 
 router.get(
-  '/verify/:token',
+  '/register/buyer/verify/:token',
   validateRequest([
       check('token')
           .notEmpty()
