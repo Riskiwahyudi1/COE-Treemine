@@ -16,6 +16,7 @@ import AddCategory from './addCategory';
 import EditCategory from './editCategory';
 import RequestCustom from './requestCustom';
 import Transaksi from './transaksi';
+import ResetPassword from './resetPassword';
 
 import { Routes, Route } from 'react-router-dom';
 
@@ -54,6 +55,7 @@ export function AdminHome() {
           <Route path="kategoriPortofolio/edit-category/:id" element={<EditCategory />} />
 
           <Route path="/request-custom" element={<RequestCustom />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/transaksi" element={<Transaksi />} />
          
 

@@ -13,6 +13,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import Videocontoh from "../assets/images/logo 2.png";
 import { useAuth } from "../contexts/AuthContext";
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const getCookie = (name) => {
     const value = `; ${document.cookie}`;
@@ -28,12 +29,12 @@ const removeCookie = (name) => {
 };
 
 const LoginFormCard = () => {
-    const { loginAdmin } = useAuth(); 
+    const { loginAdmin } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [expiredMessage, setExpiredMessage] = useState(""); 
-    
+    const [expiredMessage, setExpiredMessage] = useState("");
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === "email") setEmail(value);
@@ -43,32 +44,32 @@ const LoginFormCard = () => {
     // Handle login admin
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError(""); 
+        setError("");
 
         try {
             const response = await axios.post(
-                `${apiConfig.baseURL}admin/login/protected`, 
+                `${apiConfig.baseURL}admin/login/protected`,
                 { email, password },
                 { withCredentials: true }
             );
 
-           
+
             if (response.status === 200) {
-                const { token } = response.data; 
-                loginAdmin(token); 
-                window.location.href = "/admin/dashboard"; 
+                const { token } = response.data;
+                loginAdmin(token);
+                window.location.href = "/admin/dashboard";
             }
         } catch (err) {
             setError(err.response?.data?.message || "Login failed");
         }
     };
 
-    
+
     useEffect(() => {
         const authAdminMessage = getCookie("authAdminMessage");
         if (authAdminMessage) {
             setExpiredMessage(authAdminMessage);
-            removeCookie("authAdminMessage"); 
+            removeCookie("authAdminMessage");
         }
     }, []);
 
@@ -83,6 +84,9 @@ const LoginFormCard = () => {
                 padding: 4,
             }}
         >
+            <Helmet>
+                <title>Admin | Login</title>
+            </Helmet>
             <Card
                 sx={{
                     display: "flex",
@@ -125,9 +129,9 @@ const LoginFormCard = () => {
                             Login to Admin
                         </Typography>
                         {expiredMessage && (
-                             <Typography variant="body2" color="error" mb={2}>
-                             {expiredMessage}
-                         </Typography>
+                            <Typography variant="body2" color="error" mb={2}>
+                                {expiredMessage}
+                            </Typography>
                         )}
                         {error && (
                             <Typography variant="body2" color="error" mb={2}>

@@ -15,9 +15,10 @@ import axios from 'axios';
 import Toast from '../utils/Toast';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const UpdateBoardTypePage = () => {
-  const { adminToken } = useAuth(); 
+  const { adminToken } = useAuth();
   const [formData, setFormData] = useState({ type: '', cost: '', data: [] });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -34,7 +35,7 @@ const UpdateBoardTypePage = () => {
         const response = await axios.get(
           `${apiConfig.baseURL}admin/costom-assembly/${typeId}/item/${itemId}`
         );
-        setFormData(response.data); 
+        setFormData(response.data);
       } catch (error) {
         console.error('Failed to fetch data:', error);
         setError('Failed to load data. Please try again later.');
@@ -65,23 +66,23 @@ const UpdateBoardTypePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!formData.type || !formData.cost) {
       alert('Please fill in all fields');
       return;
     }
-  
+
     if (typeof formData.type !== 'string' || formData.type.trim().length < 3) {
       alert('Type must be at least 3 characters long');
       return;
     }
-  
+
     const costValue = parseFloat(formData.cost);
     if (isNaN(costValue) || costValue <= 0) {
       alert('Cost must be a positive number');
       return;
     }
-  
+
     try {
       setLoading(true);
 
@@ -89,27 +90,27 @@ const UpdateBoardTypePage = () => {
         setError('Kamu tidak terountetikasi, silahkan login kembali!');
         setLoading(false);
         return;
-    }
+      }
       const response = await axios.put(
         `${apiConfig.baseURL}admin/costom-assembly/${typeId}/item/${itemId}`,
         {
-          type: formData.type, 
-          cost: costValue, 
+          type: formData.type,
+          cost: costValue,
         },
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${adminToken}`, 
-        },
+            'Authorization': `Bearer ${adminToken}`,
+          },
         }
       );
-  
+
       if (response.status === 200) {
         Toast.fire({
           icon: 'success',
           title: 'Item updated successfully',
         });
-        navigate('../custom-assembly'); 
+        navigate('../custom-assembly');
       } else {
         setError('Failed to update the board type. Please try again.');
       }
@@ -125,6 +126,9 @@ const UpdateBoardTypePage = () => {
 
   return (
     <Container maxWidth="md">
+      <Helmet>
+        <title>Admin | Item Assembly</title>
+      </Helmet>
       <Paper elevation={3} sx={{ p: 4, mt: 4, borderRadius: 2 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={6}>

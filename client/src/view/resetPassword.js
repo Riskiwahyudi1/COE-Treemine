@@ -14,7 +14,7 @@ import axios from "axios";
 import Toast from "../utils/Toast";
 import { useNavigate, useParams } from "react-router-dom";
 import apiConfig from '../config/apiConfig';
-
+import { Helmet } from "react-helmet";
 export default function ChangePassword() {
     const { token } = useParams();
     const [password, setPassword] = useState("");
@@ -105,6 +105,9 @@ export default function ChangePassword() {
                 position: "relative",
             }}
         >
+            <Helmet>
+                <title>COE Treemiene | Reset Password</title>
+            </Helmet>
             <Typography
                 variant="h4"
                 sx={{

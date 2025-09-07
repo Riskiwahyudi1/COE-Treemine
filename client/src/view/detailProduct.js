@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const ProductPage = () => {
     const navigate = useNavigate();
@@ -154,7 +155,9 @@ const ProductPage = () => {
                     Back
                 </Typography>
             </Box>
-
+            <Helmet>
+                <title>COE Treemiene | Detail Product</title>
+            </Helmet>
             {product ? (
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 4 }}>
                     <Box

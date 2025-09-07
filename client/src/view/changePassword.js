@@ -17,6 +17,7 @@ import Toast from '../utils/Toast'
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 export default function ChangePassword() {
     // State untuk mengatur visibility password
@@ -143,6 +144,9 @@ export default function ChangePassword() {
                 minHeight: "100vh",
             }}
         >
+            <Helmet>
+                <title>COE Treemiene | Ubah Password</title>
+            </Helmet>
             {/* Header */}
             <Typography
                 variant="h4"

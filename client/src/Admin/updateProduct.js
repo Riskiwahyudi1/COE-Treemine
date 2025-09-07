@@ -20,6 +20,7 @@ import axios from 'axios';
 import Toast from '../utils/Toast';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 export default function UpdateProductForm() {
     const { adminToken } = useAuth();
@@ -167,6 +168,9 @@ export default function UpdateProductForm() {
 
     return (
         <Card sx={{ borderRadius: 4 }}>
+            <Helmet>
+                <title>Admin | Update Product</title>
+            </Helmet>
             <CardContent sx={{ backgroundColor: 'white' }}>
                 <Box
                     sx={{

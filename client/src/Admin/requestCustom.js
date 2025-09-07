@@ -21,7 +21,7 @@ import Dialog from '../utils/Dialog';
 import { formatDate } from '../utils/isoDate';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
-
+import { Helmet } from "react-helmet";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -282,6 +282,9 @@ console.log(requestAssembly)
                 padding: 4,
             }}
         >
+             <Helmet>
+        <title>Admin | Request Costom</title>
+      </Helmet>
             {/* Header */}
             <Typography
                 variant="h3"

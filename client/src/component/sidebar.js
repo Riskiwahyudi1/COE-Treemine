@@ -139,6 +139,9 @@ export default function MiniDrawer() {
     }));
   };
 
+  const handleResetPassword = () => {
+    window.location.href = '/admin/reset-password'; 
+  };
   const handleLogout = () => {
     logoutAdmin(); 
    
@@ -281,6 +284,7 @@ export default function MiniDrawer() {
             A
           </Avatar>
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
+            <MenuItem onClick={handleResetPassword}>Reset Password</MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </Toolbar>

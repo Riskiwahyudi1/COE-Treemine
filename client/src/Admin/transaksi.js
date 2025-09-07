@@ -22,6 +22,7 @@ import { getProvinces, getCities } from '../api/service/rajaOngkirApi'
 import Toast from '../utils/Toast';
 import Dialog from "../utils/Dialog";
 import { useAuth } from '../contexts/AuthContext';
+import { Helmet } from "react-helmet";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -323,6 +324,9 @@ export default function OrdersTable() {
                 padding: 4,
             }}
         >
+            <Helmet>
+                <title>Admin | Transaksi</title>
+            </Helmet>
             <Box
                 sx={{
                     display: 'flex',

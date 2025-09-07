@@ -24,15 +24,16 @@ import Toast from '../utils/Toast';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const CustomAssembly = () => {
     const navigate = useNavigate();
-    const { userToken } = useAuth(); 
+    const { userToken } = useAuth();
     const [partList, setPartList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
-        
+
         flexible_option: '',
         board_type: '',
         assembly_side: '',
@@ -163,14 +164,14 @@ const CustomAssembly = () => {
             const formattedMissingFields = missingFields.map(field => field.replace(/_/g, ' '));
             Toast.fire({
                 icon: 'error',
-                title: `Mohon pilih "${formattedMissingFields[0] }"!`,
+                title: `Mohon pilih "${formattedMissingFields[0]}"!`,
             });
             setLoading(false);
             return;
         }
 
         try {
-            
+
 
             if (!userToken) {
                 setError('Unauthorized access. Please log in first.');
@@ -238,7 +239,9 @@ const CustomAssembly = () => {
                         minHeight: '100vh',
                     }}
                 >
-
+                    <Helmet>
+                        <title>COE Treemiene | Costom Assembly</title>
+                    </Helmet>
                     <Paper
                         elevation={3}
                         sx={{

@@ -19,6 +19,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { getPayments, getTransaksi, getTotalDataCosotom } from './api/dashboardApi'
 import { useAuth } from '../contexts/AuthContext';
+import { Helmet } from "react-helmet";
 
 // Styled Components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -93,6 +94,9 @@ const Dashboard = () => {
       <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: '20px' }}>
         Dashboard
       </Typography>
+       <Helmet>
+        <title>Admin | Dashboard</title>
+      </Helmet>
       <Box sx={{
         display: 'grid',
         gridTemplateColumns: { xs: '1fr', md: '1fr 1fr 1fr' },

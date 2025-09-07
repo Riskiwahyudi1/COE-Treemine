@@ -24,6 +24,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import { useAuth } from '../contexts/AuthContext';
 import { Modal } from '@mui/material';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const showToast = (message, icon) => {
   Swal.fire({
@@ -216,6 +217,9 @@ export default function CustomizedTables() {
           gap: 2,
         }}
       >
+         <Helmet>
+        <title>Admin | Produk</title>
+      </Helmet>
         {/* Add Produk Button with Icon */}
         <StyledButton variant="contained"
           onClick={handleAddProduk}

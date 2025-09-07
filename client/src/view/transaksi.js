@@ -21,6 +21,7 @@ import { getProvinces, getCities } from '../api/service/rajaOngkirApi'
 import axios from 'axios'
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -417,6 +418,9 @@ export default function OrdersTable() {
                 padding: 4,
             }}
         >
+            <Helmet>
+                <title>COE Treemiene | Transaksi</title>
+            </Helmet>
             {/* Keterangan di atas tabel */}
             <Typography
                 variant="h6"

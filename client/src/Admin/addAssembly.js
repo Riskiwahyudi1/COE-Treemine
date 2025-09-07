@@ -15,9 +15,10 @@ import axios from 'axios';
 import Toast from '../utils/Toast';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const UpdateBoardTypePage = () => {
-  const { adminToken } = useAuth(); 
+  const { adminToken } = useAuth();
   const [boardName, setBoardName] = useState('');
   const [boardPrice, setBoardPrice] = useState('');
   const [error, setError] = useState('');
@@ -31,23 +32,23 @@ const UpdateBoardTypePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!boardName || !boardPrice) {
       setError('Please fill in all fields');
       return;
     }
-  
+
     if (typeof boardName !== 'string') {
       setError('Board name must be at least 3 characters long');
       return;
     }
-  
+
     const price = parseFloat(boardPrice);
     if (isNaN(price)) {
       setError('Price must be a  number');
       return;
     }
-  
+
     try {
       setLoading(true);
 
@@ -55,27 +56,27 @@ const UpdateBoardTypePage = () => {
         setError('Kamu tidak terountetikasi, silahkan login kembali!');
         setLoading(false);
         return;
-    }
+      }
       const response = await axios.post(
         `${apiConfig.baseURL}admin/costom-assembly/add-component/${id}`,
         {
-          type: boardName, 
-          cost: price, 
+          type: boardName,
+          cost: price,
         },
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${adminToken}`, 
-        },
+            'Authorization': `Bearer ${adminToken}`,
+          },
         }
       );
-  
+
       if (response.status === 200) {
         Toast.fire({
           icon: 'success',
           title: 'Item added successfully',
         });
-        navigate('../custom-assembly'); 
+        navigate('../custom-assembly');
       } else {
         setError('Failed to update the board type. Please try again.');
       }
@@ -88,11 +89,14 @@ const UpdateBoardTypePage = () => {
     } finally {
       setLoading(false);
     }
-  
+
   };
 
   return (
     <Container maxWidth="md">
+      <Helmet>
+        <title>Admin | Item Assembly</title>
+      </Helmet>
       <Paper elevation={3} sx={{ p: 4, mt: 4, borderRadius: 2 }}>
         {/* Header Section */}
         <Grid container spacing={2} alignItems="center">

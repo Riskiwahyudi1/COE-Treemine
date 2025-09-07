@@ -8,7 +8,7 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
-
+import { Helmet } from "react-helmet";
 
 
 export default function ProfileSettings() {
@@ -331,6 +331,9 @@ export default function ProfileSettings() {
                 minHeight: "100vh",
             }}
         >
+            <Helmet>
+                <title>COE Treemiene | Setting</title>
+            </Helmet>
             {/* Header */}
             <Typography
                 variant="h4"

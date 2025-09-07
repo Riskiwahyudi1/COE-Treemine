@@ -24,7 +24,7 @@ const addCategories = async (req, res) => {
 
         const newProduct = {
             category_name,
-            picture_url: `/category-picture/${image.filename}`,
+            picture_url: `category-picture/${image.filename}`,
         };
 
         const savedProduct = await Categories.create(newProduct);
@@ -106,7 +106,7 @@ const updateCategory = async (req, res) => {
             // calback delete image
             await deleteImage(imagePath);
 
-            pictureUrl = `/category-picture/${image.filename}`;
+            pictureUrl = `category-picture/${image.filename}`;
         }
 
         const updateProduct = await Categories.findByIdAndUpdate(id, {

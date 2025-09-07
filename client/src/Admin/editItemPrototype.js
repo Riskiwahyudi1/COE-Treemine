@@ -15,6 +15,7 @@ import axios from 'axios';
 import Toast from '../utils/Toast';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const UpdateBoardTypePage = () => {
   const { adminToken } = useAuth(); 
@@ -125,6 +126,9 @@ const UpdateBoardTypePage = () => {
 
   return (
     <Container maxWidth="md">
+       <Helmet>
+        <title>Admin | Item Prototype</title>
+      </Helmet>
       <Paper elevation={3} sx={{ p: 4, mt: 4, borderRadius: 2 }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={6}>

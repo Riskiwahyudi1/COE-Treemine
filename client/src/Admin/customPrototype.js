@@ -23,6 +23,7 @@ import Toast from '../utils/Toast';
 import Swal from 'sweetalert2';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -185,6 +186,9 @@ const BoardTypePage = () => {
           gap: 2,
         }}
       >
+         <Helmet>
+        <title>Admin | Item Prototype</title>
+      </Helmet>
        {selectedBoard && (
         <Button
           variant="contained"

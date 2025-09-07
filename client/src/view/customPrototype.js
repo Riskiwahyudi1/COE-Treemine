@@ -26,9 +26,10 @@ import Toast from "../utils/Toast";
 import axios from "axios";
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const CustomPrototype = (part) => {
-    const { userToken } = useAuth(); 
+    const { userToken } = useAuth();
     const [partList, setPartList] = useState([]);
     const [selectedMaterial, setSelectedMaterial] = useState("");
     const [selectedSubtype, setSelectedSubtype] = useState("");
@@ -203,10 +204,10 @@ const CustomPrototype = (part) => {
         // Validasi Input
         const requiredFields = [
             'board_type', 'design_in_panel', 'width', 'length', 'quantity', 'layer',
-             'material',
+            'material',
             'thickness', 'min_track', 'min_hole', 'solder_mask', 'silkscreen',
             'uv_printing', 'surface_finish', 'finish_copper',
-            
+
         ];
 
         if (selectedBoardType !== 'Panel by Customer' && selectedBoardType !== 'Single Piece') {
@@ -216,10 +217,10 @@ const CustomPrototype = (part) => {
             requiredFields.unshift('x_out');
         }
         if (selectedLayer === '1 Layer') {
-            requiredFields.unshift('copper_layer','solder_mask_position', 'silkscreen_position' );
+            requiredFields.unshift('copper_layer', 'solder_mask_position', 'silkscreen_position');
         }
-    
-      
+
+
         // Periksa apakah ada field yang kosong
         const missingFields = requiredFields.filter((field) => !formData[field] || formData[field].trim() === '');
 
@@ -227,7 +228,7 @@ const CustomPrototype = (part) => {
             const formattedMissingFields = missingFields.map(field => field.replace(/_/g, ' '));
             Toast.fire({
                 icon: 'error',
-                title: `Mohon pilih "${formattedMissingFields[0] }"!`,
+                title: `Mohon pilih "${formattedMissingFields[0]}"!`,
             });
             setLoading(false);
             return;
@@ -315,7 +316,9 @@ const CustomPrototype = (part) => {
                                 </Box>
                             </Box>
                         </Box>
-
+                        <Helmet>
+                            <title>COE Treemiene | Costom Prototype</title>
+                        </Helmet>
                         <Divider sx={{ mb: 3 }} />
 
                         <Typography variant="h6" sx={{ mb: 2 }}>

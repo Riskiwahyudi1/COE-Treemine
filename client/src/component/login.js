@@ -18,7 +18,7 @@ import { useAuth } from '../contexts/AuthContext';
 import Videocontoh from "../assets/images/logo 2.png";
 import Toast from '../utils/Toast';
 import apiConfig from '../config/apiConfig';
-
+import { Helmet } from "react-helmet";
 
 
 const getCookie = (name) => {
@@ -113,6 +113,9 @@ const LoginPage = () => {
 
   return (
     <Grid container component="main" sx={{ height: '100vh', borderRadius: '50%' }}>
+       <Helmet>
+        <title>COE Treemine | Login</title>
+      </Helmet>
       <Grid
         item
         xs={false}

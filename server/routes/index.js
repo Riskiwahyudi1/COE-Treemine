@@ -14,6 +14,7 @@ router.use('/', require('./buyer/transactions'));
 
 // Route admin
 router.use('/admin', require('./admin/auth/login'));
+router.use('/admin', require('./admin/auth/settingPassword'));
 router.use('/admin', require('./admin/categories'));
 router.use('/admin', require('./admin/costomAssembly'));
 router.use('/admin', require('./admin/costomPrototype')); 

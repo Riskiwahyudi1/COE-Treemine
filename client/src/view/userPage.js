@@ -5,7 +5,7 @@ import { getDataAccount } from "../api/auth/dataAccount"
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
-
+import { Helmet } from "react-helmet";
 
 export default function ProfileSettings() {
   const { userToken } = useAuth(); 
@@ -125,6 +125,9 @@ useEffect(() => {
         minHeight: "100vh",
       }}
     >
+      <Helmet>
+                <title>COE Treemiene | Profile</title>
+            </Helmet>
       {/* Header */}
       <Typography
         variant="h4"

@@ -20,6 +20,7 @@ import Toast from '../utils/Toast';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 export default function ProductForm() {
     const { adminToken } = useAuth(); 
@@ -162,6 +163,9 @@ export default function ProductForm() {
                         mb: 3,
                     }}
                 >
+                     <Helmet>
+        <title>Admin | Tambah Produk</title>
+      </Helmet>
                     <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
                         Add Product
                     </Typography>

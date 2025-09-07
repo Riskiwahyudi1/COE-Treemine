@@ -25,7 +25,7 @@ import { formatDate } from '../utils/isoDate';
 import { styled } from '@mui/material/styles';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
-
+import { Helmet } from "react-helmet";
 
 
 const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, handleCancel, handleCheckout, handleOpenModal }) => {
@@ -72,6 +72,9 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
         borderRadius: 3,
       }}
     >
+      <Helmet>
+                <title>COE Treemiene | Keranjang Costom</title>
+            </Helmet>
       <CardContent sx={{ display: 'flex', flex: 1, alignItems: 'center', gap: 2 }}>
         {/* Foto Produk */}
         {name === 'Costom Prototype' ? (

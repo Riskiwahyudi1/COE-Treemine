@@ -16,6 +16,7 @@ import axios from 'axios';
 import Toast from '../utils/Toast';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const UpdateCategoryPage = () => {
     const { adminToken } = useAuth(); 
@@ -126,6 +127,9 @@ const UpdateCategoryPage = () => {
 
     return (
         <Container maxWidth="md">
+             <Helmet>
+        <title>Admin | Kategori Produk</title>
+      </Helmet>
             <Paper elevation={3} sx={{ p: 4, mt: 4, borderRadius: 2 }}>
                 {/* Header Section */}
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>

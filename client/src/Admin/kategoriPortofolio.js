@@ -18,6 +18,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const showToast = (message, icon) => {
   Swal.fire({
@@ -104,6 +105,9 @@ const KategoriPortfolioPage = () => {
       <Typography variant="h4" fontWeight="bold" mb={3}>
         Kategori Portofolio
       </Typography>
+       <Helmet>
+        <title>Admin | Kategori</title>
+      </Helmet>
       {error && <Alert severity="error">{error}</Alert>}
       <Button
         variant="contained"

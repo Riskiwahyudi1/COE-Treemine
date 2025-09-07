@@ -22,6 +22,7 @@ import Dialog from "../utils/Dialog";
 import { getAssemblyItem, getAssemblyById } from '../api/costomAssemblyApi';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -178,6 +179,9 @@ const CustomAssemblyPage = () => {
           gap: 2,
         }}
       >
+         <Helmet>
+        <title>Admin | Item Assembly</title>
+      </Helmet>
         {selectedBoard && (
           <Button
             variant="contained"

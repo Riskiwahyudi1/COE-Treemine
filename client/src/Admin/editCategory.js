@@ -16,9 +16,10 @@ import axios from 'axios';
 import Toast from '../utils/Toast';
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const UpdateCategoryPage = () => {
-    const { adminToken } = useAuth(); 
+    const { adminToken } = useAuth();
     const [formData, setFormData] = useState({
         category_name: '',
         image: '',
@@ -93,24 +94,24 @@ const UpdateCategoryPage = () => {
             if (formData.image) {
                 data.append('image', formData.image);
             }
-        
+
             if (!adminToken) {
                 setError('Kamu tidak terountetikasi, silahkan login kembali!');
                 setLoading(false);
                 return;
             }
-            
+
             const response = await axios.put(
                 `${apiConfig.baseURL}admin/product/categories/edit/${id}`,
                 data,
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data',
-                        'Authorization': `Bearer ${adminToken}`, 
+                        'Authorization': `Bearer ${adminToken}`,
                     },
                 }
             );
-        
+
             if (response.status === 200) {
                 Toast.fire({
                     icon: 'success',
@@ -123,7 +124,7 @@ const UpdateCategoryPage = () => {
         } catch (error) {
             if (error.response) {
                 const { status, data } = error.response;
-        
+
                 if (status === 400 && data.errors) {
                     const errors = data.errors.map((err) => err.msg).join(', ');
                     setError(errors);
@@ -148,6 +149,9 @@ const UpdateCategoryPage = () => {
 
     return (
         <Container maxWidth="md">
+            <Helmet>
+                <title>Admin | Edit Kategori</title>
+            </Helmet>
             <Paper elevation={3} sx={{ p: 4, mt: 4, borderRadius: 2 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                     <Typography variant="h5" fontWeight="bold">
@@ -183,7 +187,7 @@ const UpdateCategoryPage = () => {
                             Category Image
                         </Typography>
                         <Box display="flex" alignItems="center" gap={2}>
-                        {imagePreview && (
+                            {imagePreview && (
                                 <img
                                     src={imagePreview}
                                     alt="Preview"

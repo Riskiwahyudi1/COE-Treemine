@@ -7,6 +7,7 @@ import Videocontoh from "../assets/images/logo 2.png";
 import Toast from '../utils/Toast';
 import HomeIcon from '@mui/icons-material/Home';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -66,6 +67,9 @@ const RegisterPage = () => {
           overflow: 'hidden',
         }}
       >
+         <Helmet>
+        <title>Admin | Register</title>
+      </Helmet>
         <Box
           sx={{
             my: 8,

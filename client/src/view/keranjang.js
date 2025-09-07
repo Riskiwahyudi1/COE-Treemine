@@ -21,6 +21,7 @@ import getProductsInCart from '../api/cartApi';
 import Toast from '../utils/Toast'
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const showToast = (message, icon) => {
     Swal.fire({
@@ -82,7 +83,9 @@ const ShoppingCartItem = ({
                 borderRadius: 3,
             }}
         >
-            
+            <Helmet>
+                <title>COE Treemiene | Keranjang</title>
+            </Helmet>
             <Checkbox
                 checked={isChecked}
                 onChange={(e) => onSelect(id, e.target.checked)}

@@ -26,6 +26,7 @@ import { getProvinces, getCities } from "../api/service/rajaOngkirApi";
 import Toast from "../utils/Toast";
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
+import { Helmet } from "react-helmet";
 
 const PaymentPage = () => {
     const navigate = useNavigate();
@@ -298,6 +299,9 @@ const PaymentPage = () => {
                 minHeight: "100vh",
             }}
         >
+            <Helmet>
+                <title>COE Treemiene | Checkout</title>
+            </Helmet>
             <Paper
                 sx={{
                     padding: 4,
