@@ -119,7 +119,7 @@ const ProductCard = ({ product_id, product_name, harga, description, stock, pict
 };
 
 const App = () => {
-    const { userToken } = useAuth(); 
+    const { userToken } = useAuth();
     const [searchParams] = useSearchParams();
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState([]);
@@ -130,6 +130,10 @@ const App = () => {
 
     useEffect(() => {
         const fetchProducts = async () => {
+            if (!query || query.trim() === "") {
+                return; 
+            }
+
             try {
                 const response = await axios.get(`${apiConfig.baseURL}product/search`, {
                     params: { query },
@@ -143,10 +147,11 @@ const App = () => {
         fetchProducts();
     }, [query]);
 
+
     const handleAddToCart = async (id) => {
         try {
             setLoading(true)
-            
+
 
             if (!userToken) {
 
@@ -278,21 +283,20 @@ const App = () => {
             }}
         >
             <Container>
-            {displayedProducts.length > 0 && (
-                <Typography
-                    variant="h3"
-                    component="h1"
-                    sx={{
-                        textAlign: 'center',
-                        fontWeight: 'bold',
-                        color: '#000000',
-                        // marginBottom: '30px',
-                        // marginTop: '-130px',
-                    }}
-                >
-                    Produk Kami
-                </Typography>
-            )}
+                {displayedProducts.length > 0 && (
+                    <Typography
+                        variant="h4"
+                        component="h2"
+                        sx={{
+                            textAlign: 'center',
+                            fontWeight: 'bold',
+                            color: '#00A63F',
+                            mb: 6,
+                        }}
+                    >
+                        Produk Kami
+                    </Typography>
+                )}
                 {displayedProducts.length === 0 && (
                     <Typography
                         variant="h6"

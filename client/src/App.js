@@ -28,6 +28,7 @@ import Review from './view/review';
 import Checkout from './view/checkout';
 import LoginAdmin from './component/loginAdmin';
 import ProfileSettings from './view/setingProfile';
+import NotFoundPage from './component/NotFoundPage'
 
 
 
@@ -56,6 +57,7 @@ function AppContent() {
     location.pathname === '/cancle' ||
     location.pathname === '/transaksi'  ||
     location.pathname === '/review'; 
+    // const isNotFoundPage = location.state?.isNotFoundPage === true;
 
   return (
     <>
@@ -88,6 +90,7 @@ function AppContent() {
           <Route path="/custom-assembly" element={<ProductAssemblyPage />} />
           <Route path="/checkout" element={<Checkout />} />
         </Route>
+        {/* <Route path="*" element={<NotFoundPage />} /> */}
       </Routes>
 
       {/* Setting profile page with SidebarProfile */}

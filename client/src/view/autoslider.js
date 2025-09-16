@@ -89,30 +89,27 @@ const PCBLandingPage = () => {
                 color: 'white'
             }}>
                 <Container maxWidth="xl" sx={{
-                    pt: { xs: 2, sm: 3, md: 1 },
-                    pb: { xs: 2, sm: 3, md: 1 }
+                    pt: { xs: 6, sm: 8, md: 10 },   // jarak atas lebih lega
+                    pb: { xs: 6, sm: 8, md: 10 }    // jarak bawah lebih lega
                 }}>
                     <Grid container spacing={4} alignItems="center">
                         <Grid item xs={12} md={8}>
-                            <Box>
-                                <Typography variant="h3" sx={{
-                                    fontWeight: 'bold',
-                                    mb: 2,
-                                    color: 'white',
-                                    fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' }
-                                }}>
-                                    Pengalaman Terbaik Membeli PCB
-                                </Typography>
-                                <Typography variant="body1" sx={{
-                                    color: 'white',
-                                    mb: 1,
-                                    pt: { xs: 2, sm: 3, md: 4 },
-                                    opacity: 0.9,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' }
-                                }}>
-                                    Dapatkan layanan PCB berkualitas tinggi dengan proses yang mudah dan cepat. Kami menyediakan solusi lengkap untuk kebutuhan elektronika Anda.
-                                </Typography>
-                            </Box>
+                            <Typography variant="h3" sx={{
+                                fontWeight: 'bold',
+                                mb: 2,
+                                color: 'white',
+                                fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' }
+                            }}>
+                                Pengalaman Terbaik Membeli PCB
+                            </Typography>
+                            <Typography variant="body1" sx={{
+                                color: 'white',
+                                opacity: 0.9,
+                                fontSize: { xs: '0.875rem', sm: '1rem' }
+                            }}>
+                                Dapatkan layanan PCB berkualitas tinggi dengan proses yang mudah dan cepat.
+                                Kami menyediakan solusi lengkap untuk kebutuhan elektronika Anda.
+                            </Typography>
                         </Grid>
 
                         <Grid item xs={12} md={4}>
@@ -211,12 +208,13 @@ const PCBLandingPage = () => {
             <Box sx={{
                 bgcolor: 'white',
                 px: { xs: 3, sm: 5, md: 8 },
-                pt: 1
+                pt: { xs: 6, sm: 8, md: 10 },  
+                // pb: { xs: 6, sm: 8, md: 10 }    
             }}>
                 <Container maxWidth="xl">
                     <Typography variant="h4" sx={{
                         color: '#00A63F',
-                        mb: 1,
+                        mb: 4,  
                         fontWeight: 'bold',
                         fontSize: { xs: '1.5rem', sm: '2rem' }
                     }}>

@@ -8,25 +8,12 @@ import apiConfig from '../config/apiConfig';
 import { Helmet } from "react-helmet";
 
 export default function ProfileSettings() {
-  const { userToken } = useAuth(); 
   const navigate = useNavigate();
+  const { userToken } = useAuth();
   const [profilePhoto, setProfilePhoto] = useState("");
-  const [provinces, setProvinces] = useState('');
-  const [cities, setCities] = useState();
- 
   const [dataAccount, setDataAccount] = useState({ address: {} });
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    gender: '',
-    birthday: '',
-    province: '',
-    city: '',
-    postal_code: '',
-    detail_address: '',
-    profile_picture: null
+  console.log(dataAccount)
 
-  })
   // state default
   useEffect(() => {
     setProfilePhoto(`${apiConfig.baseURL}${dataAccount.profile_picture_url}`);
@@ -35,7 +22,7 @@ export default function ProfileSettings() {
   // handle update profile
   const handleEdit = () => {
     navigate('./profileSettings');
-};
+  };
 
   // data akun default
   useEffect(() => {
@@ -43,76 +30,11 @@ export default function ProfileSettings() {
       try {
         const data = await getDataAccount(userToken);
         setDataAccount(data);
-
-        setFormData({
-          ...formData,
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          gender: data.gender,
-          birthday: data.birthday,
-          province: data.address.province,
-          city: data.address.city,
-          postal_code: data.address.postal_code,
-          detail_address: data.address.detail_address,
-          profile_picture: data.profile_picture
-        });
       } catch (error) {
       }
     };
     fetchDataAccount();
   }, []);
-
-//  provinsi user
-  useEffect(() => {
-    const fetchProvince = async () => {
-      try {
-        const dataProvinces = await getProvinces(userToken);
-        if (dataProvinces) {
-          const province = dataProvinces.data.find(
-            (prov) => prov?.id === Number(formData.province)
-          );
-          setProvinces(province?.name || "Provinsi tidak ditemukan");
-        }
-      } catch (error) {
-        setProvinces("Gagal memuat data provinsi");
-      }
-    };
-
-    if (formData.province) {
-      fetchProvince();
-    }
-  }, [formData.province]);
-
-  // Kota berdasarkan provinsi
-useEffect(() => {
-  if (formData.province) {
-    const fetchCities = async () => {
-      try {
-        const dataCity = await getCities(formData.province, userToken);
-        if (dataCity && Array.isArray(dataCity)) {
-          const city = dataCity.find(
-            (c) => c.id === Number(formData.city)
-          );
-          setCities(city?.name || "Kota tidak ditemukan");
-        } else {
-          setCities("Kota tidak ditemukan");
-        }
-      } catch (error) {
-        console.error(error);
-        setCities('Gagal memuat data kota'); 
-      }
-    };
-
-    fetchCities();
-  } else {
-
-    setCities([]);
-  }
-}, [formData.province, formData.city]);
-
-
-
 
   return (
     <Box
@@ -126,8 +48,8 @@ useEffect(() => {
       }}
     >
       <Helmet>
-                <title>COE Treemiene | Profile</title>
-            </Helmet>
+        <title>COE Treemiene | Profile</title>
+      </Helmet>
       {/* Header */}
       <Typography
         variant="h4"
@@ -207,7 +129,7 @@ useEffect(() => {
               name="name"
               label="Nama Lengkap"
               variant="outlined"
-              value={formData.name || ""}
+              value={dataAccount.name || ""}
               InputProps={{
                 readOnly: true,
               }}
@@ -224,7 +146,7 @@ useEffect(() => {
               name="gender"
               label="Jenis Kelamin"
               variant="outlined"
-              value={formData.gender || ""}
+              value={dataAccount.gender || ""}
               InputProps={{
                 readOnly: true,
               }}
@@ -242,8 +164,8 @@ useEffect(() => {
               label="Tanggal Lahir"
               variant="outlined"
               value={
-                formData.birthday
-                  ? new Date(formData.birthday).toISOString().split('T')[0]
+                dataAccount.birthday
+                  ? new Date(dataAccount.birthday).toISOString().split('T')[0]
                   : ""
               }
               InputProps={{
@@ -262,7 +184,7 @@ useEffect(() => {
               name="phone"
               label="Nomor Telepon"
               variant="outlined"
-              value={formData.phone || ""}
+              value={dataAccount.phone || ""}
               InputProps={{
                 readOnly: true,
               }}
@@ -278,7 +200,7 @@ useEffect(() => {
               fullWidth
               label="Email"
               variant="outlined"
-              value={formData.email || ""}
+              value={dataAccount.email || ""}
               InputProps={{
                 readOnly: true,
               }}
@@ -293,7 +215,7 @@ useEffect(() => {
               fullWidth
               label="Detail Alamat"
               variant="outlined"
-              value={`${formData.detail_address || ''}, ${cities || ''}, ${provinces || ''}`}
+              value={`${dataAccount?.address?.detail_address || ''}, Kel. ${dataAccount?.address?.sub_district_name || ''}, Kec. ${dataAccount?.address?.district_name || ''}, ${dataAccount?.address?.city_name || ''}, ${dataAccount?.address?.province_name || ''}`}
               multiline
               rows={3}
               InputLabelProps={{
@@ -304,7 +226,7 @@ useEffect(() => {
               }}
             />
           </Grid>
-          </Grid>
+        </Grid>
 
 
         {/* Tombol Aksi */}
@@ -320,7 +242,7 @@ useEffect(() => {
             onClick={handleEdit}
             variant="contained"
             sx={{ backgroundColor: "#00A63F", textTransform: "none", color: "#fff" }}
-            
+
           >Edit Profile
           </Button>
         </Box>

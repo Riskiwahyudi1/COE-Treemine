@@ -8,7 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { useSearchParams } from "react-router-dom";
-import { Box, Typography, Button, Modal, CircularProgress } from '@mui/material';
+import { Box, Typography, Button, Grid, Modal, CircularProgress } from '@mui/material';
 import { getTransaction } from "../api/transaksiApi"
 import { formatDate } from "../utils/isoDate"
 import { cancelTransaction, doneTransaction } from "../api/transaksiApi";
@@ -17,7 +17,6 @@ import CostomAssemblyImg from '../assets/images/3.png';
 import Toast from "../utils/Toast";
 import Dialog from "../utils/Dialog";
 import { useNavigate } from 'react-router-dom';
-import { getProvinces, getCities } from '../api/service/rajaOngkirApi'
 import axios from 'axios'
 import { useAuth } from '../contexts/AuthContext';
 import apiConfig from '../config/apiConfig';
@@ -72,14 +71,12 @@ const ModalContent = styled(Box)(({ theme }) => ({
 
 export default function OrdersTable() {
     const navigate = useNavigate();
-    const { userToken } = useAuth(); 
+    const { userToken } = useAuth();
     const [transaction, setTransaction] = useState([]);
     const [searchParams] = useSearchParams();
     const [openModal, setOpenModal] = useState(false);
     const [idTransaction, setIdTransaction] = useState('')
     const [buyerData, setBuyerData] = useState([])
-    const [provinces, setProvinces] = useState('');
-    const [cities, setCities] = useState();
     const [isLoading, setIsLoading] = useState(false);
     const [loadingButtonId, setLoadingButtonId] = useState(null);
     const [error, setError] = useState(null);
@@ -166,55 +163,11 @@ export default function OrdersTable() {
     };
 
     const handleOpenModal = (order) => {
-        setIsLoading(true);
         const transactions = transaction.filter((trsData) => trsData._id === order);
         setIdTransaction(order);
         setBuyerData(transactions);
         setOpenModal(true);
     };
-
-    useEffect(() => {
-        const fetchProvince = async () => {
-            if (buyerData && buyerData.length > 0) {
-                try {
-                    const dataProvinces = await getProvinces();
-                    if (dataProvinces?.data) {
-                        const province = dataProvinces.data.find(
-                            (prov) => prov.province_id === buyerData[0].id_user.address.province
-                        );
-                        setProvinces(province?.province || "Provinsi tidak ditemukan");
-                    }
-                } catch (error) {
-                    setProvinces("Gagal memuat data..");
-                } finally {
-                    setIsLoading(false);
-                }
-            } else {
-                setIsLoading(false);
-            }
-        };
-
-        fetchProvince();
-    }, [buyerData]);
-
-    useEffect(() => {
-        if (buyerData && buyerData.length > 0) {
-            const fetchCities = async () => {
-                try {
-                    const dataCity = await getCities(buyerData[0].id_user.address.province);
-                    if (dataCity) {
-                        const city = dataCity.find(
-                            (cities) => cities.city_id === buyerData[0].id_user.address.city
-                        );
-                        setCities(city?.city_name || "error");
-                    }
-                } catch (error) {
-                    setCities('Gagal memuat data..');
-                }
-            };
-            fetchCities();
-        }
-    }, [buyerData]);
 
     const handleCloseModal = () => {
         setOpenModal(false);
@@ -236,7 +189,7 @@ export default function OrdersTable() {
             setError(null);
             const config = {
                 headers: {
-                    'Content-Type': 'application/json', 
+                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${userToken}`,
                 }
             };
@@ -334,7 +287,7 @@ export default function OrdersTable() {
             }
             const config = {
                 headers: {
-                    'Content-Type': 'application/json', 
+                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${userToken}`,
                 }
             };
@@ -520,7 +473,7 @@ export default function OrdersTable() {
                                                     <Button
                                                         variant="contained"
                                                         onClick={() => handlePayment(order._id)}
-                                                        disabled={loadingButtonId === order._id} 
+                                                        disabled={loadingButtonId === order._id}
                                                         startIcon={loadingButtonId === order._id ? <CircularProgress size={24} /> : null}
                                                         sx={{
                                                             backgroundColor: '#00A63F', // Hijau
@@ -617,14 +570,14 @@ export default function OrdersTable() {
             <StyledModal open={openModal} onClose={handleCloseModal}>
                 <ModalContent
                     sx={{
-                        padding: 3,
-                        borderRadius: 2,
-                        boxShadow: 24,
-                        maxWidth: 700,
-                        maxHeight: '90vh',
+                        padding: 4,
+                        borderRadius: 3,
+                        maxWidth: '70%',
+                        maxHeight: '85vh',
                         margin: 'auto',
-                        backgroundColor: '#ffffff',
+                        backgroundColor: '#f9fafb',
                         overflowY: 'auto',
+                        boxShadow: '0px 8px 24px rgba(0,0,0,0.15)',
                     }}
                 >
                     {transaction && transaction.length > 0 ? (
@@ -633,91 +586,68 @@ export default function OrdersTable() {
                             .map((data, idx) => (
                                 <Box key={idx}>
                                     {isLoading ? (
-                                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                                            <CircularProgress />
-                                            <Typography>Loading data...</Typography>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 4 }}>
+                                            <CircularProgress color="success" />
+                                            <Typography sx={{ mt: 2 }}>Memuat data...</Typography>
                                         </Box>
                                     ) : (
                                         <>
-                                            <Typography
-                                                variant="h5"
-                                                sx={{
-                                                    fontWeight: 'bold',
-                                                    marginBottom: 3,
-                                                    textAlign: 'center',
-                                                    borderBottom: '2px solid #e0e0e0',
-                                                    paddingBottom: 2,
-                                                }}
-                                            >
-                                                Detail Transaksi
-                                            </Typography>
-
-                                            <Box sx={{ marginBottom: 3 }}>
-                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                    <strong>No Order:</strong> {data._id || 'N/A'}
+                                            {/* HEADER */}
+                                            <Box sx={{ textAlign: 'center', mb: 4 }}>
+                                                <Typography variant="h4" fontWeight="bold" color="primary" gutterBottom>
+                                                    Detail Transaksi
                                                 </Typography>
-                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                    <strong>Tanggal:</strong>{' '}
-                                                    {data.created_at ? new Date(data.created_at).toLocaleString('id-ID') : 'N/A'}
-                                                </Typography>
-                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                    <strong>Status:</strong>{' '}
-                                                    {data.status
-                                                        ?.split('-')
-                                                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                                                        .join(' ') || 'N/A'}
-                                                </Typography>
-                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                    <strong>Total Pembayaran:</strong> Rp.{' '}
-                                                    {Number(data.total_payment).toLocaleString('id-ID') || 'N/A'}
+                                                <Typography variant="subtitle1" color="text.secondary">
+                                                    Ringkasan lengkap pesanan pelanggan
                                                 </Typography>
                                             </Box>
 
-                                            <Typography
-                                                variant="h6"
+                                            {/* TRANSAKSI INFO */}
+                                            <Box
                                                 sx={{
-                                                    fontWeight: 'bold',
-                                                    marginBottom: 2,
-                                                    borderBottom: '1px solid #e0e0e0',
-                                                    paddingBottom: 1,
+                                                    backgroundColor: '#fff',
+                                                    p: 3,
+                                                    borderRadius: 2,
+                                                    boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                                                    mb: 3,
                                                 }}
                                             >
-                                                Detail Pengiriman
-                                            </Typography>
-                                            <Box sx={{ marginBottom: 3 }}>
-                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                    <strong>Alamat Penerima:</strong>{' '}
-                                                    {`${data.id_user.address?.detail_address || 'N/A'}, ${cities}, ${provinces}, ${data.id_user.address?.postal_code || 'N/A'}`}
+                                                <Typography variant="h6" fontWeight="bold" mb={2}>
+                                                    Informasi Pesanan
                                                 </Typography>
-                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                    <strong>Kurir:</strong> {data.expedition?.[0]?.courier || 'N/A'}
-                                                </Typography>
-                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                    <strong>Jenis Layanan:</strong> {data.expedition?.[0]?.shipping_option || 'N/A'}
-                                                </Typography>
-                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                    <strong>Ongkir:</strong> Rp.{' '}
-                                                    {Number(data.expedition?.[0]?.shipping_cost || 0).toLocaleString('id-ID') || 'N/A'}
-                                                </Typography>
-                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                    <strong>Estimasi Pengiriman:</strong> {data.estimated_delivery || 'N/A'}
-                                                </Typography>
-                                                <Typography variant="body1" sx={{ marginBottom: 1 }}>
-                                                    <strong>No Resi:</strong> {data.expedition?.[0]?.delivery_receipt || <i>Belum Diterbitkan</i>}
-                                                </Typography>
+                                                <Grid container spacing={2}>
+                                                    <Grid item xs={12}>
+                                                        <Typography><strong>No Order:</strong> {data._id}</Typography>
+                                                        <Typography><strong>Pembeli:</strong> {data.id_user?.username || 'N/A'}</Typography>
+                                                        <Typography><strong>Tanggal:</strong> {data.created_at ? new Date(data.created_at).toLocaleString('id-ID') : 'N/A'}</Typography>
+                                                        <Typography><strong>Status:</strong> {data.status?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') || 'N/A'}</Typography>
+                                                        <Typography><strong>Total:</strong> Rp {Number(data.total_payment).toLocaleString('id-ID')}</Typography>
+                                                   
+                                                    </Grid>
+                                                </Grid>
                                             </Box>
 
-                                            <Typography
-                                                variant="h6"
+                                            {/* DETAIL PENGIRIMAN */}
+                                            <Box
                                                 sx={{
-                                                    fontWeight: 'bold',
-                                                    marginBottom: 2,
-                                                    borderBottom: '1px solid #e0e0e0',
-                                                    paddingBottom: 1,
+                                                    backgroundColor: '#fff',
+                                                    p: 3,
+                                                    borderRadius: 2,
+                                                    boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                                                    mb: 3,
                                                 }}
                                             >
-                                                Produk yang Dipesan
-                                            </Typography>
+                                                <Typography variant="h6" fontWeight="bold" mb={2}>
+                                                    Detail Pengiriman
+                                                </Typography>
+                                                <Typography><strong>Alamat:</strong> {`${data?.id_user?.address?.detail_address || ''}, Kel. ${data?.id_user?.address?.sub_district_name || ''}, Kec. ${data?.id_user?.address?.district_name || ''}, ${data?.id_user?.address?.city_name || ''}, ${data?.id_user?.address?.province_name || ''}`}</Typography>
+                                                <Typography><strong>Kurir:</strong> {data.expedition?.[0]?.courier || 'N/A'}</Typography>
+                                                <Typography><strong>Layanan:</strong> {data.expedition?.[0]?.shipping_option || 'N/A'}</Typography>
+                                                <Typography><strong>Ongkir:</strong> Rp {Number(data.expedition?.[0]?.shipping_cost || 0).toLocaleString('id-ID')}</Typography>
+                                                <Typography><strong>Estimasi:</strong> {data.estimated_delivery || 'N/A'}</Typography>
+                                                <Typography><strong>No Resi:</strong> {data.expedition?.[0]?.delivery_receipt || <i>Belum diterbitkan</i>}</Typography>
+                                            </Box>
+
                                             <Box
                                                 sx={{
                                                     display: 'flex',
@@ -803,8 +733,9 @@ export default function OrdersTable() {
                                                                                 style={{
                                                                                     width: 80,
                                                                                     height: 80,
-                                                                                    borderRadius: 4,
-                                                                                    objectFit: 'cover',
+                                                                                    borderRadius: 8,
+                                                                                    border: "1px solid #00A63F",
+                                                                                    borderColor: "primary.main",
                                                                                 }}
                                                                             />
                                                                             <Box>
@@ -905,8 +836,9 @@ export default function OrdersTable() {
                                                                                 style={{
                                                                                     width: 80,
                                                                                     height: 80,
-                                                                                    borderRadius: 4,
-                                                                                    objectFit: 'cover',
+                                                                                    borderRadius: 8,
+                                                                                    border: "1px solid #00A63F",
+                                                                                    borderColor: "primary.main",
                                                                                 }}
                                                                             />
                                                                             <Box>
@@ -965,6 +897,7 @@ export default function OrdersTable() {
                                                                                     { label: 'Board to Delivery', value: custom.id_request_costom.board_to_delivery },
                                                                                     { label: 'Function Test', value: custom.id_request_costom.function_test },
                                                                                     { label: 'Cable Wire Harness Assembly', value: custom.id_request_costom.cable_wire_harness_assembly },
+                                                                                    { label: 'Detail Information', value: custom.id_request_costom.detail_information },
                                                                                 ].map((item, idx) => (
                                                                                     <Typography key={idx} variant="body2">
                                                                                         <strong>{item.label}: </strong> {item.value}
@@ -1010,16 +943,26 @@ export default function OrdersTable() {
                                                     </Typography>
                                                 )}
                                             </Box>
-                                            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 3 }}>
+
+                                            {/* ACTION BUTTONS */}
+                                            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 3 }}>
                                                 <Button
                                                     variant="contained"
-                                                    sx={{
-                                                        backgroundColor: '#54cbbb',
-                                                        '&:hover': { backgroundColor: '#46b2a6' },
-                                                    }}
+                                                    color="secondary"
                                                     onClick={handleCloseModal}
+                                                    className="no-print"
+                                                    sx={{ px: 3, py: 1.2, borderRadius: 2 }}
                                                 >
-                                                    Tutup
+                                                    ❌ Tutup
+                                                </Button>
+                                                <Button
+                                                    variant="contained"
+                                                    color="success"
+                                                    // onClick={handlePrint}
+                                                    className="no-print"
+                                                    sx={{ px: 3, py: 1.2, borderRadius: 2 }}
+                                                >
+                                                    🖨️ Cetak
                                                 </Button>
                                             </Box>
                                         </>
@@ -1027,7 +970,7 @@ export default function OrdersTable() {
                                 </Box>
                             ))
                     ) : (
-                        <Typography variant="body1">Tidak ada transaksi ditemukan.</Typography>
+                        <Typography textAlign="center">Tidak ada transaksi ditemukan.</Typography>
                     )}
                 </ModalContent>
             </StyledModal>

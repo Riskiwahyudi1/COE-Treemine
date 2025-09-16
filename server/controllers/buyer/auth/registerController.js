@@ -1,52 +1,55 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../../../models/users');
 const transporter = require('../../../config/nodemailer');
-const router = express.Router();
-const Joi = require('joi');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const register = async (req, res) => {
     const { username, email, password } = req.body;
 
     try {
-
+        // cek apakah email / username sudah ada
         const existingUser = await User.findOne({
-            $or: [{ email: req.body.email }, { username: req.body.username }]
+            $or: [{ email }, { username }]
         });
         if (existingUser) {
-            return res.status(409).json({ message: 'Email or username already exists' });
+            return res.status(409).json({ message: 'Email atau username sudah terdaftar' });
         }
 
+        // buat user baru
         const newUser = await User.create({ username, email, password });
 
+        // buat token verifikasi
         const token = jwt.sign({ id: newUser._id }, JWT_SECRET, { expiresIn: '1h' });
         const verificationUrl = `http://localhost:5000/api/register/buyer/verify/${token}`;
+        // const verificationUrl = `https://treemine.polibatam.ac.id/api/register/buyer/verify/${token}`;
 
+        // kirim email verifikasi
         await transporter.sendMail({
-            from: '"COE Treemine" riskiwahyudi@gmail.com',
+            from: `"Official CoE" <${process.env.EMAIL_USER}>`,  
             to: newUser.email,
             subject: 'Verifikasi Alamat Email Anda',
             html: `
-          <p>Halo ${newUser.username},</p>
-          <p>Terima kasih telah mendaftar di <strong>COE Treemine</strong>. Mohon verifikasi alamat email Anda untuk mengaktifkan akun:</p>
-          <p><a href="${verificationUrl}" style="color: #1a73e8;">Klik di sini untuk verifikasi email Anda</a></p>
-          <p>Tautan ini akan kedaluwarsa dalam waktu 1 jam.</p>
-          <p>Jika Anda tidak membuat akun ini, harap abaikan email ini.</p>
-          <br>
-          <p>Salam hangat,</p>
-          <p>Tim COE Treemine</p>
-        `,
+              <p>Halo ${newUser.username},</p>
+              <p>Terima kasih telah mendaftar di <strong>COE Treemine</strong>. Mohon verifikasi alamat email Anda untuk mengaktifkan akun:</p>
+              <p><a href="${verificationUrl}" style="color: #1a73e8;">Klik di sini untuk verifikasi email Anda</a></p>
+              <p>Tautan ini akan kedaluwarsa dalam waktu 1 jam.</p>
+              <p>Jika Anda tidak membuat akun ini, harap abaikan email ini.</p>
+              <br>
+              <p>Salam hangat,</p>
+              <p>Tim COE Treemine</p>
+            `,
         });
 
-
-        res.status(201).json({ message: 'User berhasil disimpan', user: newUser });
+        res.status(201).json({ message: 'User berhasil disimpan, email verifikasi terkirim', user: newUser });
 
     } catch (error) {
         console.error('Gagal menyimpan data:', error.message);
         res.status(500).json({ message: 'Gagal menyimpan data', error: error.message });
     }
-}
+};
 
 const verifikasiEmail = async (req, res) => {
 

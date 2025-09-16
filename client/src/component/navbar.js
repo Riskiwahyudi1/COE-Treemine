@@ -145,6 +145,9 @@ const Navbar = () => {
     };
 
     useEffect(() => {
+        if(userToken === null){
+            return;
+        }
         const fetchCartList = async () => {
             try {
                 const data = await getProductsInCart(userToken);

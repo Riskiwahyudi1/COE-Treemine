@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const validateRequest = require('../../../middlewares/handleValidationErrors');
+const { loginRateLimiter } = require('../../../middlewares/rateLimitLogin');
 const { login } = require('../../../controllers/buyer/auth/loginController');
 
 router.post('/login/buyer', validateRequest([
@@ -14,6 +15,6 @@ router.post('/login/buyer', validateRequest([
         .notEmpty()
         .withMessage('Password tidak boleh kosong.'),
 ]),
-    login);
+  loginRateLimiter, login);
 
 module.exports = router;

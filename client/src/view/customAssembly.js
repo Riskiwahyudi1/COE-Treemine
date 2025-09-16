@@ -372,6 +372,7 @@ const CustomAssembly = () => {
                                                             name="quantity"
                                                             value={formData.quantity}
                                                             size="small"
+                                                            type='number'
                                                             placeholder="Enter quantity"
                                                             sx={{ width: '30%' }}
                                                         />
@@ -427,6 +428,7 @@ const CustomAssembly = () => {
                                                         name="number_unik_part"
                                                         label="Number of Unique Parts"
                                                         size="small"
+                                                        type='number'
                                                         value={formData.number_unik_part || ""} // Pastikan value terkait formData
                                                         onChange={handleChange} // Handle perubahan nilai input
                                                         sx={{ flex: '1 1 calc(50% - 8px)' }}
@@ -435,6 +437,7 @@ const CustomAssembly = () => {
                                                         name="number_SMD_part"
                                                         label="Number of SMD Parts"
                                                         size="small"
+                                                        type='number'
                                                         value={formData.number_SMD_part || ""} // Sinkronisasi dengan formData
                                                         onChange={handleChange}
                                                         sx={{ flex: '1 1 calc(50% - 8px)' }}
@@ -443,6 +446,7 @@ const CustomAssembly = () => {
                                                         name="number_BGA_QFP"
                                                         label="Number of BGA/QFP Parts"
                                                         size="small"
+                                                        type='number'
                                                         value={formData.number_BGA_QFP || ""} // Sinkronisasi dengan formData
                                                         onChange={handleChange}
                                                         sx={{ flex: '1 1 calc(50% - 8px)' }}
@@ -450,6 +454,7 @@ const CustomAssembly = () => {
                                                     <TextField
                                                         name="throught_hole"
                                                         label="Throught Hole"
+                                                        type='number'
                                                         size="small"
                                                         value={formData.throught_hole || ""} // Sinkronisasi dengan formData
                                                         onChange={handleChange}

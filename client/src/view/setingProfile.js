@@ -13,7 +13,7 @@ import { Helmet } from "react-helmet";
 
 export default function ProfileSettings() {
     const navigate = useNavigate();
-    const { userToken } = useAuth(); 
+    const { userToken } = useAuth();
     const [profilePhoto, setProfilePhoto] = useState("");
     const [provinces, setProvinces] = useState([]);
     const [cities, setCities] = useState([]);
@@ -31,13 +31,17 @@ export default function ProfileSettings() {
         phone: '',
         gender: '',
         birthday: '',
+        sub_district_name: '',
+        district_name: '',
+        city_name: '',
+        province_name: '',
         province: '',
         city: '',
         district: '',
         sub_district: '',
         detail_address: '',
         profile_picture: null
-
+        
     })
     // state default
     useEffect(() => {
@@ -104,7 +108,7 @@ export default function ProfileSettings() {
         if (result.isConfirmed) {
             setLoading(true);
             try {
-                
+
                 const data = new FormData();
 
                 data.append('name', formData.name);
@@ -119,7 +123,11 @@ export default function ProfileSettings() {
                         district: formData.district,
                         city: formData.city,
                         province: formData.province,
-                        
+                        sub_district_name: formData.sub_district_name,
+                        district_name: formData.district_name ,
+                        city_name: formData.city_name,
+                        province_name: formData.province_name,
+
                     })
                 );
                 data.append('profile_picture', formData.profile_picture);
@@ -139,21 +147,21 @@ export default function ProfileSettings() {
                         icon: 'success',
                         title: 'Account settings updated successfully',
                     });
-                    navigate(-1 , { state: { showToast: true } });
+                    navigate(-1, { state: { showToast: true } });
                 } else {
                     setError('Failed to update account settings. Please try again!');
                 }
             } catch (error) {
                 if (error.response) {
                     const { data, status } = error.response;
-            
+
                     if (status === 400) {
                         const validationErrors = data.errors.map((err) => err.msg).join(', ');
                         setError(`${validationErrors}`);
-                    } 
+                    }
                     else if (status >= 500) {
                         setError('Server error. Please try again later.');
-                    } 
+                    }
                     else {
                         setError('Failed to update account settings. Please try again.');
                     }
@@ -162,7 +170,7 @@ export default function ProfileSettings() {
                 } else {
                     setError('An unexpected error occurred. Please try again.');
                 }
-            
+
             } finally {
                 setLoading(false);
             }
@@ -186,6 +194,10 @@ export default function ProfileSettings() {
                     city: data.address.city,
                     district: data.address.district,
                     sub_district: data.address.sub_district,
+                    sub_district_name: data.address.sub_district_name,
+                    district_name: data.address.district_name,
+                    city_name: data.address.city_name,
+                    province_name: data.address.province_name,
                     detail_address: data.address.detail_address,
                     profile_picture: data.profile_picture
                 });
@@ -270,34 +282,50 @@ export default function ProfileSettings() {
     };
 
     const handleSelectProvince = (e) => {
-        const { name, value } = e.target;
+        const { value } = e.target;
+
+        const province = provinces?.data?.find((c) => c.id === value);
         setFormData((prevData) => ({
             ...prevData,
-            [name]: value,
+            province: value,
+            province_name: province?.name ||'',
         }));
         setSelectedProvince(e.target.value)
     }
     const handleSelectCity = (e) => {
-        const { name, value } = e.target;
+        const { value } = e.target;
+
+        const city = cities.find((c) => c.id === value);
+        
         setFormData((prevData) => ({
             ...prevData,
-            [name]: value,
+            city: value,
+            city_name: city?.name || ""
         }));
-        setSelectedCity(e.target.value)
-    }
+        
+        setSelectedCity(value);
+    };
+    
     const handleSelectDistrict = (e) => {
-        const { name, value } = e.target;
+        const { value } = e.target;
+        
+        const dist = district.find((c) => c.id === value);
+        
         setFormData((prevData) => ({
             ...prevData,
-            [name]: value,
+            district: value,
+            district_name: dist?.name || '',
         }));
         setSelectedDistrict(e.target.value)
     }
     const handleSelectSubDistrict = (e) => {
-        const { name, value } = e.target;
+        const { value } = e.target;
+        
+        const subDist = subDistrict.find((c) => c.id === value);
         setFormData((prevData) => ({
             ...prevData,
-            [name]: value,
+            sub_district: value,
+            sub_district_name: subDist?.name || '',
         }));
         setSelectedSubDistrict(e.target.value)
     }
@@ -527,8 +555,6 @@ export default function ProfileSettings() {
                             name="city"
                             label="Pilih Kab/Kota"
                             variant="outlined"
-                            id="city"
-                            defaultValue={formData.province}
                             value={selectedCity}
                             onChange={handleMultipleChanges}
                             error={!dataAccount.address.city}
@@ -543,6 +569,7 @@ export default function ProfileSettings() {
                                 </MenuItem>
                             ))}
                         </TextField>
+
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
@@ -622,7 +649,7 @@ export default function ProfileSettings() {
                         marginTop: 4,
                     }}
                 >
-                    <Button variant="outlined"  onClick={handleBack} sx={{ textTransform: "none" }}>
+                    <Button variant="outlined" onClick={handleBack} sx={{ textTransform: "none" }}>
                         Kembali
                     </Button>
                     <Button

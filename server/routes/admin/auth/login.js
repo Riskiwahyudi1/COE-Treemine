@@ -1,9 +1,9 @@
 const express = require("express");
-const verifyTokenAdm = require("../../../middlewares/autenticateTokenAdmin")
+const { loginRateLimiter } = require('../../../middlewares/rateLimitLogin');
 const { loginAdmin } = require('../../../controllers/admin/auth/login')
 
 const router = express.Router();
 
-router.post('/login/protected', loginAdmin, verifyTokenAdm);
+router.post('/login/protected', loginRateLimiter, loginAdmin);
 
 module.exports = router;

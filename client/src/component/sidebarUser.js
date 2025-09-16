@@ -191,7 +191,7 @@ export default function MiniDrawer() {
             ]
         },
         {
-            text: 'Back',
+            text: 'Home',
             icon: <ArrowBackIcon />,
             path: '/'
         },

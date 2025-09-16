@@ -82,7 +82,6 @@ export default function OrdersTable() {
     const [selectedIdPrototype, setselectedIdPrototype] = useState(null);
     const [selectedIdAssembly, setselectedIdAssembly] = useState(null);
     const [totalRequestCostom, setTotalRequestCostom] = useState(0);
-console.log(requestAssembly)
     useEffect(() => {
         const fetchData = async () => {
             try {

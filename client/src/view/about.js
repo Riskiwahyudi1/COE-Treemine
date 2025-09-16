@@ -36,19 +36,25 @@ const LandingPage = () => {
                     flexGrow: 1,
                     background: `linear-gradient(to bottom, white, white)`,
                     minHeight: '100vh',
+                    mt: { xs: 6, md: 10 },
                 }}
             >
                 {/* Bagian Fitur Produk */}
                 <Box sx={{ bgcolor: 'transparent' }}>
-                    <Container sx={{ pb: 5 }}>
+                    <Container sx={{ pt: { xs: 6, md: 4 }, pb: 5 }}>
                         <Typography
                             variant="h4"
-                            gutterBottom
-                            align="center"
-                            sx={{ fontWeight: 'bold', color: '#000000' }}
+                            component="h2"
+                            sx={{
+                                textAlign: 'center',
+                                fontWeight: 'bold',
+                                color: '#00A63F',
+                                mb: 6,
+                            }}
                         >
                             Kenapa Memilih PCB Kami?
                         </Typography>
+
                         <Grid
                             container
                             spacing={4}

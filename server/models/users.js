@@ -65,6 +65,14 @@ const userSchema = new mongoose.Schema({
             type: String,
             default: null
         },
+        sub_district_name: {
+            type: String,
+            default: null
+        },
+        district_name: {
+            type: String,
+            default: null
+        },
         city_name: {
             type: String,
             default: null

@@ -12,7 +12,7 @@ const LandingPage = () => {
             minHeight: '100vh'
         }}>
             <Helmet>
-                <title>COE Treemiene | Home</title>
+                <title>COE Treemine | Home</title>
             </Helmet>
             <Autoslider />
             <ShopCard />

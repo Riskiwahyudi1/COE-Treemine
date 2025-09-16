@@ -18,27 +18,29 @@ const CustomPage = () => {
     return (
         <Card
             style={{
+                boxShadow: 'none', 
+                border: 'none',
                 background: `linear-gradient(to bottom, white, white)`,
-                height: '90vh',
+                minHeight: '70vh',
                 margin: 0,
                 padding: 0,
-                marginTop:'20px',
+                marginTop: '70px',
+                marginBottom: '30px',
             }}
         >
             <Container>
                 {/* Header Section */}
                 <Typography
-                    variant="h3"
-                    component="h1"
+                    variant="h4"
+                    component="h2"
                     sx={{
                         textAlign: 'center',
                         fontWeight: 'bold',
-                        color: '#000000',
-                        marginBottom: '30px',
-                        marginTop:'30px',
+                        color: '#00A63F',
+                        mb: 6,
                     }}
                 >
-                    Product Custom
+                    Request Produk Custom
                 </Typography>
 
                 <Grid container spacing={4} sx={{ display: 'flex', justifyContent: 'center' }}>

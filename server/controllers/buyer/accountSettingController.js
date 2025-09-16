@@ -5,7 +5,7 @@ const fs = require('fs')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'storage/profile-picture'); 
+        cb(null, 'storage/profile-picture');
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -34,17 +34,17 @@ const deleteImage = (imagePath) => {
 
 const updateProfile = async (req, res) => {
     try {
-        const user = req.user;  
-        const id_user = user.id; 
+        const user = req.user;
+        const id_user = user.id;
         const { name, phone, gender, birthday, address } = req.body;
-        const profile_picture = req.file; 
+        const profile_picture = req.file;
+
         let addressData = {};
-        console.log(addressData)
         if (address) {
             try {
-                addressData = JSON.parse(address); 
+                addressData = JSON.parse(address);
             } catch (err) {
-                return res.status(400).json({ error: 'Invalid address format' });
+                return res.status(400).json({ error: "Invalid address format" });
             }
         }
 
@@ -53,9 +53,29 @@ const updateProfile = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const oldImagePath = currentUser.profile_picture_url 
-            ? path.join(__dirname, '../../storage/profile-picture', path.basename(currentUser.profile_picture_url))
+        const oldImagePath = currentUser.profile_picture_url
+            ? path.join(
+                __dirname,
+                "../../storage/profile-picture",
+                path.basename(currentUser.profile_picture_url)
+            )
             : null;
+
+        const newAddress = {
+            detail_address:
+                addressData.detail_address ?? currentUser.address.detail_address,
+            province: addressData.province ?? currentUser.address.province,
+            province_name:
+                addressData.province_name ?? currentUser.address.province_name,
+            city: addressData.city ?? currentUser.address.city,
+            city_name: addressData.city_name ?? currentUser.address.city_name,
+            district: addressData.district ?? currentUser.address.district,
+            district_name:
+                addressData.district_name ?? currentUser.address.district_name,
+            sub_district: addressData.sub_district ?? currentUser.address.sub_district,
+            sub_district_name:
+                addressData.sub_district_name ?? currentUser.address.sub_district_name,
+        };
 
         const dataProfile = await User.findByIdAndUpdate(
             id_user,
@@ -64,12 +84,12 @@ const updateProfile = async (req, res) => {
                 phone,
                 gender,
                 birthday,
-                address: addressData,
-                profile_picture_url: profile_picture 
-                    ? `/profile-picture/${profile_picture.filename}`  
-                    : currentUser.profile_picture_url, 
+                address: newAddress,
+                profile_picture_url: profile_picture
+                    ? `/profile-picture/${profile_picture.filename}`
+                    : currentUser.profile_picture_url,
             },
-            { new: true } 
+            { new: true }
         );
 
         if (!dataProfile) {
@@ -81,24 +101,26 @@ const updateProfile = async (req, res) => {
         }
 
         res.status(200).json({
-            message: 'Profile updated successfully',
+            message: "Profile updated successfully",
             data: dataProfile,
         });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to update profile' });
+        console.error(error);
+        res.status(500).json({ error: "Failed to update profile" });
     }
 };
+
 
 const getUserData = async (req, res) => {
     const user = req.user;
     const id_user = user.id;
 
     try {
-        const userData = await User.findById(id_user); 
+        const userData = await User.findById(id_user);
         if (!userData) {
             return res.status(404).json({ message: 'userData not found' });
         }
-        res.json(userData); 
+        res.json(userData);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });

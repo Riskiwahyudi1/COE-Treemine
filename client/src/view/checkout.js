@@ -39,8 +39,6 @@ const PaymentPage = () => {
     const [selectedCourier, setSelectedCourier] = useState('')
     const [shipingOption, setShipingOption] = useState('')
     const [dataAccount, setDataAccount] = useState([])
-    const [province, setProvince] = useState('')
-    const [city, setCity] = useState('')
     const [totalPriceProduct, settotalPriceProduct] = useState(0);
     const [totalPayment, setTotalPayment] = useState(0);
     // id untuk checkout
@@ -142,51 +140,6 @@ const PaymentPage = () => {
         fetchDataAccount();
     }, []);
 
-    //  provinsi user
-    useEffect(() => {
-        const fetchProvince = async () => {
-            try {
-                const dataProvinces = await getProvinces(userToken);
-                if (dataProvinces) {
-                    const province = dataProvinces.data.find(
-                        (prov) => prov?.id === Number(dataAccount?.address?.province)
-                    );
-                    setProvince(province?.name);
-                }
-            } catch (error) {
-                setProvince("Gagal memuat data..");
-            }
-        };
-
-        if (dataAccount?.address?.province) {
-            fetchProvince();
-        }
-    }, [dataAccount]);
-
-    // kota berdasarkan profinsi
-    useEffect(() => {
-        if (dataAccount?.address?.province) {
-            const fetchCities = async () => {
-                try {
-                    const dataCity = await getCities(dataAccount?.address?.province, userToken);
-
-                    if (dataCity) {
-                        const city = dataCity.find(
-                            (cities) => cities.id === Number(dataAccount?.address?.city)
-                        );
-                        setCity(city?.name || "Kota tidak ditemukan");
-                    }
-                } catch (error) {
-                    setCity('Gagal memuat data..');
-                }
-            };
-            fetchCities();
-        } else {
-            setCity([]);
-        }
-    }, [dataAccount]);
-
-
     // memilih kurir
     useEffect(() => {
         const fetchCost = async () => {
@@ -236,8 +189,6 @@ const PaymentPage = () => {
             setEstimasionDay(etd);
         }
     }, [costList, selectedOption, shipingOption]);
-
-
 
     // handle list
     const handleSelectShippingOptions = (event) => {
@@ -353,7 +304,7 @@ const PaymentPage = () => {
                             fullWidth
                             label="Detail Alamat"
                             variant="outlined"
-                            value={`${dataAccount?.address?.detail_address || ''}, ${city || ''}, ${province || ''}, ${dataAccount?.address?.postal_code || ''}`}
+                            value={`${dataAccount?.address?.detail_address || ''}, Kel. ${dataAccount?.address?.sub_district_name || ''}, Kec. ${dataAccount?.address?.district_name || ''}, ${dataAccount?.address?.city_name || ''}, ${dataAccount?.address?.province_name || ''}` }
                             multiline
                             rows={3}
                             sx={{ mb: 2 }}

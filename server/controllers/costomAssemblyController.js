@@ -7,7 +7,6 @@ const showCustomAssemblyData = async (req, res) => {
         if (!customAssemblyData || customAssemblyData.length === 0) {
             return res.status(404).json({ message: 'Data tidak ditemukan!' });
         }
-        console.log(customAssemblyData)
         res.json(customAssemblyData);
     } catch (error) {
         console.error(error);
