@@ -215,7 +215,11 @@ export default function ProfileSettings() {
               fullWidth
               label="Detail Alamat"
               variant="outlined"
-              value={`${dataAccount?.address?.detail_address || ''}, Kel. ${dataAccount?.address?.sub_district_name || ''}, Kec. ${dataAccount?.address?.district_name || ''}, ${dataAccount?.address?.city_name || ''}, ${dataAccount?.address?.province_name || ''}`}
+              value={
+                dataAccount?.address?.detail_address
+                  ? `${dataAccount.address.detail_address}, Kel. ${dataAccount.address.sub_district_name || ""}, Kec. ${dataAccount.address.district_name || ""}, ${dataAccount.address.city_name || ""}, ${dataAccount.address.province_name || ""}`
+                  : ""
+              }
               multiline
               rows={3}
               InputLabelProps={{
