@@ -48,22 +48,23 @@ const forgotPassword = async (req, res) => {
 
      
         const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
-        const resetPasswordUrl = `http://localhost:3000/reset-password/${token}`;
+        const resetPasswordUrl = `https://treemine.polibatam.ac.id/reset-password/${token}`;
+        // const resetPasswordUrl = `http://localhost:3000/reset-password/${token}`;
 
-        await transporter.sendMail({
-            from: '"COE Treemine" riskiwahyudi@gmail.com',
+           await transporter.sendMail({
+            from: `"Official CoE" <${process.env.EMAIL_USER}>`,  
             to: user.email,
             subject: 'Permintaan Reset Password',
             html: `
-          <p>Yth. ${user.username},</p>
-          <p>Kami menerima permintaan untuk mereset password Anda. Untuk melanjutkan, silakan klik link di bawah ini:</p>
-          <p><a href="${resetPasswordUrl}" style="color: #1a73e8;">Klik di sini untuk mereset password Anda</a></p>
-          <p>Link ini akan kedaluwarsa dalam 1 jam.</p>
-          <p>Jika Anda tidak merasa melakukan permintaan reset password, harap abaikan email ini.</p>
-          <br>
-          <p>Salam hormat,</p>
-          <p>COE Treemine</p>
-        `,
+              <p>Halo ${user.username},</p>
+              <p>Kami menerima permintaan untuk mereset password Anda. Untuk melanjutkan, silakan klik tautan di bawah ini:</p>
+              <p><a href="${resetPasswordUrl}" style="color: #1a73e8;">Klik di sini untuk mereset password Anda</a></p>
+              <p>Tautan ini hanya berlaku selama 1 jam.</p>
+              <p>Jika Anda tidak merasa melakukan permintaan reset password, harap abaikan email ini.</p>
+              <br>
+              <p>Salam hangat,</p>
+              <p>Tim COE Treemine</p>
+            `,
         });
 
         res.status(200).json({ message: 'Link reset password telah dikirim ke email Anda.' });

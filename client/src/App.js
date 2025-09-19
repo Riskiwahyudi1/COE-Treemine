@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, Outlet  } from 'react-router-dom';
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import ResponsiveAppBar from './component/navbar';
@@ -35,12 +35,12 @@ import NotFoundPage from './component/NotFoundPage'
 function App() {
   return (
     <Router>
-    <AuthProvider>
-      <CartProvider>
-        <AppContent />
-      </CartProvider>
-    </AuthProvider>
-  </Router>
+      <AuthProvider>
+        <CartProvider>
+          <AppContent />
+        </CartProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 
@@ -48,37 +48,39 @@ function AppContent() {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login' || location.pathname === '/register';
   const isAdminPage = location.pathname.startsWith('/admin');
-  const isForgotPassword = location.pathname === '/forgot-password' ;
+  const isForgotPassword = location.pathname === '/forgot-password';
   const isResetPassword = location.pathname.startsWith('/reset-password');
   const isProfilePage = location.pathname.startsWith('/user') ||
     location.pathname === '/change-password' ||
     location.pathname === '/proses' ||
     location.pathname === '/finish' ||
     location.pathname === '/cancle' ||
-    location.pathname === '/transaksi'  ||
-    location.pathname === '/review'; 
-    // const isNotFoundPage = location.state?.isNotFoundPage === true;
+    location.pathname === '/transaksi' ||
+    location.pathname === '/review';
+  const isNotFoundPage = location.pathname === '/404';
+  const hideNavbarFooter =
+    isLoginPage || isAdminPage || isProfilePage || isForgotPassword || isResetPassword || isNotFoundPage;
 
   return (
     <>
       {/* Navbar hanya muncul jika bukan di halaman login, admin, dan profile */}
-      {!isLoginPage && !isAdminPage && !isProfilePage && !isForgotPassword && !isResetPassword && <ResponsiveAppBar />}
+      {!hideNavbarFooter && !isNotFoundPage && <ResponsiveAppBar />}
 
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/admin-login" element={<LoginAdmin />} />        
-        <Route path="/forgot-password" element={<ForgotPassword />} />        
-        <Route path="/reset-password/:token" element={<ResetPassword />} />        
+        <Route path="/admin-login" element={<LoginAdmin />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* Lindungi halaman admin dengan ProtectedRoute */}
         <Route element={<AdminProtectedRoute redirectTo="/admin-login" />}>
           <Route path="/admin/*" element={<AdminHome />} />
-         
+
         </Route>
 
-        {/* Halaman yang memerlukan login */}
+         {/* Halaman yang memerlukan login */}
         <Route element={<ProtectedRoute redirectTo="/login" />}>
           <Route path="/product" element={<ProductPage />} />
           <Route path="/custom" element={<CustomPage />} />
@@ -89,38 +91,41 @@ function AppContent() {
           <Route path="/custom-prototype" element={<CustomPrototype />} />
           <Route path="/custom-assembly" element={<ProductAssemblyPage />} />
           <Route path="/checkout" element={<Checkout />} />
+
+          {/* Layout profile + nested routes */}
+          <Route
+            element={
+              <Box sx={{ display: 'flex' }}>
+                <SidebarProfile />
+                <Box
+                  component="main"
+                  sx={{
+                    flexGrow: 1,
+                    p: 3,
+                    backgroundColor: '#fffff',
+                    minHeight: '90vh',
+                    mt: 8,
+                  }}
+                >
+                  <Outlet />
+                </Box>
+              </Box>
+            }
+          >
+            <Route path="/user" element={<UserPage />} />
+            <Route path="/user/profileSettings" element={<ProfileSettings />} />
+            <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/transaksi" element={<Transaksi />} />
+            <Route path="/review" element={<Review />} />
+          </Route>
         </Route>
-        {/* <Route path="*" element={<NotFoundPage />} /> */}
+
+        {/* Not Found */}
+        <Route path="/404" element={<NotFoundPage />} />
+        <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
 
-      {/* Setting profile page with SidebarProfile */}
-      {isProfilePage && (
-        <Box sx={{ display: 'flex' }}>
-          <SidebarProfile />
-          <Box
-            component="main"
-            sx={{
-              flexGrow: 1,
-              p: 3,
-              backgroundColor: '#fffff',
-              minHeight: '90vh',
-              mt: 8,
-            }}
-          >
-            <Routes>
-              <Route element={<ProtectedRoute redirectTo="/login" />}>
-                <Route path="/user" element={<UserPage />} />
-                <Route path="/user/profileSettings" element={<ProfileSettings />} />
-                <Route path="/change-password" element={<ChangePassword />} />
-                <Route path="/transaksi" element={<Transaksi />} />
-                <Route path="/review" element={<Review />} />
-              </Route>
-            </Routes>
-          </Box>
-        </Box>
-      )}
-      {/* Footer hanya muncul jika bukan di halaman login, admin, dan profile */}
-      {!isLoginPage && !isAdminPage && !isProfilePage && <Footer />}
+      {!hideNavbarFooter && <Footer />}
     </>
   );
 }

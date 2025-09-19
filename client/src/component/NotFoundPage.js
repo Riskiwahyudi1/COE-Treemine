@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 function NotFoundPage() {
   const navigate = useNavigate();
+  const handleBack = () => navigate(-1);
 
   return (
     <Box
@@ -57,7 +58,7 @@ function NotFoundPage() {
       <Button
         variant="contained"
         size="large"
-        onClick={() => navigate("/")}
+         onClick={handleBack} 
         sx={{
           backgroundColor: "#00A63F",
           color: "#fff",
@@ -74,7 +75,7 @@ function NotFoundPage() {
           },
         }}
       >
-        Kembali ke Beranda
+        Kembali
       </Button>
     </Box>
   );

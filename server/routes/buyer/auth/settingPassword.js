@@ -18,7 +18,7 @@ router.post(
 
 
 router.post(
-  '/forgot-password', 
+  '/password/forgot-password', 
   validateRequest([
     check('email')
       .isEmail()
@@ -29,7 +29,7 @@ router.post(
 
 
 router.post(
-  '/reset-password/:token', 
+  '/password/reset-password/:token', 
   validateRequest([
     check('password')
       .isLength({ min: 6 })

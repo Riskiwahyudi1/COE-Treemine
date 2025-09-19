@@ -8,10 +8,12 @@ router.post(
   '/register/buyer',
   validateRequest([
     body('username')
-      .isLength({ min: 5, max: 30 })
-      .withMessage('Username harus memiliki 5-30 karakter.')
-      .notEmpty()
-      .withMessage('Username tidak boleh kosong.'),
+    .isLength({ min: 5, max: 30 })
+    .withMessage('Username harus memiliki 5-30 karakter.')
+    .notEmpty()
+    .withMessage('Username tidak boleh kosong.')
+    .matches(/^[a-zA-Z0-9]+$/)
+    .withMessage('Username hanya boleh mengandung huruf dan angka, tanpa spasi atau simbol.'),
     body('email')
       .isEmail()
       .withMessage('Email tidak valid.')

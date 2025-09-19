@@ -10,12 +10,35 @@ const register = async (req, res) => {
     const { username, email, password } = req.body;
 
     try {
-        // cek apakah email / username sudah ada
         const existingUser = await User.findOne({
             $or: [{ email }, { username }]
         });
         if (existingUser) {
-            return res.status(409).json({ message: 'Email atau username sudah terdaftar' });
+            if (existingUser.isVerified) {
+                // sudah terdaftar dan terverifikasi
+                return res.status(409).json({ message: 'Email atau username sudah terdaftar' });
+            } else {
+                // user ada tapi belum verifikasi
+                const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+                const verificationUrl = `https://treemine.polibatam.ac.id/api/register/buyer/verify/${token}`;
+
+                await transporter.sendMail({
+                    from: `"Official CoE" <${process.env.EMAIL_USER}>`,
+                    to: existingUser.email,
+                    subject: 'Verifikasi Alamat Email Anda',
+                    html: `
+                      <p>Halo ${existingUser.username},</p>
+                      <p>Akun Anda sudah terdaftar tetapi belum terverifikasi. Klik tautan berikut untuk memverifikasi akun:</p>
+                      <p><a href="${verificationUrl}" style="color: #1a73e8;">Verifikasi akun Anda</a></p>
+                      <p>Tautan ini akan kedaluwarsa dalam 1 jam.</p>
+                      <br>
+                      <p>Salam hangat,</p>
+                      <p>Tim COE Treemine</p>
+                    `,
+                });
+
+                return res.status(201).json({ message: 'Email verifikasi baru telah dikirim ulang' });
+            }
         }
 
         // buat user baru
@@ -23,8 +46,8 @@ const register = async (req, res) => {
 
         // buat token verifikasi
         const token = jwt.sign({ id: newUser._id }, JWT_SECRET, { expiresIn: '1h' });
-        const verificationUrl = `http://localhost:5000/api/register/buyer/verify/${token}`;
-        // const verificationUrl = `https://treemine.polibatam.ac.id/api/register/buyer/verify/${token}`;
+        // const verificationUrl = `http://localhost:5000/api/register/buyer/verify/${token}`;
+        const verificationUrl = `https://treemine.polibatam.ac.id/api/register/buyer/verify/${token}`;
 
         // kirim email verifikasi
         await transporter.sendMail({
@@ -58,7 +81,8 @@ const verifikasiEmail = async (req, res) => {
     try {
 
         const decoded = jwt.verify(token, JWT_SECRET);
-        const linkLogin = 'http://localhost:3000/login';
+        const linkLogin = 'https://treemine.polibatam.ac.id/login';
+        // const linkLogin = 'http://localhost:3000/login';
 
         await User.findByIdAndUpdate(decoded.id, { isVerified: true });
         res.send(`<h1>Email verified successfully!, please login to your account <a href="${linkLogin}">here!</a></h1>`);
