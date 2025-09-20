@@ -73,8 +73,8 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
       }}
     >
       <Helmet>
-                <title>COE Treemiene | Keranjang Costom</title>
-            </Helmet>
+        <title>COE Treemiene | Keranjang Costom</title>
+      </Helmet>
       <CardContent sx={{ display: 'flex', flex: 1, alignItems: 'center', gap: 2 }}>
         {/* Foto Produk */}
         {name === 'Costom Prototype' ? (
@@ -179,7 +179,6 @@ const ShoppingCartItem = ({ id, name, price, onDelete, status, handleRequest, ha
         {/* Kondisi: Review By Admin */}
         {status === 'admin-review' ? (
           <>
-            {console.log(name)}
             <Button
               variant="contained"
               size="small"
@@ -287,7 +286,6 @@ const ShoppingCart = () => {
   const [checkoutPrototype, setCheckoutPrototype] = useState([]);
   const [shouldNavigate, setShouldNavigate] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-
   const singleProductCostom = requestCustom.filter(
     (product) => product._id === selectedId
   );
@@ -474,25 +472,22 @@ const ShoppingCart = () => {
 
 
   const handleCancel = async (id, type) => {
-    
+
     const result = await Dialog.fire({
       title: "Anda yakin?",
       text: "Ingin membatalkan pesanan?",
     });
 
     if (!result.isConfirmed) return;
-    console.log('ok')
     try {
       const endpoint =
         type === "Costom Prototype"
           ? `${apiConfig.baseURL}costom-prototype/${id}/cancel`
           : `${apiConfig.baseURL}costom-assembly/${id}/cancel`;
 
-          console.log('type', type)
-             console.log("Endpoint:", endpoint);
       const response = await axios.put(
         endpoint,
-        {}, 
+        {},
         {
           headers: {
             Authorization: `Bearer ${userToken}`,
@@ -529,10 +524,11 @@ const ShoppingCart = () => {
     setIdOpenModal(order);
     setOpenModal(true);
   };
-
+  
   const handleCloseModal = () => {
     setOpenModal(false);
     setRequestPrototype(null);
+    setIdOpenModal('');
   };
 
   return (
@@ -603,142 +599,146 @@ const ShoppingCart = () => {
       <StyledModal open={openModal} onClose={handleCloseModal}>
         <ModalContent>
           {/* Detail untuk Prototype */}
-          {requestPrototype && requestPrototype.length > 0 ? (
-            requestPrototype
-              .filter(data => data._id === openModalId)
-              .map((data, idx) => (
-                <div key={idx}>
-                  {/* Header */}
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-                    Detail Pesanan - Prototype
-                  </Typography>
+          {(() => {
+            const prototypeData = requestPrototype?.find(
+              (data) => String(data._id) === String(openModalId)
+            );
 
-                  {/* Informasi Pesanan */}
+            return prototypeData ? (
+              <div>
+                {/* Header */}
+                <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
+                  Detail Pesanan - Prototype
+                </Typography>
 
-                  <Typography variant="body1">
-                    <strong>Type Custom:</strong> {data.name}
-                  </Typography>
-                  <Typography variant="body1">
-                    <strong>Tanggal:</strong> {formatDate(data.createdAt)}
-                  </Typography>
-                  <Typography variant="body1">
-                    <strong>Harga:</strong> Rp.{Number(data.total_cost).toLocaleString('id-ID')}
-                  </Typography>
+                {/* Informasi Pesanan */}
+                <Typography variant="body1">
+                  <strong>Type Custom:</strong> {prototypeData.name}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Tanggal:</strong> {formatDate(prototypeData.createdAt)}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Harga:</strong> Rp.
+                  {Number(prototypeData.total_cost).toLocaleString("id-ID")}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Status:</strong>{" "}
+                  {prototypeData.status
+                    .split("-")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ")}
+                </Typography>
 
-                  <Typography variant="body1">
-                    <strong>Status:</strong> {data.status
-                      .split('-')
-                      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                      .join(' ')}
-                  </Typography>
+                {/* Spesifikasi */}
+                <Typography
+                  variant="body1"
+                  sx={{ marginTop: 2, fontWeight: "bold", marginBottom: 1 }}
+                >
+                  Spesifikasi :
+                </Typography>
+                <Box>
+                  {[
+                    { label: "Board Type", value: prototypeData.board_type },
+                    { label: "X Out", value: prototypeData.x_out },
+                    { label: "Route Process", value: prototypeData.route_process },
+                    { label: "Design in Panel", value: prototypeData.design_in_panel },
+                    { label: "Size", value: `${prototypeData.length} X ${prototypeData.width}` },
+                    { label: "Quantity", value: prototypeData.quantity },
+                    { label: "Layer", value: prototypeData.layer },
+                    { label: "Copper Layer", value: prototypeData.copper_layer },
+                    { label: "Solder Mask Position", value: prototypeData.solder_mask_position },
+                    { label: "Material", value: prototypeData.material },
+                    { label: "Thickness", value: prototypeData.thickness },
+                    { label: "Min Track", value: prototypeData.min_track },
+                    { label: "Min Hole", value: prototypeData.min_hole },
+                    { label: "Solder Mask", value: prototypeData.solder_mask },
+                    { label: "Silkscreen", value: prototypeData.silkscreen },
+                    { label: "UV Printing", value: prototypeData.uv_printing },
+                    { label: "Surface Finish", value: prototypeData.surface_finish },
+                    { label: "Finish Copper", value: prototypeData.finish_copper },
+                  ].map((item, idx) => (
+                    <Typography key={idx} variant="body2">
+                      <strong>{item.label}: </strong> {item.value || "N/A"}
+                    </Typography>
+                  ))}
+                </Box>
+              </div>
+            ) : null;
+          })()}
 
-                  {/* Spesifikasi */}
-                  <Typography variant="body1" sx={{ marginTop: 2, fontWeight: 'bold', marginBottom: 1 }}>
-                    Spesifikasi :
-                  </Typography>
-                  <Box>
-                    {[
-                      { label: 'Board Type', value: data.board_type },
-                      { label: 'X Out', value: data.x_out },
-                      { label: 'Route Process', value: data.route_process },
-                      { label: 'Design in Panel', value: data.design_in_panel },
-                      { label: 'Size', value: `${data.length} X ${data.width}` },
-                      { label: 'Quantity', value: data.quantity },
-                      { label: 'Layer', value: data.layer },
-                      { label: 'Copper Layer', value: data.copper_layer },
-                      { label: 'Solder Mask Position', value: data.solder_mask_position },
-                      { label: 'Material', value: data.material },
-                      { label: 'Thickness', value: data.thickness },
-                      { label: 'Min Track', value: data.min_track },
-                      { label: 'Min Hole', value: data.min_hole },
-                      { label: 'Solder Mask', value: data.solder_mask },
-                      { label: 'Silkscreen', value: data.silkscreen },
-                      { label: 'UV Printing', value: data.uv_printing },
-                      { label: 'Surface Finish', value: data.surface_finish },
-                      { label: 'Finish Copper', value: data.finish_copper },
-                    ]
-                      .map((item, idx) => (
-                        <Typography key={idx} variant="body2">
-                          <strong>{item.label}: </strong> {item.value}
-                        </Typography>
-                      ))}
-                  </Box>
-                </div>
-              ))
-          ) : (
-            // Loading State
-            <Typography variant="body1"></Typography>
-          )}
           {/* Detail untuk Assembly */}
-          {requestAssembly && requestAssembly.length > 0 ? (
-            requestAssembly
-              .filter(data => data._id === openModalId)
-              .map((data, idx) => (
-                <div key={idx}>
-                  {/* Header */}
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-                    Detail Pesanan - Assembly
-                  </Typography>
+          {(() => {
+            const assemblyData = requestAssembly?.find(
+              (data) => String(data._id) === String(openModalId)
+            );
 
-                  {/* Informasi Pesanan */}
+            return assemblyData ? (
+              <div>
+                {/* Header */}
+                <Typography variant="h6" sx={{ fontWeight: "bold", marginBottom: 2 }}>
+                  Detail Pesanan - Assembly
+                </Typography>
 
-                  <Typography variant="body1">
-                    <strong>Type Custom:</strong> {data.name}
-                  </Typography>
-                  <Typography variant="body1">
-                    <strong>Tanggal:</strong> {formatDate(data.createdAt)}
-                  </Typography>
-                  <Typography variant="body1">
-                    <strong>Harga:</strong> Rp.{Number(data.total_cost).toLocaleString('id-ID')}
-                  </Typography>
+                {/* Informasi Pesanan */}
+                <Typography variant="body1">
+                  <strong>Type Custom:</strong> {assemblyData.name}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Tanggal:</strong> {formatDate(assemblyData.createdAt)}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Harga:</strong> Rp.
+                  {Number(assemblyData.total_cost).toLocaleString("id-ID")}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Status:</strong>{" "}
+                  {assemblyData.status
+                    .split("-")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ")}
+                </Typography>
 
-                  <Typography variant="body1">
-                    <strong>Status:</strong> {data.status
-                      .split('-')
-                      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                      .join(' ')}
-                  </Typography>
-
-                  {/* Spesifikasi untuk Assembly */}
-                  <Typography variant="body1" sx={{ marginTop: 2, fontWeight: 'bold', marginBottom: 1 }}>
-                    Spesifikasi :
-                  </Typography>
-                  <Box>
-                    {[{ label: 'Flexible Option', value: data.flexible_option },
-                    { label: 'Board Type', value: data.board_type },
-                    { label: 'Assembly Side', value: data.assembly_side },
-                    { label: 'Quantity', value: data.quantity },
-                    { label: 'Pay Attention', value: data.pay_attention },
-                    { label: 'Notes', value: data.notes },
-                    { label: 'Unique Part Number', value: data.number_unik_part },
-                    { label: 'SMD Part Number', value: data.number_SMD_part },
-                    { label: 'BGA/QFP Part Number', value: data.number_BGA_QFP },
-                    { label: 'Through Hole', value: data.throught_hole },
-                    { label: 'Board to Delivery', value: data.board_to_delivery },
-                    { label: 'Function Test', value: data.function_test },
-                    { label: 'Cable/Wire Harness Assembly', value: data.cable_wire_harness_assembly },
-                    { label: 'Detail Information', value: data.detail_information },
-                    ]
-                      .map((item, idx) => (
-                        <Typography key={idx} variant="body2">
-                          <strong>{item.label}: </strong> {item.value ? item.value : 'N/A'}
-                        </Typography>
-                      ))}
-                  </Box>
-                </div>
-              ))
-          ) : (
-            // Loading State
-            <Typography variant="body1"></Typography>
-          )}
+                {/* Spesifikasi */}
+                <Typography
+                  variant="body1"
+                  sx={{ marginTop: 2, fontWeight: "bold", marginBottom: 1 }}
+                >
+                  Spesifikasi :
+                </Typography>
+                <Box>
+                  {[
+                    { label: "Flexible Option", value: assemblyData.flexible_option },
+                    { label: "Board Type", value: assemblyData.board_type },
+                    { label: "Assembly Side", value: assemblyData.assembly_side },
+                    { label: "Quantity", value: assemblyData.quantity },
+                    { label: "Pay Attention", value: assemblyData.pay_attention },
+                    { label: "Notes", value: assemblyData.notes },
+                    { label: "Unique Part Number", value: assemblyData.number_unik_part },
+                    { label: "SMD Part Number", value: assemblyData.number_SMD_part },
+                    { label: "BGA/QFP Part Number", value: assemblyData.number_BGA_QFP },
+                    { label: "Through Hole", value: assemblyData.throught_hole },
+                    { label: "Board to Delivery", value: assemblyData.board_to_delivery },
+                    { label: "Function Test", value: assemblyData.function_test },
+                    { label: "Cable/Wire Harness Assembly", value: assemblyData.cable_wire_harness_assembly },
+                    { label: "Detail Information", value: assemblyData.detail_information },
+                  ].map((item, idx) => (
+                    <Typography key={idx} variant="body2">
+                      <strong>{item.label}: </strong> {item.value || "N/A"}
+                    </Typography>
+                  ))}
+                </Box>
+              </div>
+            ) : null;
+          })()}
 
           {/* Tombol Penutup */}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: 2 }}>
             <Button
               variant="contained"
               sx={{
-                backgroundColor: '#54cbbb',
-                '&:hover': { backgroundColor: '#46b2a6' },
+                backgroundColor: "#54cbbb",
+                "&:hover": { backgroundColor: "#46b2a6" },
               }}
               onClick={handleCloseModal}
             >
@@ -747,6 +747,7 @@ const ShoppingCart = () => {
           </Box>
         </ModalContent>
       </StyledModal>
+
     </Box>
   );
 };

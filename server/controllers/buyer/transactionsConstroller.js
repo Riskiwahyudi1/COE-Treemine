@@ -16,7 +16,7 @@ const createTransactions = async (req, res) => {
 
         const user = req.user;
         const id_user = user.id;
-        
+
         if (!id_user || !product || !expedition || !total_payment) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
@@ -91,7 +91,7 @@ const showTransactionBuyer = async (req, res) => {
             .populate('product.standart.id_product', 'product_name harga picture_url');
 
         if (!products || products.length === 0) {
-            return res.status(404).json({ message: "Request not found!" });
+            return res.status(200).json([]);
         }
         res.json(products);
 

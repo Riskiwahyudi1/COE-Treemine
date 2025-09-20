@@ -70,8 +70,6 @@ const CustomPrototype = (part) => {
 
     });
 
-    console.log(formData)
-
     const [getCost, setGetCost] = useState({
         board_type: 0,
         x_out: 0,

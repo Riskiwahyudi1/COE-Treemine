@@ -90,16 +90,16 @@ export default function OrdersTable() {
     useEffect(() => {
         const fetchTransaction = async () => {
             try {
-                const currentStatus = searchParams.getAll("status");
+                const currentStatus = searchParams.getAll("status"); // selalu array
 
                 setTransaction([]);
 
-                if (currentStatus) {
+                if (currentStatus.length > 0) {
                     const data = await getTransaction(currentStatus, userToken);
                     setTransaction(data);
                 }
             } catch (error) {
-                console.error('Failed to load transactions', error);
+                console.error("Failed to load transactions", error);
             }
         };
 
@@ -413,7 +413,6 @@ export default function OrdersTable() {
                             transaction.map((order, idx) => (
                                 <StyledTableRow key={order._id}>
                                     <StyledTableCell>{idx + 1}</StyledTableCell>
-                                    {console.log('orderList', transaction)}
                                     {order.product.map((product, productIdx) => (
                                         <StyledTableCell align="center" key={`product-${productIdx}`}>
                                             {product.costom_prototype.length > 0
@@ -622,7 +621,7 @@ export default function OrdersTable() {
                                                         <Typography><strong>Tanggal:</strong> {data.created_at ? new Date(data.created_at).toLocaleString('id-ID') : 'N/A'}</Typography>
                                                         <Typography><strong>Status:</strong> {data.status?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') || 'N/A'}</Typography>
                                                         <Typography><strong>Total:</strong> Rp {Number(data.total_payment).toLocaleString('id-ID')}</Typography>
-                                                   
+
                                                     </Grid>
                                                 </Grid>
                                             </Box>

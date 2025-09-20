@@ -12,7 +12,6 @@ export default function ProfileSettings() {
   const { userToken } = useAuth();
   const [profilePhoto, setProfilePhoto] = useState("");
   const [dataAccount, setDataAccount] = useState({ address: {} });
-  console.log(dataAccount)
 
   // state default
   useEffect(() => {

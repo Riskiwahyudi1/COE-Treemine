@@ -34,6 +34,7 @@ const LoginFormCard = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [expiredMessage, setExpiredMessage] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -45,6 +46,7 @@ const LoginFormCard = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         setError("");
+        setLoading(true);
 
         try {
             const response = await axios.post(
@@ -53,7 +55,6 @@ const LoginFormCard = () => {
                 { withCredentials: true }
             );
 
-
             if (response.status === 200) {
                 const { token } = response.data;
                 loginAdmin(token);
@@ -61,8 +62,11 @@ const LoginFormCard = () => {
             }
         } catch (err) {
             setError(err.response?.data?.message || "Login failed");
+        } finally {
+            setLoading(false);
         }
     };
+
 
 
     useEffect(() => {
@@ -202,9 +206,18 @@ const LoginFormCard = () => {
                                 "&:hover": { backgroundColor: "#008c36" },
                             }}
                             onClick={handleLogin}
+                            disabled={loading}
                         >
-                            Submit
+                            {loading ? (
+                                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <span style={{ marginRight: 8 }}>Loading...</span>
+                                    <span className="loader"></span>
+                                </Box>
+                            ) : (
+                                "Submit"
+                            )}
                         </Button>
+
                         <Button
                             startIcon={<HomeIcon />}
                             fullWidth

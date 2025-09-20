@@ -22,7 +22,7 @@ const showCustomPrototypeByUser = async (req, res) => {
     try {
         const customPrototypeData = await RequestCustomPrototype.find({id_user: user.id}); 
         if (!customPrototypeData || customPrototypeData.length === 0) {
-            return res.status(404).json({ message: 'Data tidak ditemukan!' });
+            return res.status(200).json([]);
         }
         res.json(customPrototypeData);
     } catch (error) {

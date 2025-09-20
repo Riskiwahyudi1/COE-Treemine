@@ -19,10 +19,10 @@ export default function ProfileSettings() {
     const [cities, setCities] = useState([]);
     const [district, setDistrict] = useState([]);
     const [subDistrict, setSubDistrict] = useState([]);
-    const [selectedProvince, setSelectedProvince] = useState("");
-    const [selectedCity, setSelectedCity] = useState("");
-    const [selectedDistrict, setSelectedDistrict] = useState("");
-    const [selectedSubDistrict, setSelectedSubDistrict] = useState("");
+    const [selectedProvince, setSelectedProvince] = useState(null);
+    const [selectedCity, setSelectedCity] = useState(null);
+    const [selectedDistrict, setSelectedDistrict] = useState(null);
+    const [selectedSubDistrict, setSelectedSubDistrict] = useState(null);
     const [dataAccount, setDataAccount] = useState({ address: {} });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState('');
@@ -41,7 +41,7 @@ export default function ProfileSettings() {
         sub_district: '',
         detail_address: '',
         profile_picture: null
-        
+
     })
     // state default
     useEffect(() => {
@@ -49,17 +49,10 @@ export default function ProfileSettings() {
     }, [dataAccount]);
 
     useEffect(() => {
-        setSelectedProvince(`${dataAccount.address.province}`);
-    }, [dataAccount]);
-
-    useEffect(() => {
-        setSelectedCity(`${dataAccount.address.city}`);
-    }, [dataAccount]);
-    useEffect(() => {
-        setSelectedDistrict(`${dataAccount.address.district}`);
-    }, [dataAccount]);
-    useEffect(() => {
-        setSelectedSubDistrict(`${dataAccount.address.sub_district}`);
+        setSelectedProvince(dataAccount?.address?.province || null);
+        setSelectedCity(dataAccount?.address?.city || null);
+        setSelectedDistrict(dataAccount?.address?.district || null);
+        setSelectedSubDistrict(dataAccount?.address?.sub_district || null);
     }, [dataAccount]);
 
     // handle foto profil
@@ -124,7 +117,7 @@ export default function ProfileSettings() {
                         city: formData.city,
                         province: formData.province,
                         sub_district_name: formData.sub_district_name,
-                        district_name: formData.district_name ,
+                        district_name: formData.district_name,
                         city_name: formData.city_name,
                         province_name: formData.province_name,
 
@@ -222,53 +215,60 @@ export default function ProfileSettings() {
 
     // data kota berdasarkan profinsi
     useEffect(() => {
-        if (selectedProvince) {
-            const fetchCities = async () => {
-                try {
-                    const data = await getCities(selectedProvince, userToken);
-                    setCities(data);
-                } catch (error) {
-                    console.error("Error fetching cities", error);
-                }
-            };
-            fetchCities();
-        } else {
+        if (!selectedProvince) {
             setCities([]);
+            return;
         }
+
+        const fetchCities = async () => {
+            try {
+                const data = await getCities(selectedProvince, userToken);
+                setCities(data);
+            } catch (error) {
+                console.error("Error fetching cities", error);
+            }
+        };
+
+        fetchCities();
     }, [selectedProvince]);
+
 
     // data kecamatan berdasarkan kota/kab
     useEffect(() => {
-        if (selectedCity) {
-            const fetchDistrict = async () => {
-                try {
-                    const data = await getDistrict(selectedCity, userToken);
-                    setDistrict(data);
-                } catch (error) {
-                    console.error("Error fetching District", error);
-                }
-            };
-            fetchDistrict();
-        } else {
+        if (!selectedCity) {
             setDistrict([]);
+            return;
         }
+
+        const fetchDistrict = async () => {
+            try {
+                const data = await getDistrict(selectedCity, userToken);
+                setDistrict(data);
+            } catch (error) {
+                console.error("Error fetching District", error);
+            }
+        };
+
+        fetchDistrict();
     }, [selectedCity, selectedProvince]);
 
     // data kelurahan berdasarkan kecamatan
     useEffect(() => {
-        if (selectedDistrict) {
-            const fetchSubDistrict = async () => {
-                try {
-                    const data = await getSubDistrict(selectedDistrict, userToken);
-                    setSubDistrict(data);
-                } catch (error) {
-                    console.error("Error fetching Sub District", error);
-                }
-            };
-            fetchSubDistrict();
-        } else {
+        if (!selectedDistrict) {
             setSubDistrict([]);
+            return;
         }
+
+        const fetchSubDistrict = async () => {
+            try {
+                const data = await getSubDistrict(selectedDistrict, userToken);
+                setSubDistrict(data);
+            } catch (error) {
+                console.error("Error fetching Sub District", error);
+            }
+        };
+
+        fetchSubDistrict();
     }, [selectedDistrict, selectedCity, selectedProvince]);
 
 
@@ -283,52 +283,68 @@ export default function ProfileSettings() {
 
     const handleSelectProvince = (e) => {
         const { value } = e.target;
+        const province = provinces?.data?.find((c) => String(c.id) === String(value));
 
-        const province = provinces?.data?.find((c) => c.id === value);
-        setFormData((prevData) => ({
-            ...prevData,
+        setFormData((prev) => ({
+            ...prev,
             province: value,
-            province_name: province?.name ||'',
+            province_name: province?.name || '',
+            city: '', district: '', sub_district: '',
+            city_name: '', district_name: '', sub_district_name: ''
         }));
-        setSelectedProvince(e.target.value)
-    }
+
+        setSelectedProvince(value);
+        setSelectedCity(null);
+        setSelectedDistrict(null);
+        setSelectedSubDistrict(null);
+    };
+
     const handleSelectCity = (e) => {
         const { value } = e.target;
+        const city = cities.find((c) => String(c.id) === String(value));
 
-        const city = cities.find((c) => c.id === value);
-        
-        setFormData((prevData) => ({
-            ...prevData,
+        setFormData((prev) => ({
+            ...prev,
             city: value,
-            city_name: city?.name || ""
+            city_name: city?.name || '',
+            district: '', sub_district: '',
+            district_name: '', sub_district_name: ''
         }));
-        
+
         setSelectedCity(value);
+        setSelectedDistrict(null);
+        setSelectedSubDistrict(null);
     };
-    
+
     const handleSelectDistrict = (e) => {
         const { value } = e.target;
-        
-        const dist = district.find((c) => c.id === value);
-        
-        setFormData((prevData) => ({
-            ...prevData,
+        const dist = district.find((c) => String(c.id) === String(value));
+
+        setFormData((prev) => ({
+            ...prev,
             district: value,
             district_name: dist?.name || '',
+            sub_district: '',
+            sub_district_name: ''
         }));
-        setSelectedDistrict(e.target.value)
-    }
+
+        setSelectedDistrict(value);
+        setSelectedSubDistrict(null);
+    };
+
     const handleSelectSubDistrict = (e) => {
         const { value } = e.target;
-        
-        const subDist = subDistrict.find((c) => c.id === value);
-        setFormData((prevData) => ({
-            ...prevData,
+        const subDist = subDistrict.find((c) => String(c.id) === String(value));
+
+        setFormData((prev) => ({
+            ...prev,
             sub_district: value,
-            sub_district_name: subDist?.name || '',
+            sub_district_name: subDist?.name || ''
         }));
-        setSelectedSubDistrict(e.target.value)
-    }
+
+        setSelectedSubDistrict(value);
+    };
+
 
     const handleMultipleChanges = (e) => {
         const { name } = e.target;
@@ -535,7 +551,7 @@ export default function ProfileSettings() {
                             variant="outlined"
                             defaultValue=""
                             id="province"
-                            value={selectedProvince}
+                            value={selectedProvince ?? ''}
                             onChange={handleMultipleChanges}
                             error={!dataAccount.address.province}
                             helperText={!dataAccount.address.province ? "Lengkapi Provinsi !" : ""}
@@ -555,7 +571,7 @@ export default function ProfileSettings() {
                             name="city"
                             label="Pilih Kab/Kota"
                             variant="outlined"
-                            value={selectedCity}
+                            value={selectedCity ?? ""}
                             onChange={handleMultipleChanges}
                             error={!dataAccount.address.city}
                             helperText={!dataAccount.address.city ? "Lengkapi Kab/Kota !" : ""}
@@ -580,7 +596,7 @@ export default function ProfileSettings() {
                             variant="outlined"
                             id="district"
                             defaultValue={formData.district}
-                            value={selectedDistrict}
+                            value={selectedDistrict ?? ''}
                             onChange={handleMultipleChanges}
                             error={!dataAccount.address.district}
                             helperText={!dataAccount.address.district ? "Lengkapi Kecamatan !" : ""}
@@ -604,7 +620,7 @@ export default function ProfileSettings() {
                             variant="outlined"
                             id="sub_district"
                             defaultValue={formData.sub_district}
-                            value={selectedSubDistrict}
+                            value={selectedSubDistrict ?? ''}
                             onChange={handleMultipleChanges}
                             error={!dataAccount.address.sub_district}
                             helperText={!dataAccount.address.sub_district ? "Lengkapi District !" : ""}
